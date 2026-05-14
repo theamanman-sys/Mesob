@@ -1,0 +1,1 @@
+var e=(e,t=[])=>{if(t&&t.length>0){let n=t.find(t=>t.code===e);if(n)return n.id}return e===`am`?2:1},t=(e,t,n,r=``)=>e?t===`am`?e[`${n}Am`]||e[n]||r:e[n]||r:r;export{t as n,e as t};
