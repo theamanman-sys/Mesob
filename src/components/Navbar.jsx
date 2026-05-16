@@ -1,18 +1,35 @@
-import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
-import { Menu, X } from 'lucide-react'
-
-const navLinks = [
-  { path: '/', label: 'Home' },
-  { path: '/service-catalogue', label: 'Services' },
-  { path: '/about-us', label: 'About Us' }
-]
+import { Menu, X, LogOut, ChevronDown } from 'lucide-react'
+import { citizenService } from '../services/citizenService'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [citizen, setCitizen] = useState(null)
   const location = useLocation()
-  const { currentLanguage, changeLanguage, languages } = useLanguage()
+  const navigate = useNavigate()
+  const { currentLanguage, changeLanguage, languages, t } = useLanguage()
+
+  useEffect(() => {
+    setCitizen(citizenService.getSession())
+    setProfileOpen(false)
+  }, [location.pathname])
+
+  const handleLogout = () => {
+    citizenService.logout()
+    setCitizen(null)
+    setProfileOpen(false)
+    navigate('/')
+  }
+
+  const navLinks = [
+    { path: '/', label: t('Home') },
+    { path: '/service-catalogue', label: t('Services') },
+    { path: '/departments', label: t('Departments') },
+    { path: '/about-us', label: t('About Us') }
+  ]
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -37,13 +54,69 @@ export default function Navbar() {
               {languages.length === 0 && (
                 <>
                   <option value="en">English</option>
-                  <option value="am">Amharic</option>
-                  <option value="om">Afaan Oromo</option>
+                  <option value="am">አማርኛ</option>
+                  <option value="om">Afaan Oromoo</option>
                 </>
               )}
             </select>
+
+            {citizen ? (
+              <div className="relative">
+                <button onClick={() => setProfileOpen(!profileOpen)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 transition">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                    {citizen.firstName?.[0]}{citizen.lastName?.[0]}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 max-w-[100px] truncate">
+                    {citizen.firstName}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </button>
+                {profileOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setProfileOpen(false)} />
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 z-20 py-2">
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-semibold text-gray-900">{citizen.firstName} {citizen.lastName}</p>
+                        <p className="text-xs text-gray-500 truncate">{citizen.email}</p>
+                      </div>
+                      <Link to="/citizen/dashboard" onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition">
+                        My Dashboard
+                      </Link>
+                      <Link to="/citizen/profile" onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition">
+                        Profile
+                      </Link>
+                      <Link to="/citizen/documents" onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition">
+                        My Documents
+                      </Link>
+                      <div className="border-t border-gray-100 mt-1 pt-1">
+                        <button onClick={handleLogout}
+                          className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition">
+                          <LogOut className="w-4 h-4" /> Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link to="/citizen-register"
+                  className="text-blue-600 px-3 py-2 rounded-md text-sm font-medium hover:text-blue-800 transition">
+                  {t('Register')}
+                </Link>
+                <Link to="/citizen-login"
+                  className="border border-blue-600 text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition">
+                  {t('Sign In')}
+                </Link>
+              </>
+            )}
+
             <Link to="/login" className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">
-              Admin
+              {t('Admin')}
             </Link>
           </div>
           <button className="md:hidden" onClick={() => setOpen(!open)}>
@@ -60,9 +133,43 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
+            {citizen ? (
+              <>
+                <div className="flex items-center gap-3 px-2 py-3 border-b border-gray-100">
+                  <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                    {citizen.firstName?.[0]}{citizen.lastName?.[0]}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">{citizen.firstName} {citizen.lastName}</p>
+                    <p className="text-xs text-gray-500">{citizen.email}</p>
+                  </div>
+                </div>
+                <Link to="/citizen/dashboard" onClick={() => setOpen(false)}
+                  className="text-sm font-medium py-2 text-gray-700">Dashboard</Link>
+                <Link to="/citizen/profile" onClick={() => setOpen(false)}
+                  className="text-sm font-medium py-2 text-gray-700">Profile</Link>
+                <Link to="/citizen/documents" onClick={() => setOpen(false)}
+                  className="text-sm font-medium py-2 text-gray-700">My Documents</Link>
+                <button onClick={() => { handleLogout(); setOpen(false) }}
+                  className="text-sm font-medium py-2 text-red-600 text-left">Sign Out</button>
+              </>
+            ) : (
+              <>
+                <Link to="/citizen-register" onClick={() => setOpen(false)}
+                  className="text-blue-600 px-4 py-2 rounded-md text-sm text-center">
+                  {t('Register')}
+                </Link>
+                <Link to="/citizen-login" onClick={() => setOpen(false)}
+                  className="border border-blue-600 text-blue-600 px-4 py-2 rounded-md text-sm text-center">
+                  {t('Sign In')}
+                </Link>
+              </>
+            )}
+
             <Link to="/login" onClick={() => setOpen(false)}
               className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm text-center">
-              Admin Login
+              {t('Admin')}
             </Link>
           </div>
         </div>

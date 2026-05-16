@@ -1,0 +1,113 @@
+import { useState } from 'react'
+import { Calculator, TrendingUp, Users, PiggyBank, Download } from 'lucide-react'
+
+export default function AdminPension() {
+  const [age, setAge] = useState(30)
+  const [retirementAge, setRetirementAge] = useState(65)
+  const [salary, setSalary] = useState(15000)
+  const [contribution, setContribution] = useState(7)
+  const [savings, setSavings] = useState(0)
+  const [result, setResult] = useState(null)
+
+  const calculate = () => {
+    const years = retirementAge - age
+    const monthlyContribution = (salary * contribution) / 100
+    const annualReturn = 0.08
+    let total = savings
+    for (let y = 0; y < years; y++) {
+      for (let m = 0; m < 12; m++) {
+        total += monthlyContribution
+        total *= (1 + annualReturn / 12)
+      }
+    }
+    const monthlyPayout = total * 0.04 / 12
+    setResult({ total: Math.round(total), monthly: Math.round(monthlyPayout), years, monthlyContribution: Math.round(monthlyContribution) })
+  }
+
+  return (
+    <div className="p-6 max-w-6xl mx-auto">
+      <div className="flex items-center gap-3 mb-6">
+        <PiggyBank className="w-7 h-7 text-blue-600" />
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pension Calculator</h1>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+            <Calculator className="w-5 h-5 text-blue-500" /> Your Details
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Age: <span className="font-bold text-blue-600">{age}</span></label>
+              <input type="range" min="18" max="70" value={age} onChange={(e) => setAge(Number(e.target.value))} className="w-full" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Retirement Age: <span className="font-bold text-blue-600">{retirementAge}</span></label>
+              <input type="range" min="40" max="80" value={retirementAge} onChange={(e) => setRetirementAge(Number(e.target.value))} className="w-full" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly Salary (ETB)</label>
+              <input type="number" value={salary} onChange={(e) => setSalary(Number(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contribution Rate: <span className="font-bold text-blue-600">{contribution}%</span></label>
+              <input type="range" min="1" max="20" value={contribution} onChange={(e) => setContribution(Number(e.target.value))} className="w-full" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Savings (ETB)</label>
+              <input type="number" value={savings} onChange={(e) => setSavings(Number(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+            </div>
+            <button onClick={calculate}
+              className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+              <Calculator className="w-5 h-5" /> Calculate Pension
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-green-500" /> Projection
+          </h2>
+          {result ? (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Savings</p>
+                  <p className="text-2xl font-bold text-blue-600">{result.total.toLocaleString()} ETB</p>
+                </div>
+                <div className="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Payout</p>
+                  <p className="text-2xl font-bold text-green-600">{result.monthly.toLocaleString()} ETB</p>
+                </div>
+              </div>
+              <div className="space-y-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Years until retirement</span>
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">{result.years} years</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Monthly contribution</span>
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">{result.monthlyContribution.toLocaleString()} ETB</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Annual return rate</span>
+                  <span className="font-semibold text-green-600">8%</span>
+                </div>
+              </div>
+              <button className="w-full py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition flex items-center justify-center gap-2">
+                <Download className="w-4 h-4" /> Download Report
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+              <Calculator className="w-12 h-12 mb-3 opacity-50" />
+              <p>Fill in your details and calculate</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

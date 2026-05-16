@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { X, LayoutDashboard, Globe, Image, Building2, FileText, ShoppingCart, MapPin, Newspaper, Phone, Map,
-  Video, MessageSquare, Users, Settings, Menu as MenuIcon, Megaphone, BookOpen, UserCheck } from 'lucide-react'
+  Video, MessageSquare, Users, Settings, Menu as MenuIcon, Megaphone, BookOpen, UserCheck, Scan, PiggyBank, FileSignature, Shield, Home, Landmark } from 'lucide-react'
 
 const menuItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', roles: ['admin', 'contentManager'] },
@@ -26,6 +26,13 @@ const menuItems = [
   { path: '/admin/news-ui-text', icon: BookOpen, label: 'News UI Text', roles: ['admin', 'contentManager'] },
   { path: '/admin/about-us', icon: FileText, label: 'About Us', roles: ['admin', 'contentManager'] },
   { path: '/admin/user-management', icon: UserCheck, label: 'User Mgmt', roles: ['admin'] },
+  { path: '/admin/document-scanner', icon: Scan, label: 'Document Scanner', roles: ['admin'] },
+  { path: '/admin/applications', icon: FileText, label: 'Applications', roles: ['admin'] },
+  { path: '/admin/pension', icon: PiggyBank, label: 'Pension', roles: ['admin'] },
+  { path: '/admin/inheritance', icon: FileSignature, label: 'Inheritance', roles: ['admin'] },
+  { path: '/admin/insurance', icon: Shield, label: 'Insurance', roles: ['admin'] },
+  { path: '/admin/bank', icon: Landmark, label: 'Bank & Finance', roles: ['admin'] },
+  { path: '/admin/property', icon: Home, label: 'Property Mgmt', roles: ['admin'] },
   { path: '/admin/account-settings', icon: Settings, label: 'Account', roles: ['admin', 'socialMedia', 'contentManager'] },
 ]
 

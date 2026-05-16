@@ -1,46 +1,76 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import Home from './pages/Home'
-import ServiceCatalogue from './pages/ServiceCatalogue'
-import AboutUs from './pages/AboutUs'
-import Login from './pages/Login'
-import AdminLayout from './admin/AdminLayout'
-import AdminDashboard from './admin/AdminDashboard'
-import AdminLanguages from './admin/AdminLanguages'
-import AdminBanner from './admin/AdminBanner'
-import AdminBannerImages from './admin/AdminBannerImages'
-import AdminOrganization from './admin/AdminOrganization'
-import AdminServices from './admin/AdminServices'
-import AdminServiceCatalog from './admin/AdminServiceCatalog'
-import AdminLocations from './admin/AdminLocations'
-import AdminNews from './admin/AdminNews'
-import AdminContactInfo from './admin/AdminContactInfo'
-import AdminHeadquarters from './admin/AdminHeadquarters'
-import AdminContactUiText from './admin/AdminContactUiText'
-import AdminSocialMediaLinks from './admin/AdminSocialMediaLinks'
-import AdminBodyTexts from './admin/AdminBodyTexts'
-import AdminVideoData from './admin/AdminVideoData'
-import AdminPopularServices from './admin/AdminPopularServices'
-import AdminMessages from './admin/AdminMessages'
-import AdminAdvImage from './admin/AdminAdvImage'
-import AdminAdvVideo from './admin/AdminAdvVideo'
-import AdminGovernmentServices from './admin/AdminGovernmentServices'
-import AdminNewsUiText from './admin/AdminNewsUiText'
-import AdminAboutUs from './admin/AdminAboutUs'
-import AdminUserManagement from './admin/AdminUserManagement'
-import AdminAccountSettings from './admin/AdminAccountSettings'
 
-function ProtectedRoute({ children, allowedRoles = [] }) {
-  const { isAuthenticated, user, loading } = useAuth()
+const Home = lazy(() => import('./pages/Home'))
+const ServiceCatalogue = lazy(() => import('./pages/ServiceCatalogue'))
+const Departments = lazy(() => import('./pages/Departments'))
+const DepartmentDetail = lazy(() => import('./pages/DepartmentDetail'))
+const AboutUs = lazy(() => import('./pages/AboutUs'))
+const Login = lazy(() => import('./pages/Login'))
+const CitizenLogin = lazy(() => import('./pages/CitizenLogin'))
+const CitizenRegister = lazy(() => import('./pages/citizen/CitizenRegister'))
+const CitizenLayout = lazy(() => import('./pages/citizen/CitizenLayout'))
+const CitizenDashboard = lazy(() => import('./pages/citizen/CitizenDashboard'))
+const CitizenServices = lazy(() => import('./pages/citizen/CitizenServices'))
+const CitizenApplications = lazy(() => import('./pages/citizen/CitizenApplications'))
+const CitizenDocuments = lazy(() => import('./pages/citizen/CitizenDocuments'))
+const CitizenProfile = lazy(() => import('./pages/citizen/CitizenProfile'))
+const CitizenDocumentScanner = lazy(() => import('./pages/citizen/CitizenDocumentScanner'))
+const CitizenPension = lazy(() => import('./pages/citizen/CitizenPension'))
+const CitizenInheritance = lazy(() => import('./pages/citizen/CitizenInheritance'))
+const CitizenInsurance = lazy(() => import('./pages/citizen/CitizenInsurance'))
+const CitizenBank = lazy(() => import('./pages/citizen/CitizenBank'))
+const CitizenProperty = lazy(() => import('./pages/citizen/CitizenProperty'))
+const ServiceDetail = lazy(() => import('./pages/ServiceDetail'))
+const AdminLayout = lazy(() => import('./admin/AdminLayout'))
+const AdminDashboard = lazy(() => import('./admin/AdminDashboard'))
+const AdminLanguages = lazy(() => import('./admin/AdminLanguages'))
+const AdminBanner = lazy(() => import('./admin/AdminBanner'))
+const AdminBannerImages = lazy(() => import('./admin/AdminBannerImages'))
+const AdminOrganization = lazy(() => import('./admin/AdminOrganization'))
+const AdminServices = lazy(() => import('./admin/AdminServices'))
+const AdminServiceCatalog = lazy(() => import('./admin/AdminServiceCatalog'))
+const AdminLocations = lazy(() => import('./admin/AdminLocations'))
+const AdminNews = lazy(() => import('./admin/AdminNews'))
+const AdminContactInfo = lazy(() => import('./admin/AdminContactInfo'))
+const AdminHeadquarters = lazy(() => import('./admin/AdminHeadquarters'))
+const AdminContactUiText = lazy(() => import('./admin/AdminContactUiText'))
+const AdminSocialMediaLinks = lazy(() => import('./admin/AdminSocialMediaLinks'))
+const AdminBodyTexts = lazy(() => import('./admin/AdminBodyTexts'))
+const AdminVideoData = lazy(() => import('./admin/AdminVideoData'))
+const AdminPopularServices = lazy(() => import('./admin/AdminPopularServices'))
+const AdminMessages = lazy(() => import('./admin/AdminMessages'))
+const AdminAdvImage = lazy(() => import('./admin/AdminAdvImage'))
+const AdminAdvVideo = lazy(() => import('./admin/AdminAdvVideo'))
+const AdminGovernmentServices = lazy(() => import('./admin/AdminGovernmentServices'))
+const AdminNewsUiText = lazy(() => import('./admin/AdminNewsUiText'))
+const AdminAboutUs = lazy(() => import('./admin/AdminAboutUs'))
+const AdminUserManagement = lazy(() => import('./admin/AdminUserManagement'))
+const AdminAccountSettings = lazy(() => import('./admin/AdminAccountSettings'))
+const AdminDocumentScanner = lazy(() => import('./admin/AdminDocumentScanner'))
+const AdminApplications = lazy(() => import('./admin/AdminApplications'))
+const AdminPension = lazy(() => import('./admin/AdminPension'))
+const AdminInheritance = lazy(() => import('./admin/AdminInheritance'))
+const AdminInsurance = lazy(() => import('./admin/AdminInsurance'))
+const AdminBank = lazy(() => import('./admin/AdminBank'))
+const AdminProperty = lazy(() => import('./admin/AdminProperty'))
 
-  if (loading) return (
+function PageLoader() {
+  return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
     </div>
   )
+}
+
+function ProtectedRoute({ children, allowedRoles = [] }) {
+  const { isAuthenticated, user, loading } = useAuth()
+
+  if (loading) return <PageLoader />
 
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />
@@ -89,8 +119,25 @@ export default function App() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
       className="min-h-screen dark:bg-gray-900 dark:text-white">
+      <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/citizen-login" element={<CitizenLogin />} />
+        <Route path="/citizen-register" element={<CitizenRegister />} />
+        <Route path="/citizen" element={<CitizenLayout />}>
+          <Route index element={<Navigate to="/citizen/dashboard" replace />} />
+          <Route path="dashboard" element={<CitizenDashboard />} />
+          <Route path="services" element={<CitizenServices />} />
+          <Route path="applications" element={<CitizenApplications />} />
+          <Route path="documents" element={<CitizenDocuments />} />
+          <Route path="document-scanner" element={<CitizenDocumentScanner />} />
+          <Route path="pension" element={<CitizenPension />} />
+          <Route path="inheritance" element={<CitizenInheritance />} />
+          <Route path="insurance" element={<CitizenInsurance />} />
+          <Route path="bank" element={<CitizenBank />} />
+          <Route path="property" element={<CitizenProperty />} />
+          <Route path="profile" element={<CitizenProfile />} />
+        </Route>
         <Route path="/admin" element={
           <ProtectedRoute allowedRoles={['admin', 'socialMedia', 'contentManager']}>
             <AdminLayout />
@@ -168,13 +215,38 @@ export default function App() {
           <Route path="account-settings" element={
             <RoleGuard allowedRoles={['admin', 'socialMedia', 'contentManager']}><AdminAccountSettings /></RoleGuard>
           } />
+          <Route path="document-scanner" element={
+            <RoleGuard allowedRoles={['admin']}><AdminDocumentScanner /></RoleGuard>
+          } />
+          <Route path="applications" element={
+            <RoleGuard allowedRoles={['admin']}><AdminApplications /></RoleGuard>
+          } />
+          <Route path="pension" element={
+            <RoleGuard allowedRoles={['admin']}><AdminPension /></RoleGuard>
+          } />
+          <Route path="inheritance" element={
+            <RoleGuard allowedRoles={['admin']}><AdminInheritance /></RoleGuard>
+          } />
+          <Route path="insurance" element={
+            <RoleGuard allowedRoles={['admin']}><AdminInsurance /></RoleGuard>
+          } />
+          <Route path="bank" element={
+            <RoleGuard allowedRoles={['admin']}><AdminBank /></RoleGuard>
+          } />
+          <Route path="property" element={
+            <RoleGuard allowedRoles={['admin']}><AdminProperty /></RoleGuard>
+          } />
           <Route path="*" element={<div className="text-center py-12 text-gray-500">Page not found</div>} />
         </Route>
         <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
         <Route path="/service-catalogue" element={<PublicLayout><ServiceCatalogue /></PublicLayout>} />
+        <Route path="/services/:id" element={<PublicLayout><ServiceDetail /></PublicLayout>} />
+        <Route path="/departments" element={<PublicLayout><Departments /></PublicLayout>} />
+        <Route path="/departments/:id" element={<PublicLayout><DepartmentDetail /></PublicLayout>} />
         <Route path="/about-us" element={<PublicLayout><AboutUs /></PublicLayout>} />
         <Route path="*" element={<PublicLayout><Home /></PublicLayout>} />
       </Routes>
+      </Suspense>
     </motion.div>
   )
 }

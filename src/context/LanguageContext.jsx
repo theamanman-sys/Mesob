@@ -6,6 +6,7 @@ import { bannerService } from '../services/bannerService'
 import { bodyTextService } from '../services/bodyTextService'
 import { serviceCatalogService } from '../services/serviceCatalogService'
 import { governmentServiceService } from '../services/governmentServiceService'
+import translations from '../i18n/translations'
 
 const LanguageContext = createContext()
 
@@ -71,7 +72,9 @@ export function LanguageProvider({ children }) {
   }, [])
 
   const t = useCallback((textKey, lang = currentLanguage) => {
-    return textKey || ''
+    if (!textKey) return ''
+    if (lang === 'en' || !translations[lang]) return textKey
+    return translations[lang][textKey] || textKey
   }, [currentLanguage])
 
   return (

@@ -1,0 +1,929 @@
+{
+  "organizations": [
+    {
+      "id": 1,
+      "name": "Ministry of Trade and Regional Integration",
+      "shortName": "MOTRI",
+      "description": "Trade licensing, business registration, and commercial services.",
+      "color": "#1e40af",
+      "isActive": true,
+      "url": "https://www.motri.gov.et",
+      "icon": "/files/logos/motri-logo.svg"
+    },
+    {
+      "id": 2,
+      "name": "National ID Program",
+      "shortName": "NID",
+      "description": "Fayda digital ID registration and management.",
+      "color": "#047857",
+      "isActive": true,
+      "url": "https://id.gov.et",
+      "icon": "/files/logos/nid-logo.png"
+    },
+    {
+      "id": 3,
+      "name": "Immigration and Citizenship Service",
+      "shortName": "ICS",
+      "description": "Passport, visa, residence permit, and citizenship services.",
+      "color": "#b45309",
+      "isActive": true,
+      "url": "https://www.ics.gov.et",
+      "icon": "/files/logos/ics-logo.png"
+    },
+    {
+      "id": 4,
+      "name": "Ministry of Labor and Skills",
+      "shortName": "MOLS",
+      "description": "Expat work permits, skills development, and employment services.",
+      "color": "#7c3aed",
+      "isActive": true,
+      "url": "https://www.mols.gov.et",
+      "icon": "/files/logos/mols-logo.svg"
+    },
+    {
+      "id": 5,
+      "name": "Ministry of Foreign Affairs",
+      "shortName": "MFA",
+      "description": "Document authentication and legalization for international use.",
+      "color": "#be123c",
+      "isActive": true,
+      "url": "https://mfa.gov.et/",
+      "icon": "/files/logos/mfa-logo.svg"
+    },
+    {
+      "id": 6,
+      "name": "Ministry of Revenues",
+      "shortName": "MOR",
+      "description": "Taxpayer registration, TIN issuance, and revenue services.",
+      "color": "#6366f1",
+      "isActive": true,
+      "url": "https://www.mor.gov.et",
+      "icon": "/files/logos/mor-logo.png"
+    },
+    {
+      "id": 7,
+      "name": "Documents Authentication and Registration Service",
+      "shortName": "DARS",
+      "description": "Registration and authentication of legal documents, contracts, and agreements.",
+      "color": "#0891b2",
+      "isActive": true,
+      "url": "https://www.dars.gov.et",
+      "icon": "/files/logos/dars-logo.png"
+    },
+    {
+      "id": 8,
+      "name": "Educational Assessment and Examination Service",
+      "shortName": "EAES",
+      "description": "Educational document verification, authentication, and transcript services.",
+      "color": "#d97706",
+      "isActive": true,
+      "url": "https://eaes.et/",
+      "icon": "/files/logos/eaes-logo.svg"
+    },
+    {
+      "id": 9,
+      "name": "Ethiopian Investment Commission",
+      "shortName": "EIC",
+      "description": "Investment permits, capital registration, and customs duty exemptions.",
+      "color": "#059669",
+      "isActive": true,
+      "url": "https://www.investethiopia.gov.et",
+      "icon": "/files/logos/eic-logo.svg"
+    },
+    {
+      "id": 10,
+      "name": "Ethiopian Postal Service Enterprise",
+      "shortName": "EPSE",
+      "description": "Postal services including NID card delivery and express mail.",
+      "color": "#dc2626",
+      "isActive": true,
+      "url": "https://ethio.post",
+      "icon": "/files/logos/epse-logo.png"
+    },
+    {
+      "id": 11,
+      "name": "Ministry of Tourism",
+      "shortName": "MOT",
+      "description": "Tour operator licensing, guide certification, and tourism classification.",
+      "color": "#db2777",
+      "isActive": true,
+      "url": "https://www.tourism.gov.et",
+      "icon": "/files/logos/mot-logo.svg"
+    },
+    {
+      "id": 12,
+      "name": "Ethiopian Customs Commission",
+      "shortName": "ECC",
+      "description": "Customs declaration, warehouse licensing, and broker services.",
+      "color": "#4f46e5",
+      "isActive": true,
+      "url": "https://www.ethiopiancustoms.gov.et",
+      "icon": "/files/logos/ecc-logo.png"
+    },
+    {
+      "id": 14,
+      "name": "Ministry of Justice",
+      "shortName": "MOJ",
+      "description": "Advocate licensing and legal professional regulation.",
+      "color": "#0d9488",
+      "isActive": true,
+      "url": "https://www.moj.gov.et",
+      "icon": "/files/logos/moj-logo.svg"
+    },
+    {
+      "id": 15,
+      "name": "Ministry of Health",
+      "shortName": "MOH",
+      "description": "Medical referral, professional licensing for health professionals.",
+      "color": "#e11d48",
+      "isActive": true,
+      "url": "https://www.moh.gov.et",
+      "icon": "/files/logos/moh-logo.png"
+    },
+    {
+      "id": 16,
+      "name": "Ethiopian Construction Authority",
+      "shortName": "ECA",
+      "description": "Professional licensing for engineers and construction professionals.",
+      "color": "#ca8a04",
+      "isActive": true,
+      "url": "https://www.eca.gov.et",
+      "icon": "/files/logos/eca-logo.svg"
+    },
+    {
+      "id": 17,
+      "name": "Ethiopian Agricultural Authority",
+      "shortName": "EAA",
+      "description": "Agricultural inputs regulation, pesticide and fertilizer certification.",
+      "color": "#16a34a",
+      "isActive": true,
+      "url": "https://www.eaa.gov.et",
+      "icon": "/files/logos/eaa-logo.svg"
+    },
+    {
+      "id": 19,
+      "name": "Ethiopian Food and Drug Authority",
+      "shortName": "EFDA",
+      "description": "Food, medicine, and medical device regulation and licensing.",
+      "color": "#9333ea",
+      "isActive": true,
+      "url": "https://www.efda.gov.et",
+      "icon": "/files/logos/efda-logo.svg"
+    },
+    {
+      "id": 20,
+      "name": "Ethiopian Environmental Protection Authority",
+      "shortName": "EPA",
+      "description": "Environmental licensing and impact assessment services.",
+      "color": "#15803d",
+      "isActive": true,
+      "url": "https://www.epa.gov.et",
+      "icon": "/files/logos/epa-logo.svg"
+    },
+    {
+      "id": 21,
+      "name": "Education and Training Authority",
+      "shortName": "ETA",
+      "description": "Educational credential authentication and equivalence services.",
+      "color": "#2563eb",
+      "isActive": true,
+      "url": "https://www.eta.gov.et",
+      "icon": "/files/logos/eta-logo.svg"
+    },
+    {
+      "id": 23,
+      "name": "Ethio telecom",
+      "shortName": "Ethio telecom",
+      "description": "Telecom services including Telebirr and enterprise solutions.",
+      "color": "#7c3aed",
+      "isActive": true,
+      "url": "https://www.ethiotelecom.et",
+      "icon": "/files/logos/ethiotelecom-logo.png"
+    },
+    {
+      "id": 24,
+      "name": "Commercial Bank of Ethiopia",
+      "shortName": "CBE",
+      "description": "Banking services including account opening and mobile banking.",
+      "color": "#b91c1c",
+      "isActive": true,
+      "url": "https://combanketh.et/home",
+      "icon": "/files/logos/cbe-logo.svg"
+    },
+    {
+      "id": 26,
+      "name": "Ministry of Transport and Logistics",
+      "shortName": "MoTL",
+      "description": "Transport operator licensing and logistics regulation.",
+      "color": "#0e7490",
+      "isActive": true,
+      "url": "https://www.motl.gov.et",
+      "icon": "/files/logos/motl-logo.svg"
+    },
+    {
+      "id": 27,
+      "name": "Federal Public Procurement and Property Authority",
+      "shortName": "PPPA",
+      "description": "Supplier registration and procurement services.",
+      "color": "#475569",
+      "isActive": true,
+      "url": "https://www.pppa.gov.et",
+      "icon": "/files/logos/pppa-logo.svg"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@mesobcenter.et",
+      "password": "admin123",
+      "role": "admin",
+      "isActive": true,
+      "mustChangePassword": false
+    },
+    {
+      "id": 2,
+      "username": "manager",
+      "email": "manager@mesobcenter.et",
+      "password": "manager123",
+      "role": "admin",
+      "isActive": true,
+      "mustChangePassword": false
+    }
+  ],
+  "languages": [
+    {
+      "id": 1,
+      "code": "en",
+      "name": "English",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "code": "am",
+      "name": "አማርኛ",
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "code": "om",
+      "name": "Afaan Oromoo",
+      "isActive": true
+    }
+  ],
+  "aboutUs": [
+    {
+      "id": 1,
+      "title": "About MESOB Center",
+      "description": "MESOB Center is a one-stop service center where Ethiopian residents can access essential government services efficiently.",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "title": "Our Mission",
+      "description": "To provide seamless, efficient, and secure government services to all Ethiopian residents.",
+      "isActive": true,
+      "category": "mission"
+    },
+    {
+      "id": 3,
+      "title": "Our Vision",
+      "description": "A modern Ethiopia where every citizen has easy access to organized, beneficial government services.",
+      "isActive": true,
+      "category": "vision"
+    }
+  ],
+  "socialMediaLinks": [
+    {
+      "id": 1,
+      "platform": "facebook",
+      "link": "https://facebook.com/mesobcenter",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "platform": "telegram",
+      "link": "https://t.me/mesobcenter",
+      "isActive": true
+    }
+  ],
+  "messages": [],
+  "bannerData": [
+    {
+      "id": 1,
+      "title": "Welcome to MESOB Center",
+      "subtitle": "One-stop service for Ethiopian residents",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "title": "Fast & Efficient Services",
+      "subtitle": "Access government services seamlessly",
+      "isActive": true
+    }
+  ],
+  "bannerImages": [
+    {
+      "id": 1,
+      "bannerId": 1,
+      "imageUrl": "/files/banners/hero-1.jpg",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "bannerId": 1,
+      "imageUrl": "/files/banners/hero-2.jpg",
+      "isActive": true
+    }
+  ],
+  "bodyTexts": [
+    {
+      "id": 1,
+      "key": "home_tagline",
+      "content": "Modern Ethiopia Service for Organized Benefit",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "key": "home_description",
+      "content": "Your one-stop center for government services",
+      "isActive": true
+    }
+  ],
+  "advVideo": [],
+  "advImage": [],
+  "videoData": [],
+  "newsData": [],
+  "newsUiText": [],
+  "locations": [
+    {
+      "id": 1,
+      "name": "MESOB Center - Addis Ababa",
+      "address": "Bole Road, Addis Ababa",
+      "phone": "+251-11-123-4567",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "name": "MESOB Center - Bahir Dar",
+      "address": "Piassa, Bahir Dar",
+      "phone": "+251-58-123-4567",
+      "isActive": true
+    }
+  ],
+  "headquarters": [
+    {
+      "id": 1,
+      "name": "MESOB Center Headquarters",
+      "address": "Bole Sub-city, Addis Ababa, Ethiopia",
+      "phone": "+251-11-123-4567",
+      "email": "info@mesobcenter.et",
+      "isActive": true
+    }
+  ],
+  "contactInfo": [
+    {
+      "id": 1,
+      "label": "Phone",
+      "value": "+251-11-123-4567",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "label": "Email",
+      "value": "info@mesobcenter.et",
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "label": "Address",
+      "value": "Bole Road, Addis Ababa, Ethiopia",
+      "isActive": true
+    }
+  ],
+  "contactUiText": [
+    {
+      "id": 1,
+      "key": "contact_header",
+      "content": "Contact Us",
+      "languageId": 1
+    },
+    {
+      "id": 2,
+      "key": "contact_description",
+      "content": "Get in touch with MESOB Center",
+      "languageId": 1
+    }
+  ],
+  "popularServices": [],
+  "translatedOrganizations": [],
+  "governmentServices": [],
+  "serviceCatalog": [
+    {
+      "id": 1,
+      "name": "Business Services",
+      "description": "Business registration and licensing",
+      "organizationId": 1,
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "name": "Identification Services",
+      "description": "National ID and identity documents",
+      "organizationId": 2,
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "name": "Immigration Services",
+      "description": "Passport, visa, and residence permits",
+      "organizationId": 3,
+      "isActive": true
+    }
+  ],
+  "citizens": [
+    {
+      "id": 1,
+      "firstName": "Aman",
+      "lastName": "Cordova",
+      "email": "theamanman@gmail.com",
+      "phone": "",
+      "idNumber": "",
+      "password": "",
+      "picture": "https://lh3.googleusercontent.com/a/ACg8ocJTEqtY3Qdh4eNhPJyIVVGikVdfwmWSxfgTv26kRVuccrD8Gk8=s96-c",
+      "googleId": "110107265262571144354",
+      "googleData": {
+        "sub": "110107265262571144354",
+        "email": "theamanman@gmail.com",
+        "email_verified": true,
+        "name": "Aman Cordova",
+        "given_name": "Aman",
+        "family_name": "Cordova",
+        "picture": "https://lh3.googleusercontent.com/a/ACg8ocJTEqtY3Qdh4eNhPJyIVVGikVdfwmWSxfgTv26kRVuccrD8Gk8=s96-c",
+        "aud": "684481615293-5ah46hm3dccnfbqj4rbuga2knpvtevma.apps.googleusercontent.com",
+        "iss": "https://accounts.google.com"
+      },
+      "createdAt": "2026-05-16T07:38:03.329Z",
+      "updatedAt": "2026-05-16T13:20:38.193Z",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "firstName": "Aman",
+      "lastName": "Desta",
+      "email": "realcordos@gmail.com",
+      "phone": "",
+      "idNumber": "",
+      "password": "",
+      "picture": "https://lh3.googleusercontent.com/a/ACg8ocKkV3eDiqP8_ZWlQe7Mp6nZAMFso1hjDvPWKu4e1NCNgkM4lw=s96-c",
+      "googleId": "115638865822623344313",
+      "googleData": {
+        "sub": "115638865822623344313",
+        "email": "realcordos@gmail.com",
+        "email_verified": true,
+        "name": "Aman Desta",
+        "given_name": "Aman",
+        "family_name": "Desta",
+        "picture": "https://lh3.googleusercontent.com/a/ACg8ocKkV3eDiqP8_ZWlQe7Mp6nZAMFso1hjDvPWKu4e1NCNgkM4lw=s96-c",
+        "aud": "684481615293-5ah46hm3dccnfbqj4rbuga2knpvtevma.apps.googleusercontent.com",
+        "iss": "https://accounts.google.com"
+      },
+      "createdAt": "2026-05-16T10:24:25.089Z",
+      "updatedAt": "2026-05-16T10:24:25.089Z",
+      "status": "active"
+    }
+  ],
+  "citizenApplications": [
+    {
+      "id": "mp89alhr",
+      "citizenId": 2,
+      "serviceId": 389,
+      "serviceTitle": "Transport Route Permit",
+      "formData": {},
+      "documents": [],
+      "status": "submitted",
+      "createdAt": "2026-05-16T11:21:48.879Z",
+      "updatedAt": "2026-05-16T11:21:48.879Z",
+      "timeline": [
+        {
+          "status": "submitted",
+          "date": "2026-05-16T11:21:48.879Z",
+          "note": "Application submitted"
+        }
+      ]
+    },
+    {
+      "id": "mp8dkbo2",
+      "citizenId": 1,
+      "serviceId": 98,
+      "serviceTitle": "Urgent Temporary Residence Permit Card Issuance",
+      "formData": {},
+      "documents": [],
+      "status": "submitted",
+      "createdAt": "2026-05-16T13:21:21.170Z",
+      "updatedAt": "2026-05-16T13:21:21.170Z",
+      "timeline": [
+        {
+          "status": "submitted",
+          "date": "2026-05-16T13:21:21.170Z",
+          "note": "Application submitted"
+        }
+      ]
+    }
+  ],
+  "citizenDocuments": [],
+  "services": [
+    {
+      "id": 2,
+      "organizationId": 1,
+      "title": "Approval of Business Organization Name",
+      "description": "Apply for official approval of your business organization name before registration.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "27 birr"
+    },
+    {
+      "id": 4,
+      "organizationId": 1,
+      "title": "New Business Name Registration",
+      "description": "Register a new business name for your enterprise.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "127 birr"
+    },
+    {
+      "id": 6,
+      "organizationId": 1,
+      "title": "Amendment of Business Organization Name",
+      "description": "Change or amend your registered business organization name.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "27 birr"
+    },
+    {
+      "id": 8,
+      "organizationId": 1,
+      "title": "Amendment of Business Name",
+      "description": "Amend an existing business name registration.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "27 birr"
+    },
+    {
+      "id": 195,
+      "organizationId": 1,
+      "title": "Replacement of Business License",
+      "description": "Replace a lost or damaged business license.",
+      "processingTime": "5 minutes",
+      "ServiceFee": "52 birr"
+    },
+    {
+      "id": 10,
+      "organizationId": 2,
+      "title": "Fayda ID Registration",
+      "description": "Register for the national digital ID (Fayda).",
+      "processingTime": "10 minutes",
+      "ServiceFee": "Free"
+    },
+    {
+      "id": 370,
+      "organizationId": 2,
+      "title": "Fayda Demographic and Biometric Information Update",
+      "description": "Update your demographic and biometric data on Fayda ID.",
+      "processingTime": "-",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 371,
+      "organizationId": 2,
+      "title": "First-Level Complaint/Grievance Submission",
+      "description": "Submit a first-level complaint about Fayda ID services.",
+      "processingTime": "-",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 372,
+      "organizationId": 2,
+      "title": "Second-Level Complaint/Grievance Response Handling",
+      "description": "Handle responses for second-level complaints.",
+      "processingTime": "-",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 12,
+      "organizationId": 3,
+      "title": "2 Days Urgent Passport Renewal",
+      "description": "Express passport renewal within 2 working days for citizens requiring immediate travel.",
+      "processingTime": "2 days",
+      "ServiceFee": "28,000-33,000 ETB"
+    },
+    {
+      "id": 14,
+      "organizationId": 3,
+      "title": "5 Day Urgent Passport Renewal Service",
+      "description": "Standard urgent passport renewal within 5 working days.",
+      "processingTime": "5 days",
+      "ServiceFee": "28,000-33,000 ETB"
+    },
+    {
+      "id": 16,
+      "organizationId": 3,
+      "title": "Urgent Service for Damaged or Defaced Passports",
+      "description": "Replace a damaged or defaced passport urgently.",
+      "processingTime": "1-5 days",
+      "ServiceFee": "28,000-33,000 ETB"
+    },
+    {
+      "id": 18,
+      "organizationId": 3,
+      "title": "Service for Lost or Stolen Passport Replacement",
+      "description": "Replace a lost or stolen passport urgently.",
+      "processingTime": "1-5 days",
+      "ServiceFee": "28,000-33,000 ETB"
+    },
+    {
+      "id": 98,
+      "organizationId": 3,
+      "title": "Urgent Temporary Residence Permit Card Issuance",
+      "description": "Get an urgent temporary residence permit card.",
+      "processingTime": "1-5 days",
+      "ServiceFee": "1,000-3,000 USD"
+    },
+    {
+      "id": 99,
+      "organizationId": 3,
+      "title": "Urgent Permanent Residence Permit Card Issuance",
+      "description": "Get an urgent permanent residence permit card.",
+      "processingTime": "1-5 days",
+      "ServiceFee": "1,000-3,000 USD"
+    },
+    {
+      "id": 100,
+      "organizationId": 3,
+      "title": "Urgent Investment Visa (IV) Issuance",
+      "description": "Obtain an urgent investment visa.",
+      "processingTime": "1-5 days",
+      "ServiceFee": "150-750 USD"
+    },
+    {
+      "id": 101,
+      "organizationId": 3,
+      "title": "Urgent Work Visa (WV) for Private Sector Employment",
+      "description": "Get an urgent work visa for private sector employment.",
+      "processingTime": "1-5 days",
+      "ServiceFee": "150-750 USD"
+    },
+    {
+      "id": 102,
+      "organizationId": 3,
+      "title": "Urgent Issuance of Ethiopian Origin ID (Yellow Card)",
+      "description": "Obtain an Ethiopian origin ID card urgently.",
+      "processingTime": "1-5 days",
+      "ServiceFee": "200-400 USD"
+    },
+    {
+      "id": 103,
+      "organizationId": 3,
+      "title": "Issuance of Ethiopian Origin ID for Individuals Under 18",
+      "description": "Ethiopian origin ID for minors under 18 years.",
+      "processingTime": "1-5 days",
+      "ServiceFee": "200-400 USD"
+    },
+    {
+      "id": 110,
+      "organizationId": 4,
+      "title": "Expat Work Permit System",
+      "description": "Work permit processing for expatriate employees.",
+      "processingTime": "15-20 minutes",
+      "ServiceFee": "1,200-1,500 Birr"
+    },
+    {
+      "id": 113,
+      "organizationId": 4,
+      "title": "Enterprise Development Service",
+      "description": "Enterprise development and business support services.",
+      "processingTime": "-",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 22,
+      "organizationId": 5,
+      "title": "Authentication of Marriage, Divorce, Birth & Death Certificates",
+      "description": "Authentication of personal status documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "150-324 Birr + 100"
+    },
+    {
+      "id": 238,
+      "organizationId": 5,
+      "title": "Authentication of Educational Documents",
+      "description": "Authentication of diplomas, degrees, and academic transcripts.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "150-300 Birr + 100"
+    },
+    {
+      "id": 240,
+      "organizationId": 5,
+      "title": "Authentication of Health Certificates",
+      "description": "Authentication of medical and health-related documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 24,
+      "organizationId": 6,
+      "title": "Taxpayer Registration (TIN)",
+      "description": "Register for a Taxpayer Identification Number (TIN) required for all commercial and legal transactions.",
+      "processingTime": "30-45 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 26,
+      "organizationId": 7,
+      "title": "Revocation/ Renunciation of Power of Attorney",
+      "description": "Revoke or renounce a power of attorney document.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "200-400 Birr + duty"
+    },
+    {
+      "id": 28,
+      "organizationId": 7,
+      "title": "Amendment of Contract Documents",
+      "description": "Amend various types of contract documents.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "600-1,200 Birr + duty"
+    },
+    {
+      "id": 30,
+      "organizationId": 7,
+      "title": "Termination of Contract Documents",
+      "description": "Terminate different contract documents.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "200-400 Birr + duty"
+    },
+    {
+      "id": 32,
+      "organizationId": 7,
+      "title": "Declaration of Consent Documents",
+      "description": "Register declaration of consent documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "200-400 Birr + duty"
+    },
+    {
+      "id": 34,
+      "organizationId": 7,
+      "title": "Translated Documents",
+      "description": "Register and authenticate translated documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "200-400 Birr + duty"
+    },
+    {
+      "id": 36,
+      "organizationId": 8,
+      "title": "Educational Document Replacement Certificate",
+      "description": "Replacement certificate for lost educational documents.",
+      "processingTime": "50 minutes",
+      "ServiceFee": "200-400 ETB"
+    },
+    {
+      "id": 114,
+      "organizationId": 8,
+      "title": "Educational Document Replacement with True Copy",
+      "description": "Replace educational documents with certified true copy.",
+      "processingTime": "50 minutes",
+      "ServiceFee": "200-400 ETB"
+    },
+    {
+      "id": 116,
+      "organizationId": 8,
+      "title": "Educational Document Authentication",
+      "description": "Authentication of educational certificates and documents.",
+      "processingTime": "50 minutes",
+      "ServiceFee": "200-400 ETB"
+    },
+    {
+      "id": 118,
+      "organizationId": 8,
+      "title": "Giving a Supporting Letter",
+      "description": "Request a supporting letter for educational purposes.",
+      "processingTime": "5-50 minutes",
+      "ServiceFee": "200 ETB"
+    },
+    {
+      "id": 120,
+      "organizationId": 8,
+      "title": "Official Transcript",
+      "description": "Request official academic transcripts.",
+      "processingTime": "5-50 minutes",
+      "ServiceFee": "200 ETB / 50 USD"
+    },
+    {
+      "id": 122,
+      "organizationId": 8,
+      "title": "True Copy",
+      "description": "Certified true copy of educational documents.",
+      "processingTime": "5-50 minutes",
+      "ServiceFee": "200 ETB / 50 USD"
+    },
+    {
+      "id": 63,
+      "organizationId": 9,
+      "title": "Capital Registration",
+      "description": "Register investment capital with the Investment Commission.",
+      "processingTime": "2 hours",
+      "ServiceFee": "50 USD"
+    },
+    {
+      "id": 64,
+      "organizationId": 9,
+      "title": "Income Tax Holiday",
+      "description": "Apply for income tax holiday incentives.",
+      "processingTime": "3 hours",
+      "ServiceFee": "20 USD/request"
+    },
+    {
+      "id": 65,
+      "organizationId": 9,
+      "title": "New Investment Permit Application",
+      "description": "Apply for a new investment permit.",
+      "processingTime": "1 hour",
+      "ServiceFee": "100 USD"
+    },
+    {
+      "id": 159,
+      "organizationId": 10,
+      "title": "National ID (NID) Card Printing & Distribution",
+      "description": "NID card printing and distribution via postal service.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "343-1,000 ETB"
+    },
+    {
+      "id": 347,
+      "organizationId": 10,
+      "title": "Express Mail Service (EMS)",
+      "description": "Express mail and courier service.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "From 530 ETB"
+    },
+    {
+      "id": 162,
+      "organizationId": 11,
+      "title": "New Letter of Support for Expat Professional",
+      "description": "Initial letter of support for expatriate tourism professionals.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 164,
+      "organizationId": 11,
+      "title": "Renewal Letter of Support for Expat Professional",
+      "description": "Renew letter of support for expatriate professionals.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 38,
+      "organizationId": 15,
+      "title": "Medical Treatment Abroad (Non-Transplant)",
+      "description": "Apply for referral for medical treatment abroad.",
+      "processingTime": "40 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 40,
+      "organizationId": 15,
+      "title": "Organ Transplant Abroad",
+      "description": "Apply for referral for organ transplant abroad.",
+      "processingTime": "40 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 46,
+      "organizationId": 24,
+      "title": "Account Opening",
+      "description": "Open a new bank account at CBE.",
+      "processingTime": "25 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 48,
+      "organizationId": 24,
+      "title": "Mobile Banking",
+      "description": "Register for CBE mobile banking services.",
+      "processingTime": "5 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 50,
+      "organizationId": 23,
+      "title": "Telebirr Service",
+      "description": "Mobile money and payment services via Telebirr.",
+      "processingTime": "5 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 52,
+      "organizationId": 23,
+      "title": "Enterprise Service",
+      "description": "Enterprise telecom solutions and services.",
+      "processingTime": "5 minutes",
+      "ServiceFee": "None"
+    }
+  ]
+}

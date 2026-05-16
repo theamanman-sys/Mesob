@@ -1,24 +1,26 @@
 import { motion } from 'framer-motion'
 import { Target, Eye, Shield, Zap, Accessibility } from 'lucide-react'
-
-const values = [
-  { icon: Zap, title: 'Efficiency', desc: 'Streamlined processes for faster service delivery' },
-  { icon: Shield, title: 'Security', desc: 'Secure handling of all citizen data and transactions' },
-  { icon: Accessibility, title: 'Accessibility', desc: 'Services available to all Ethiopian citizens' }
-]
+import { useLanguage } from '../context/LanguageContext'
 
 export default function AboutUs() {
+  const { t } = useLanguage()
+
+  const values = [
+    { icon: Zap, title: t('Efficiency'), desc: t('Streamlined processes for faster service delivery') },
+    { icon: Shield, title: t('Security'), desc: t('Secure handling of all citizen data and transactions') },
+    { icon: Accessibility, title: t('Accessibility'), desc: t('Services available to all Ethiopian citizens') }
+  ]
   return (
     <div className="min-h-screen">
       <section className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold mb-6">
-            About MESOB Center
+            {t('About MESOB Center')}
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="text-xl text-blue-100 max-w-3xl mx-auto">
-            Modern Ethiopian Services for Organized Benefit — a one-stop service center for all government services.
+            {t('Modern Ethiopian Services for Organized Benefit — a one-stop service center for all government services.')}
           </motion.p>
         </div>
       </section>
@@ -29,24 +31,24 @@ export default function AboutUs() {
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}>
               <div className="flex items-center space-x-3 mb-4">
                 <Target className="w-8 h-8 text-blue-600" />
-                <h2 className="text-2xl font-bold text-gray-900">Our Mission</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{t('Our Mission')}</h2>
               </div>
               <p className="text-gray-600 leading-relaxed">
-                To establish a seamless, efficient, and secure one-stop service center where Ethiopian residents can access essential government and organizational services in a single location, reducing bureaucracy and enhancing service efficiency.
+                {t('To establish a seamless, efficient, and secure one-stop service center where Ethiopian residents can access essential government and organizational services in a single location, reducing bureaucracy and enhancing service efficiency.')}
               </p>
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}>
               <div className="flex items-center space-x-3 mb-4">
                 <Eye className="w-8 h-8 text-blue-600" />
-                <h2 className="text-2xl font-bold text-gray-900">Our Vision</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{t('Our Vision')}</h2>
               </div>
               <p className="text-gray-600 leading-relaxed">
-                To be the premier digital service platform in Ethiopia, setting the standard for efficient, transparent, and citizen-centered government service delivery.
+                {t('To be the premier digital service platform in Ethiopia, setting the standard for efficient, transparent, and citizen-centered government service delivery.')}
               </p>
             </motion.div>
           </div>
 
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Core Values</h2>
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">{t('Core Values')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {values.map((v, i) => (
               <motion.div key={v.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}

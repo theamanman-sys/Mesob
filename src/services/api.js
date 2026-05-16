@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'https://mesobportalback.mesobcenter.et/api'
+const API_BASE_URL = import.meta.env.DEV ? '/api' : 'https://mesobportalback.mesobcenter.et/api'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,7 +14,10 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem('accessToken')
+    let token = sessionStorage.getItem('accessToken')
+    if (!token) {
+      token = sessionStorage.getItem('citizen_token')
+    }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -29,6 +32,13 @@ api.interceptors.response.use(
     const originalRequest = error.config
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
+      const isCitizen = !!sessionStorage.getItem('citizen_token')
+      if (isCitizen) {
+        sessionStorage.removeItem('citizen_token')
+        sessionStorage.removeItem('citizen_user')
+        window.location.href = '/citizen-login'
+        return Promise.reject(error)
+      }
       try {
         const { data } = await axios.post(`${API_BASE_URL}/users/accessToken`, {}, {
           withCredentials: true,

@@ -6,4 +6,503 @@ body {
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.mesob-hero-scroll {
+  position: relative;
+  height: 400vh;
+  color: #ffffff;
+  overflow: clip;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 100%),
+    linear-gradient(135deg, #081f4b 0%, #0b47bd 44%, #052a66 72%, #101836 100%);
+  background-size: 42px 42px, auto;
+}
+
+.mesob-hero-video {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  translate: 0 -50%;
+  width: 100%;
+  height: auto;
+  z-index: 3;
+  opacity: var(--video-opacity, 0.5);
+  pointer-events: none;
+}
+
+
+.mesob-hero-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  isolation: isolate;
+  overflow: visible;
+  padding: clamp(8rem, 12vw, 11rem) 0 clamp(1.5rem, 3vw, 3rem);
+}
+
+.mesob-ambient,
+.mesob-woven-ribbon {
+  position: absolute;
+  pointer-events: none;
+  z-index: -2;
+}
+
+.mesob-ambient {
+  width: min(72vw, 920px);
+  height: 34vh;
+  clip-path: polygon(0 20%, 100% 0, 86% 82%, 8% 100%);
+  opacity: 0.36;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(245, 189, 30, 0.28) 0 14px,
+      rgba(255, 255, 255, 0.06) 14px 18px,
+      rgba(16, 184, 166, 0.22) 18px 32px,
+      rgba(232, 93, 63, 0.16) 32px 42px
+    );
+  filter: blur(0.2px);
+}
+
+.mesob-ambient-one {
+  top: 4vh;
+  right: -18vw;
+  transform: translateY(var(--stage-y)) rotate(-14deg);
+}
+
+.mesob-ambient-two {
+  left: -22vw;
+  bottom: 7vh;
+  transform: translateY(var(--hero-copy-y)) rotate(11deg);
+  opacity: 0.22;
+}
+
+.mesob-woven-ribbon {
+  width: 120vw;
+  height: 86px;
+  left: -10vw;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.14) 0 11px,
+      rgba(255, 255, 255, 0) 11px 20px
+    ),
+    linear-gradient(90deg, transparent, rgba(245, 189, 30, 0.34), rgba(22, 163, 148, 0.28), transparent);
+  z-index: -1;
+  opacity: 0.42;
+}
+
+.mesob-woven-ribbon-one {
+  top: 14%;
+  transform: rotate(-7deg) translateY(var(--hero-copy-y));
+}
+
+.mesob-woven-ribbon-two {
+  bottom: 10%;
+  transform: rotate(6deg) translateY(var(--stage-y));
+  opacity: 0.24;
+}
+
+.mesob-grain {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+.mesob-hero-shell {
+  position: relative;
+  z-index: 5;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.mesob-hero-copy {
+  opacity: var(--copy-opacity);
+  transform: translateY(var(--hero-copy-y));
+  transition: opacity 80ms linear, transform 80ms linear;
+}
+
+.mesob-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  margin-bottom: 1.25rem;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #f5bd1e;
+}
+
+.mesob-hero-mark {
+  width: clamp(64px, 7vw, 92px);
+  aspect-ratio: 1;
+  object-fit: contain;
+  padding: 0.45rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+  margin-bottom: clamp(1rem, 2vw, 1.35rem);
+}
+
+.mesob-hero-copy h1 {
+  max-width: 620px;
+  margin: 0;
+  font-size: clamp(2.7rem, 5.2vw, 4.75rem);
+  line-height: 1.02;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.mesob-hero-copy p {
+  max-width: 640px;
+  margin: 1.4rem 0 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: clamp(1rem, 1.5vw, 1.22rem);
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+
+.mesob-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 2rem;
+}
+
+.mesob-primary-cta,
+.mesob-secondary-cta {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: 8px;
+  padding: 0.85rem 1.2rem;
+  font-size: 0.96rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.mesob-primary-cta {
+  color: #092454;
+  background: #f5bd1e;
+  box-shadow: 0 16px 38px rgba(245, 189, 30, 0.28);
+}
+
+.mesob-secondary-cta {
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.mesob-primary-cta:hover,
+.mesob-secondary-cta:hover {
+  transform: translateY(-2px);
+}
+
+.mesob-primary-cta:hover {
+  background: #ffd24f;
+}
+
+.mesob-secondary-cta:hover {
+  border-color: rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.mesob-hero-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.45rem;
+}
+
+.mesob-hero-proof span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  border-radius: 8px;
+  padding: 0.42rem 0.7rem;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.mesob-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 1;
+}
+
+.mesob-frame-strip {
+  position: absolute;
+  top: 50%;
+  right: clamp(-0.75rem, -1vw, 0.25rem);
+  transform: translateY(-50%);
+  display: grid;
+  gap: 7px;
+  padding: 0.7rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  z-index: 4;
+}
+
+.mesob-frame-strip::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 2px;
+  height: var(--progress-width);
+  max-height: 100%;
+  background: linear-gradient(#f5bd1e, #10b8a6);
+}
+
+.mesob-frame-strip span {
+  width: 8px;
+  height: 18px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  transition: background 100ms linear, box-shadow 100ms linear;
+}
+
+.mesob-frame-strip span.is-lit {
+  background: #f5bd1e;
+  box-shadow: 0 0 16px rgba(245, 189, 30, 0.58);
+}
+
+.mesob-camera {
+  width: 100%;
+  height: 100%;
+  perspective: 1200px;
+}
+
+.mesob-float {
+  position: absolute;
+  width: 54px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  z-index: 3;
+}
+
+.mesob-float svg {
+  width: 25px;
+  height: 25px;
+  stroke-width: 1.8;
+}
+
+.mesob-float-a {
+  top: 9%;
+  left: 8%;
+  color: #f5bd1e;
+  transform: translateY(var(--float-a-y)) rotate(-8deg);
+}
+
+.mesob-float-b {
+  top: 24%;
+  right: 4%;
+  color: #10b8a6;
+  transform: translateY(var(--float-b-y)) rotate(9deg);
+}
+
+.mesob-float-c {
+  right: 18%;
+  bottom: 12%;
+  color: #ff7a5f;
+  transform: translateY(var(--float-c-y)) rotate(-4deg);
+}
+
+.mesob-splat {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.mesob-scroll-hint {
+  position: absolute;
+  bottom: clamp(1.5rem, 3vh, 2.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: mesob-scroll-hint-fade 2s ease-in-out 0.5s both;
+  z-index: 10;
+}
+
+@keyframes mesob-scroll-hint-fade {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.mesob-scroll-hint-mouse {
+  width: 18px;
+  height: 28px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  justify-content: center;
+  padding-top: 5px;
+}
+
+.mesob-scroll-hint-dot {
+  width: 2px;
+  height: 6px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  animation: mesob-scroll-hint-bounce 1.6s ease-in-out infinite;
+}
+
+@keyframes mesob-scroll-hint-bounce {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(6px); opacity: 0.3; }
+}
+
+@media (max-width: 1020px) {
+  .mesob-hero-sticky {
+    padding-top: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .mesob-hero-copy {
+    max-width: 760px;
+  }
+
+  .mesob-float {
+    width: 44px;
+  }
+
+  .mesob-float svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mesob-hero-badge,
+  .mesob-scroll-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .mesob-hero-sticky {
+    padding-top: 0.8rem;
+  }
+
+  .mesob-hero-shell {
+    width: min(100% - 16px, 540px);
+    gap: 0.5rem;
+  }
+
+  .mesob-hero-mark {
+    width: 48px;
+    margin-bottom: 0.6rem;
+  }
+
+  .mesob-hero-copy h1 {
+    font-size: clamp(1.8rem, 9vw, 2.6rem);
+    line-height: 1;
+  }
+
+  .mesob-hero-copy p {
+    margin-top: 0.6rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .mesob-hero-actions {
+    margin-top: 0.8rem;
+    gap: 0.5rem;
+  }
+
+  .mesob-primary-cta,
+  .mesob-secondary-cta {
+    width: 100%;
+    min-height: 42px;
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .mesob-hero-proof {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .mesob-hero-proof span {
+    min-height: 28px;
+    font-size: 0.7rem;
+  }
+
+  .mesob-frame-strip {
+    display: none;
+  }
+
+  .mesob-float {
+    width: 36px;
+  }
+
+  .mesob-float svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .mesob-hero-badge,
+  .mesob-scroll-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mesob-hero-copy,
+  .mesob-camera,
+  .mesob-float,
+  .mesob-frame-strip span {
+    transition: none !important;
+  }
+
+  .mesob-scroll-hint,
+  .mesob-scroll-hint-dot {
+    animation: none;
+  }
+
+  .mesob-primary-cta:hover,
+  .mesob-secondary-cta:hover {
+    transform: none;
+  }
 }
