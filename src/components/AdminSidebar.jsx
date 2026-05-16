@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { X, LayoutDashboard, Globe, Image, Building2, FileText, ShoppingCart, MapPin, Newspaper, Phone, Map,
-  Video, MessageSquare, Users, Settings, Menu as MenuIcon, Megaphone, BookOpen, UserCheck, Scan, PiggyBank, FileSignature, Shield, Home, Landmark } from 'lucide-react'
+  Video, MessageSquare, Users, Settings, Menu as MenuIcon, Megaphone, BookOpen, UserCheck, Scan, PiggyBank, FileSignature, Shield, Home, Landmark, Ticket, BarChart3, Users as UsersIcon, Wallet, DollarSign, Route, BadgeCheck, Gavel } from 'lucide-react'
 
 const menuItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', roles: ['admin', 'contentManager'] },
@@ -26,7 +26,16 @@ const menuItems = [
   { path: '/admin/news-ui-text', icon: BookOpen, label: 'News UI Text', roles: ['admin', 'contentManager'] },
   { path: '/admin/about-us', icon: FileText, label: 'About Us', roles: ['admin', 'contentManager'] },
   { path: '/admin/user-management', icon: UserCheck, label: 'User Mgmt', roles: ['admin'] },
+  { path: '/admin/verifications', icon: BadgeCheck, label: 'Verifications', roles: ['admin'] },
+  { path: '/admin/legal', icon: Gavel, label: 'Legal & Proxies', roles: ['admin'] },
   { path: '/admin/document-scanner', icon: Scan, label: 'Document Scanner', roles: ['admin'] },
+  { path: '/admin/apisix', icon: Route, label: 'APISIX Gateway', roles: ['admin'] },
+  { path: '/admin/economy', icon: BarChart3, label: 'Economy & Budgets', roles: ['admin'] },
+  { path: '/admin/population', icon: UsersIcon, label: 'Population & Telecom', roles: ['admin'] },
+  { path: '/admin/tax', icon: DollarSign, label: 'Tax & Revenue', roles: ['admin'] },
+  { path: '/admin/wealth-allocator', icon: Wallet, label: 'Wealth Allocator', roles: ['admin'] },
+  { path: '/admin/departments', icon: Building2, label: 'Dept Controls', roles: ['admin'] },
+  { path: '/admin/tickets', icon: Ticket, label: 'Tickets & Revenue', roles: ['admin'] },
   { path: '/admin/applications', icon: FileText, label: 'Applications', roles: ['admin'] },
   { path: '/admin/pension', icon: PiggyBank, label: 'Pension', roles: ['admin'] },
   { path: '/admin/inheritance', icon: FileSignature, label: 'Inheritance', roles: ['admin'] },

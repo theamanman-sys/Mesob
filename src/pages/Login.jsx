@@ -35,10 +35,11 @@ export default function Login() {
     })()
   }, [])
 
-  if (isAuthenticated() && !loading) {
-    navigate(location.state?.from?.pathname || '/admin', { replace: true })
-    return null
-  }
+  useEffect(() => {
+    if (!loading && isAuthenticated()) {
+      navigate(location.state?.from?.pathname || '/admin', { replace: true })
+    }
+  }, [loading])
 
   const handleChange = (field) => (e) => {
     const val = e.target.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')

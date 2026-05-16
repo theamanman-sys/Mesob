@@ -25,6 +25,14 @@ const CitizenInheritance = lazy(() => import('./pages/citizen/CitizenInheritance
 const CitizenInsurance = lazy(() => import('./pages/citizen/CitizenInsurance'))
 const CitizenBank = lazy(() => import('./pages/citizen/CitizenBank'))
 const CitizenProperty = lazy(() => import('./pages/citizen/CitizenProperty'))
+const CitizenTickets = lazy(() => import('./pages/citizen/CitizenTickets'))
+const CitizenFinance = lazy(() => import('./pages/citizen/CitizenFinance'))
+const CitizenFaydaId = lazy(() => import('./pages/citizen/CitizenFaydaId'))
+const CitizenVerification = lazy(() => import('./pages/citizen/CitizenVerification'))
+const CitizenJobs = lazy(() => import('./pages/citizen/CitizenJobs'))
+const CitizenLegal = lazy(() => import('./pages/citizen/CitizenLegal'))
+const CitizenEservices = lazy(() => import('./pages/citizen/CitizenEservices'))
+const CitizenTrading = lazy(() => import('./pages/citizen/CitizenTrading'))
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'))
 const AdminLayout = lazy(() => import('./admin/AdminLayout'))
 const AdminDashboard = lazy(() => import('./admin/AdminDashboard'))
@@ -58,6 +66,15 @@ const AdminInheritance = lazy(() => import('./admin/AdminInheritance'))
 const AdminInsurance = lazy(() => import('./admin/AdminInsurance'))
 const AdminBank = lazy(() => import('./admin/AdminBank'))
 const AdminProperty = lazy(() => import('./admin/AdminProperty'))
+const AdminTickets = lazy(() => import('./admin/AdminTickets'))
+const AdminEconomy = lazy(() => import('./admin/AdminEconomy'))
+const AdminPopulation = lazy(() => import('./admin/AdminPopulation'))
+const AdminDepartments = lazy(() => import('./admin/AdminDepartments'))
+const AdminWealthAllocator = lazy(() => import('./admin/AdminWealthAllocator'))
+const AdminTax = lazy(() => import('./admin/AdminTax'))
+const AdminApiSix = lazy(() => import('./admin/AdminApiSix'))
+const AdminVerifications = lazy(() => import('./admin/AdminVerifications'))
+const AdminLegal = lazy(() => import('./admin/AdminLegal'))
 
 function PageLoader() {
   return (
@@ -136,6 +153,14 @@ export default function App() {
           <Route path="insurance" element={<CitizenInsurance />} />
           <Route path="bank" element={<CitizenBank />} />
           <Route path="property" element={<CitizenProperty />} />
+          <Route path="tickets" element={<CitizenTickets />} />
+          <Route path="finance" element={<CitizenFinance />} />
+          <Route path="fayda-id" element={<CitizenFaydaId />} />
+          <Route path="verification" element={<CitizenVerification />} />
+          <Route path="jobs" element={<CitizenJobs />} />
+          <Route path="legal" element={<CitizenLegal />} />
+          <Route path="eservices" element={<CitizenEservices />} />
+          <Route path="trading" element={<CitizenTrading />} />
           <Route path="profile" element={<CitizenProfile />} />
         </Route>
         <Route path="/admin" element={
@@ -235,6 +260,33 @@ export default function App() {
           } />
           <Route path="property" element={
             <RoleGuard allowedRoles={['admin']}><AdminProperty /></RoleGuard>
+          } />
+          <Route path="tickets" element={
+            <RoleGuard allowedRoles={['admin']}><AdminTickets /></RoleGuard>
+          } />
+          <Route path="economy" element={
+            <RoleGuard allowedRoles={['admin']}><AdminEconomy /></RoleGuard>
+          } />
+          <Route path="population" element={
+            <RoleGuard allowedRoles={['admin']}><AdminPopulation /></RoleGuard>
+          } />
+          <Route path="departments" element={
+            <RoleGuard allowedRoles={['admin']}><AdminDepartments /></RoleGuard>
+          } />
+          <Route path="wealth-allocator" element={
+            <RoleGuard allowedRoles={['admin']}><AdminWealthAllocator /></RoleGuard>
+          } />
+          <Route path="tax" element={
+            <RoleGuard allowedRoles={['admin']}><AdminTax /></RoleGuard>
+          } />
+          <Route path="apisix" element={
+            <RoleGuard allowedRoles={['admin']}><AdminApiSix /></RoleGuard>
+          } />
+          <Route path="verifications" element={
+            <RoleGuard allowedRoles={['admin']}><AdminVerifications /></RoleGuard>
+          } />
+          <Route path="legal" element={
+            <RoleGuard allowedRoles={['admin']}><AdminLegal /></RoleGuard>
           } />
           <Route path="*" element={<div className="text-center py-12 text-gray-500">Page not found</div>} />
         </Route>

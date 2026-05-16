@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, FileText, ClipboardList, Upload, User, LogOut, Menu, X, ChevronRight, Bell, Scan, PiggyBank, FileSignature, Shield, Building2, Home } from 'lucide-react'
+import { LayoutDashboard, FileText, ClipboardList, Upload, User, LogOut, Menu, X, ChevronRight, Bell, Scan, PiggyBank, FileSignature, Shield, Building2, Home, Ticket, TrendingUp, Fingerprint, BadgeCheck, Briefcase, Scale, Globe, CandlestickChart } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
 
 const navItems = [
@@ -14,7 +14,15 @@ const navItems = [
   { path: '/citizen/inheritance', icon: FileSignature, label: 'Inheritance & Will' },
   { path: '/citizen/insurance', icon: Shield, label: 'Insurance' },
   { path: '/citizen/bank', icon: Building2, label: 'Bank & Finance' },
-  { path: '/citizen/property', icon: Home, label: 'Property' },
+  { path: '/citizen/property', icon: Home, label: 'Assets & Property' },
+  { path: '/citizen/tickets', icon: Ticket, label: 'My Tickets' },
+  { path: '/citizen/finance', icon: TrendingUp, label: 'Economy & Finance' },
+  { path: '/citizen/fayda-id', icon: Fingerprint, label: 'Fayda Digital ID' },
+  { path: '/citizen/verification', icon: BadgeCheck, label: 'Verification & Badges' },
+  { path: '/citizen/jobs', icon: Briefcase, label: 'Jobs & Opportunities' },
+  { path: '/citizen/legal', icon: Scale, label: 'Legal & Representation' },
+  { path: '/citizen/eservices', icon: Globe, label: 'E-Services' },
+  { path: '/citizen/trading', icon: CandlestickChart, label: 'Trading' },
   { path: '/citizen/profile', icon: User, label: 'Profile' }
 ]
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Building2, Clock, DollarSign, FileText, CheckCircle, X, ArrowRight, Upload, Loader, AlertCircle, ChevronDown, Filter } from 'lucide-react'
+import { Search, Building2, Clock, DollarSign, FileText, CheckCircle, X, ArrowRight, Upload, Loader, AlertCircle, ChevronDown, Filter, Ticket, Calendar } from 'lucide-react'
 import { services, organizations } from '../../data/seedData'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
@@ -16,6 +16,7 @@ export default function CitizenServices() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [appTicket, setAppTicket] = useState(null)
   const [appForm, setAppForm] = useState({})
   const [appDocs, setAppDocs] = useState([])
   const [expandedOrg, setExpandedOrg] = useState(null)
@@ -57,7 +58,8 @@ export default function CitizenServices() {
     e.preventDefault()
     setLoading(true)
     try {
-      await citizenService.submitApplication(showApply.id, showApply.title, appForm, appDocs)
+      const result = await citizenService.submitApplication(showApply.id, showApply.title, appForm, appDocs)
+      if (result.ticket) setAppTicket(result.ticket)
       setSuccess(true)
       setStep(3)
     } catch (err) {
@@ -212,11 +214,20 @@ export default function CitizenServices() {
                       <CheckCircle className="w-8 h-8 text-green-600" />
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-1">Application Submitted!</h3>
-                    <p className="text-gray-500 text-sm mb-6">Your application has been received. You can track its status in My Applications.</p>
+                    <p className="text-gray-500 text-sm mb-4">Your application has been received. You can track its status in My Applications.</p>
+                    {appTicket && (
+                      <div className="bg-blue-50 rounded-xl p-4 mb-4 text-left max-w-sm mx-auto border border-blue-100">
+                        <div className="flex items-center gap-2 text-blue-700 font-semibold text-sm mb-2"><Ticket className="w-4 h-4" /> Appointment Ticket Generated</div>
+                        <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">Ticket #</span><span className="font-bold text-gray-800">{appTicket.ticketNumber}</span></div>
+                        <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">Date</span><span className="font-medium text-gray-800">{new Date(appTicket.appointmentDate).toLocaleDateString()}</span></div>
+                        <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">Time</span><span className="font-medium text-gray-800">{appTicket.appointmentTime}</span></div>
+                        <div className="flex items-center justify-between text-sm"><span className="text-gray-500">Fee</span><span className="font-medium text-gray-800">{appTicket.fee} ETB</span></div>
+                      </div>
+                    )}
                     <div className="flex gap-3 justify-center">
                       <button onClick={resetApply} className="px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Close</button>
-                      <Link to="/citizen/applications" className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
-                        onClick={resetApply}>View Applications</Link>
+                      <Link to="/citizen/tickets" className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
+                        onClick={resetApply}>View Tickets</Link>
                     </div>
                   </div>
                 ) : step === 1 ? (
