@@ -134,6 +134,20 @@ export default function Navbar() {
               </Link>
             ))}
 
+            <select value={currentLanguage} onChange={(e) => { changeLanguage(e.target.value); setOpen(false) }}
+              className="w-full text-sm border rounded px-2 py-2 bg-white text-gray-700 my-2">
+              {languages.map((lang) => (
+                <option key={lang.id} value={lang.code}>{lang.name}</option>
+              ))}
+              {languages.length === 0 && (
+                <>
+                  <option value="en">English</option>
+                  <option value="am">አማርኛ</option>
+                  <option value="om">Afaan Oromoo</option>
+                </>
+              )}
+            </select>
+
             {citizen ? (
               <>
                 <div className="flex items-center gap-3 px-2 py-3 border-b border-gray-100">
