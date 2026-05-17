@@ -3,6 +3,12 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "unsafe-none"
+    Cross-Origin-Embedder-Policy = "unsafe-none"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api"
