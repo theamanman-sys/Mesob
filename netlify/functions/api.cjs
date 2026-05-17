@@ -173,6 +173,40 @@ exports.handler = async (event) => {
       })
     }
 
+    // ========== NET WORTH ==========
+    if (method === 'GET' && p === '/citizens/net-worth') {
+      const citizen = (data.citizens || []).find(c => c.id === citizenId)
+      let entry = (data.netWorth || []).find(n => n.citizenId === citizenId)
+      if (!entry) {
+        entry = { id: Date.now(), citizenId, fullName: citizen ? `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim() : '', email: citizen?.email || '', netWorth: 0, assets: [], liabilities: [], updatedAt: new Date().toISOString(), shareName: !!(citizen?.shareName) }
+        if (!data.netWorth) data.netWorth = []
+        data.netWorth.push(entry)
+      }
+      const rankings = [...data.netWorth].sort((a, b) => (b.netWorth || 0) - (a.netWorth || 0))
+      const rank = rankings.findIndex(n => n.citizenId === citizenId) + 1
+      return respond(200, { ...entry, rank, totalParticipants: rankings.length })
+    }
+
+    if (method === 'PUT' && p === '/citizens/net-worth') {
+      const citizen = (data.citizens || []).find(c => c.id === citizenId)
+      let entry = (data.netWorth || []).find(n => n.citizenId === citizenId)
+      if (!entry) {
+        entry = { id: Date.now(), citizenId, fullName: citizen ? `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim() : '', email: citizen?.email || '', netWorth: 0, assets: [], liabilities: [], shareName: !!(citizen?.shareName) }
+        if (!data.netWorth) data.netWorth = []
+        data.netWorth.push(entry)
+      }
+      entry.netWorth = body.netWorth ?? entry.netWorth
+      entry.assets = body.assets ?? entry.assets
+      entry.liabilities = body.liabilities ?? entry.liabilities
+      entry.fullName = citizen ? `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim() : entry.fullName
+      entry.email = citizen?.email || entry.email
+      entry.shareName = !!(citizen?.shareName)
+      entry.updatedAt = new Date().toISOString()
+      const rankings = [...data.netWorth].sort((a, b) => (b.netWorth || 0) - (a.netWorth || 0))
+      const rank = rankings.findIndex(n => n.citizenId === citizenId) + 1
+      return respond(200, { ...entry, rank, totalParticipants: rankings.length }, 'Net worth updated')
+    }
+
     // ========== OTHER CITIZEN COLLECTIONS ==========
     if (method === 'GET' && p?.startsWith('/citizens/')) {
       const key = p.slice(10) // e.g. "net-worth" from "/citizens/net-worth"
@@ -263,7 +297,15 @@ exports.handler = async (event) => {
     if (method === 'GET' && p === '/banks') return respond(200, data.banks || [])
     if (method === 'GET' && p === '/economy') return respond(200, data.economyData || [])
     if (method === 'GET' && p === '/business-news') return respond(200, data.cachedBusinessNews || [])
-    if (method === 'GET' && p === '/net-worth/rankings') return respond(200, data.netWorth || [])
+    if (method === 'GET' && p === '/net-worth/rankings') {
+      if (!data.netWorth) data.netWorth = []
+      const rankings = [...data.netWorth].sort((a, b) => (b.netWorth || 0) - (a.netWorth || 0))
+      const anonymized = rankings.map((r, i) => ({
+        ...r,
+        displayName: r.shareName ? r.fullName : `Citizen #${i + 1}`,
+      }))
+      return respond(200, anonymized)
+    }
     if (method === 'GET' && p === '/contributions/stats') return respond(200, data.contributions || [])
     if (method === 'GET' && p === '/tickets/stats') return respond(200, { total: (data.tickets || []).length })
 
