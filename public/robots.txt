@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /citizen/
+Disallow: /api/
+
+Sitemap: https://mesob.gov.et/sitemap.xml

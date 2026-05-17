@@ -22,7 +22,7 @@ export default function CitizenTickets() {
     const session = citizenService.getSession()
     if (session) {
       setCitizen(session)
-      citizenService.getTickets().then(setTickets).catch(() => {})
+      citizenService.getMyTickets().then(setTickets).catch(() => {})
     }
   }, [])
 

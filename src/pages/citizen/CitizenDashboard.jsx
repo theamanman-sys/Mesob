@@ -329,7 +329,7 @@ export default function CitizenDashboard() {
       citizenService.getEconomyData().then(setEconomyData).catch(() => {})
       citizenService.getContributionStats().then(setContribStats).catch(() => {})
       citizenService.getContributions().then(setUserContribs).catch(() => {})
-      citizenService.getTickets().then(setTickets).catch(() => {})
+      citizenService.getMyTickets().then(setTickets).catch(() => {})
     }
   }, [])
 
