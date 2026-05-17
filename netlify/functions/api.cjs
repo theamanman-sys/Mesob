@@ -1,19 +1,18 @@
-const path = require('path')
-const fs = require('fs')
-const express = require('express')
 const serverless = require('serverless-http')
-
-// Load mock server app
 const mockApp = require('../../mock/server.cjs')
 
-const app = express()
+const handler = serverless(mockApp)
 
-// Mount mock app at /api so path stripping works
-app.use('/api', mockApp)
+const PREFIXES = ['/.netlify/functions/api', '/api']
 
-// Also mount at root for direct function calls
-app.use('/', mockApp)
-
-exports.handler = serverless(app, {
-  requestPath: '/.netlify/functions/api'
-})
+exports.handler = async (event, context) => {
+  let requestPath = event.path
+  for (const prefix of PREFIXES) {
+    if (requestPath.startsWith(prefix)) {
+      requestPath = requestPath.slice(prefix.length) || '/'
+      break
+    }
+  }
+  event.path = requestPath
+  return handler(event, context)
+}
