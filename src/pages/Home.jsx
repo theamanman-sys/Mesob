@@ -140,7 +140,17 @@ function MesobHero({ t }) {
       }}
     >
       <div className="mesob-hero-sticky">
-        <video className="mesob-hero-video" autoPlay muted loop playsInline preload="metadata" aria-hidden="true">
+        <video
+          className="mesob-hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/files/Mesob.jpeg"
+          aria-hidden="true"
+          loading="lazy"
+        >
           <source src="/files/hero-video.mp4" type="video/mp4" />
           <source src="/files/hero-video.mkv" type="video/x-matroska" />
         </video>

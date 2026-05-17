@@ -4,49 +4,57 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/files/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#4f46e5" />
 
-    <title>MESOB - Ethiopian Government Services & Citizen Portal</title>
+    <title>MESOB – Ethiopian Government Services Portal | የኢትዮጵያ መንግሥት አገልግሎቶች መግቢያ</title>
 
     <!-- Primary Meta Tags -->
-    <meta name="title" content="MESOB - Ethiopian Government Services Portal" />
-    <meta name="description" content="MESOB is Ethiopia's unified government services portal. Access citizen services, business registration, trade licensing, tax information, passport services, and more. Your gateway to Ethiopian e-government services." />
-    <meta name="keywords" content="MESOB, Ethiopian government portal, Ethiopia e-government, citizen services, business registration, trade license, passport Ethiopia, tax Ethiopia, MESOB center, Ethiopian digital government" />
-    <meta name="robots" content="index, follow" />
-    <meta name="language" content="English" />
-    <meta name="revisit-after" content="7 days" />
+    <meta name="title" content="MESOB – Ethiopian Government Services Portal | የኢትዮጵያ መንግሥት አገልግሎቶች መግቢያ" />
+    <meta name="description" content="MESOB is Ethiopia's unified e-government services portal. Apply for business registration, trade license, passport, tax ID, and citizen services online. የኢትዮጵያ መንግሥት አገልግሎቶችን በመስመር ያግኙ።" />
+    <meta name="keywords" content="MESOB, መሶብ, Ethiopian government services, የኢትዮጵያ መንግስት አገልግሎቶች, Ethiopia e-government, citizen portal, business registration Ethiopia, trade license Ethiopia, passport service Ethiopia, TIN registration, የንግድ ፍቃድ, ፓስፖርት, Ethiopian digital government, MESOB center, የኢትዮጵያ ዲጂታል መንግስት" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <meta name="revisit-after" content="3 days" />
     <meta name="author" content="MESOB" />
+    <meta name="application-name" content="MESOB" />
+    <meta name="google" content="notranslate" />
+
+    <!-- Hreflang -->
+    <link rel="alternate" href="https://mesobcenter.netlify.app/" hreflang="en" />
+    <link rel="alternate" href="https://mesobcenter.netlify.app/?lang=am" hreflang="am" />
+    <link rel="alternate" href="https://mesobcenter.netlify.app/" hreflang="x-default" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://mesobcenter.netlify.app/" />
-    <meta property="og:title" content="MESOB - Ethiopian Government Services Portal" />
-    <meta property="og:description" content="Ethiopia's unified government services platform. Access citizen services, business registration, trade, tax, and more in one place." />
+    <meta property="og:title" content="MESOB – Ethiopian Government Services Portal" />
+    <meta property="og:description" content="Apply for Ethiopian government services online: business registration, trade licenses, passports, TIN, and citizen services. Unified e-government portal for Ethiopia." />
     <meta property="og:image" content="https://mesobcenter.netlify.app/files/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="MESOB" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://mesobcenter.netlify.app/" />
-    <meta property="twitter:title" content="MESOB - Ethiopian Government Services Portal" />
-    <meta property="twitter:description" content="Ethiopia's unified government services platform. Access citizen services, business registration, trade, tax, and more." />
-    <meta property="twitter:image" content="https://mesobcenter.netlify.app/files/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://mesobcenter.netlify.app/" />
+    <meta name="twitter:title" content="MESOB – Ethiopian Government Services Portal" />
+    <meta name="twitter:description" content="Ethiopia's unified e-government platform for business registration, passports, TIN, trade licenses, and citizen services." />
+    <meta name="twitter:image" content="https://mesobcenter.netlify.app/files/og-image.png" />
 
     <!-- Canonical -->
     <link rel="canonical" href="https://mesobcenter.netlify.app/" />
 
-    <!-- JSON-LD Structured Data -->
+    <!-- JSON-LD: GovernmentOrganization -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "GovernmentOrganization",
       "name": "MESOB Center Services",
       "alternateName": "MESOB",
-      "description": "Ethiopia's unified government services portal providing access to citizen services, business registration, trade licensing, and more.",
+      "description": "Ethiopia's unified government services portal providing access to citizen services, business registration, trade licensing, tax information, passport services, and more.",
       "url": "https://mesobcenter.netlify.app/",
       "logo": "https://mesobcenter.netlify.app/files/logo.png",
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "ET"
-      },
+      "address": { "@type": "PostalAddress", "addressCountry": "ET" },
       "sameAs": [
         "https://www.facebook.com/mesobgov",
         "https://twitter.com/mesobgov"
@@ -57,18 +65,30 @@
         "Trade Licensing",
         "Tax Services",
         "Passport Services",
-        "Document Services"
-      ]
+        "Document Services",
+        "Visa Services",
+        "Marriage Registration",
+        "Property Registration",
+        "Driving License Services"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": ["English", "Amharic"]
+      }
     }
     </script>
 
+    <!-- JSON-LD: WebSite -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "MESOB - Ethiopian Government Services",
+      "alternateName": "መሶብ - የኢትዮጵያ መንግሥት አገልግሎቶች",
       "url": "https://mesobcenter.netlify.app/",
-      "description": "Access Ethiopian government services online - citizen portal, business services, and more.",
+      "description": "Access Ethiopian government services online – citizen portal, business services, and more. የኢትዮጵያ መንግሥት አገልግሎቶችን በመስመር ያግኙ።",
+      "inLanguage": ["en", "am"],
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
@@ -77,6 +97,71 @@
         },
         "query-input": "required name=search_term_string"
       }
+    }
+    </script>
+
+    <!-- JSON-LD: BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://mesobcenter.netlify.app/" },
+        { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://mesobcenter.netlify.app/services" },
+        { "@type": "ListItem", "position": 3, "name": "Citizen Portal", "item": "https://mesobcenter.netlify.app/citizen-login" },
+        { "@type": "ListItem", "position": 4, "name": "Organizations", "item": "https://mesobcenter.netlify.app/organizations" },
+        { "@type": "ListItem", "position": 5, "name": "About", "item": "https://mesobcenter.netlify.app/about" }
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD: FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is MESOB?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "MESOB is Ethiopia's unified government services portal that provides citizens and businesses with online access to government services including business registration, trade licensing, passport applications, TIN registration, and more."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I register a business in Ethiopia?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can register a business in Ethiopia through MESOB by selecting the Ministry of Trade service, filling out the application form, uploading required documents, and submitting your application online."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I apply for a passport online?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, you can start your passport application process through MESOB. Submit your application, upload required documents, and book an appointment at the Immigration and Citizenship Service office."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I get a TIN in Ethiopia?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can register for a Tax Identification Number (TIN) through the Ministry of Revenues service on MESOB. Submit your application with the required identification documents to receive your TIN certificate."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What documents are needed for trade license renewal?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "For trade license renewal in Ethiopia, you typically need your previous trade license, TIN certificate, business registration certificate, and tax clearance certificate. Specific requirements vary by business type."
+          }
+        }
+      ]
     }
     </script>
 
