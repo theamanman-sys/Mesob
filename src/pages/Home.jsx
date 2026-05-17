@@ -147,7 +147,6 @@ function MesobHero({ t }) {
           loop
           playsInline
           preload="metadata"
-          poster="/files/Mesob.jpeg"
           aria-hidden="true"
         >
           <source src="/files/hero-video.mp4" type="video/mp4" />
