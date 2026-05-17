@@ -146,7 +146,7 @@ function MesobHero({ t }) {
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
           poster="/files/Mesob.jpeg"
           aria-hidden="true"
         >
