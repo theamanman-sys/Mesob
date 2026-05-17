@@ -4,6 +4,7 @@ import { TextField, Button, Typography, Box, CircularProgress, Divider, IconButt
 import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
+import { useLanguage } from '../context/LanguageContext'
 import { socialMediaLinkService } from '../services/socialMediaLinkService'
 import { Facebook, Twitter, Send, Linkedin, Youtube, Globe } from 'lucide-react'
 
@@ -52,23 +53,23 @@ export default function Login() {
     e.preventDefault()
     try {
       const result = await login(form)
-      if (result?.mustChangePassword) {
-        showToast('You must change your password before proceeding.', 'warning')
-        sessionStorage.setItem('mustChangePassword', 'true')
-        navigate('/admin/account-settings')
-      } else {
-        sessionStorage.removeItem('mustChangePassword')
-        navigate(location.state?.from?.pathname || '/admin')
+        if (result?.mustChangePassword) {
+          showToast('You must change your password before proceeding.', 'warning')
+          localStorage.setItem('mustChangePassword', 'true')
+          navigate('/admin/account-settings')
+        } else {
+          localStorage.removeItem('mustChangePassword')
+          navigate(location.state?.from?.pathname || '/admin')
       }
     } catch (err) {
       if (err.message?.includes('Network Error') || err.code === 'ERR_NETWORK') {
         if (form.username === 'admin' && form.password === 'admin123') {
-          sessionStorage.setItem('accessToken', 'demo-token-mesob-admin')
-          sessionStorage.setItem('user', JSON.stringify({
+          localStorage.setItem('accessToken', 'demo-token-mesob-admin')
+          localStorage.setItem('user', JSON.stringify({
             id: 1, username: 'admin', email: 'admin@mesobcenter.et',
-            role: 'admin', isActive: true, mustChangePassword: false
+            role: 'admin',             isActive: true, mustChangePassword: false
           }))
-          sessionStorage.removeItem('mustChangePassword')
+          localStorage.removeItem('mustChangePassword')
           showToast('Demo mode — logged in as admin', 'success')
           navigate(location.state?.from?.pathname || '/admin')
         } else {
@@ -127,7 +128,12 @@ export default function Login() {
                 bgcolor: '#1565c0', '&:hover': { bgcolor: '#0d47a1' } }}>
               {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Login'}
             </Button>
-            <Divider sx={{ my: 2 }}>visit</Divider>
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Link to="/" style={{ color: '#1976d2', fontSize: '0.875rem', textDecoration: 'none' }}>
+                ← Back to Main Site
+              </Link>
+            </Box>
+            <Divider sx={{ my: 2 }}>social</Divider>
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
               {socialLinks.filter((s) => s?.platform && s?.link && String(s.platform).toLowerCase() !== 'telegram').map((s) => {
                 const key = String(s.platform).toLowerCase()

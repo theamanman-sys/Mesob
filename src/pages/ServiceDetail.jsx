@@ -73,12 +73,12 @@ export default function ServiceDetail() {
                 {organization && (
                   <Link to={`/departments/${organization.id}`} className="text-blue-300 hover:text-white transition text-sm flex items-center">
                     <Building2 className="w-4 h-4 mr-1" />
-                    {organization.name}
+                    {t(organization.name)}
                   </Link>
                 )}
               </div>
               <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
-                {service.title}
+                {t(service.title)}
               </h1>
               <p className="text-xl text-blue-100 max-w-2xl leading-relaxed">
                 {service.description || t('Efficient and transparent government service provided through the MESOB portal for all eligible citizens.')}

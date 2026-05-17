@@ -10,9 +10,9 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('user')
+    const stored = localStorage.getItem('user')
     if (stored) {
-      try { setUser(JSON.parse(stored)) } catch { sessionStorage.removeItem('user') }
+      try { setUser(JSON.parse(stored)) } catch { localStorage.removeItem('user') }
     }
     setLoading(false)
   }, [])
@@ -21,11 +21,11 @@ export function AuthProvider({ children }) {
     const { data } = await userService.login(credentials)
     const result = data.data || data
     if (result.accessToken) {
-      sessionStorage.setItem('accessToken', result.accessToken)
+      localStorage.setItem('accessToken', result.accessToken)
     }
     if (result.user || result.username) {
       const userData = result.user || result
-      sessionStorage.setItem('user', JSON.stringify(userData))
+      localStorage.setItem('user', JSON.stringify(userData))
       setUser(userData)
     }
     return result
@@ -33,19 +33,19 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     try { await userService.logout() } catch {}
-    sessionStorage.removeItem('accessToken')
-    sessionStorage.removeItem('user')
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('user')
     setUser(null)
   }, [])
 
-  const isAuthenticated = useCallback(() => !!sessionStorage.getItem('accessToken'), [])
+  const isAuthenticated = useCallback(() => !!localStorage.getItem('accessToken'), [])
   const isAdmin = useCallback(() => user?.role === 'admin', [user])
 
   const getProfile = useCallback(async () => {
     const { data } = await userService.getProfile()
     const profile = data.data || data
     setUser(profile)
-    sessionStorage.setItem('user', JSON.stringify(profile))
+    localStorage.setItem('user', JSON.stringify(profile))
     return profile
   }, [])
 

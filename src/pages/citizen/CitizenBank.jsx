@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Building2, Calculator, TrendingUp, PieChart, Plus, Landmark } from 'lucide-react'
+import { useLanguage } from '../../context/LanguageContext'
 
 export default function CitizenBank() {
+  const { t } = useLanguage()
   const [income, setIncome] = useState(25000)
   const [expenses, setExpenses] = useState(15000)
   const [assets, setAssets] = useState([
@@ -29,20 +31,20 @@ export default function CitizenBank() {
     <div>
       <div className="flex items-center gap-3 mb-6">
         <Building2 className="w-7 h-7 text-blue-600" />
-        <h1 className="text-2xl font-bold text-gray-900">Bank & Finance</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('Bank & Finance')}</h1>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
-          <p className="text-sm text-gray-500">Total Assets</p>
+          <p className="text-sm text-gray-500">{t('Total Assets')}</p>
           <p className="text-2xl font-bold text-green-600">{format(totalAssets)} ETB</p>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
-          <p className="text-sm text-gray-500">Total Liabilities</p>
+          <p className="text-sm text-gray-500">{t('Total Liabilities')}</p>
           <p className="text-2xl font-bold text-red-600">{format(totalLiabilities)} ETB</p>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
-          <p className="text-sm text-gray-500">Net Worth</p>
+          <p className="text-sm text-gray-500">{t('Net Worth')}</p>
           <p className={`text-2xl font-bold ${netWorth >= 0 ? 'text-blue-600' : 'text-red-600'}`}>{format(netWorth)} ETB</p>
         </div>
       </div>
@@ -51,26 +53,26 @@ export default function CitizenBank() {
         <div className="space-y-6">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <PieChart className="w-5 h-5 text-blue-500" /> Financial Overview
+              <PieChart className="w-5 h-5 text-blue-500" /> {t('Financial Overview')}
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Income (ETB)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('Monthly Income (ETB)')}</label>
                 <input type="number" value={income} onChange={(e) => setIncome(Number(e.target.value))}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-900" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Expenses (ETB)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('Monthly Expenses (ETB)')}</label>
                 <input type="number" value={expenses} onChange={(e) => setExpenses(Number(e.target.value))}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-900" />
               </div>
               <div className="p-4 bg-gray-50 rounded-lg space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Monthly surplus</span>
+                  <span className="text-gray-500">{t('Monthly surplus')}</span>
                   <span className="font-semibold text-green-600">{format(income - expenses)} ETB</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Savings rate</span>
+                  <span className="text-gray-500">{t('Savings rate')}</span>
                   <span className="font-semibold text-blue-600">{savingsRate}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
@@ -82,24 +84,24 @@ export default function CitizenBank() {
 
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <Calculator className="w-5 h-5 text-purple-500" /> Savings Goal
+              <Calculator className="w-5 h-5 text-purple-500" /> {t('Savings Goal')}
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Target Amount (ETB)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('Target Amount (ETB)')}</label>
                 <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(Number(e.target.value))}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-900" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Savings (ETB)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('Monthly Savings (ETB)')}</label>
                 <input type="number" value={monthlySave} onChange={(e) => setMonthlySave(Number(e.target.value))}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-900" />
               </div>
               <div className="p-4 bg-purple-50 rounded-lg">
                 <p className="text-sm text-purple-700">
                   {monthsToGoal > 0
-                    ? `You'll reach your goal in <strong>${monthsToGoal} months</strong> (${Math.ceil(monthsToGoal / 12)} years)`
-                    : 'Set a monthly savings amount'}
+                    ? <>{t("You'll reach your goal in")} <strong>{monthsToGoal} {t('months')}</strong> ({Math.ceil(monthsToGoal / 12)} {t('years')})</>
+                    : t('Set a monthly savings amount')}
                 </p>
               </div>
             </div>
@@ -110,7 +112,7 @@ export default function CitizenBank() {
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-500" /> Assets
+                <TrendingUp className="w-5 h-5 text-green-500" /> {t('Assets')}
               </h2>
               <button className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200"><Plus className="w-4 h-4" /></button>
             </div>
@@ -130,7 +132,7 @@ export default function CitizenBank() {
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <Landmark className="w-5 h-5 text-red-500" /> Liabilities
+                <Landmark className="w-5 h-5 text-red-500" /> {t('Liabilities')}
               </h2>
               <button className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200"><Plus className="w-4 h-4" /></button>
             </div>

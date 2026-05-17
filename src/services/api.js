@@ -14,9 +14,9 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    let token = sessionStorage.getItem('accessToken')
+    let token = localStorage.getItem('accessToken')
     if (!token) {
-      token = sessionStorage.getItem('citizen_token')
+      token = localStorage.getItem('citizen_token')
     }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -32,10 +32,10 @@ api.interceptors.response.use(
     const originalRequest = error.config
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
-      const isCitizen = !!sessionStorage.getItem('citizen_token')
+      const isCitizen = !!localStorage.getItem('citizen_token')
       if (isCitizen) {
-        sessionStorage.removeItem('citizen_token')
-        sessionStorage.removeItem('citizen_user')
+        localStorage.removeItem('citizen_token')
+        localStorage.removeItem('citizen_user')
         window.location.href = '/citizen-login'
         return Promise.reject(error)
       }
@@ -45,13 +45,13 @@ api.interceptors.response.use(
           headers: { 'Content-Type': 'application/json' }
         })
         if (data.accessToken) {
-          sessionStorage.setItem('accessToken', data.accessToken)
+          localStorage.setItem('accessToken', data.accessToken)
           originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
           return api(originalRequest)
         }
       } catch {
-        sessionStorage.removeItem('accessToken')
-        sessionStorage.removeItem('user')
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('user')
         window.location.href = '/login'
       }
     }

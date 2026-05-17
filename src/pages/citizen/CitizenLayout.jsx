@@ -2,28 +2,29 @@ import { useState, useEffect } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LayoutDashboard, FileText, ClipboardList, Upload, User, LogOut, Menu, X, ChevronRight, Bell, Scan, PiggyBank, FileSignature, Shield, Building2, Home, Ticket, TrendingUp, Fingerprint, BadgeCheck, Briefcase, Scale, Globe, CandlestickChart } from 'lucide-react'
+import { useLanguage } from '../../context/LanguageContext'
 import { citizenService } from '../../services/citizenService'
 
-const navItems = [
-  { path: '/citizen/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/citizen/services', icon: ClipboardList, label: 'Services' },
-  { path: '/citizen/applications', icon: FileText, label: 'My Applications' },
-  { path: '/citizen/documents', icon: Upload, label: 'My Documents' },
-  { path: '/citizen/document-scanner', icon: Scan, label: 'Document Scanner' },
-  { path: '/citizen/pension', icon: PiggyBank, label: 'Pension' },
-  { path: '/citizen/inheritance', icon: FileSignature, label: 'Inheritance & Will' },
-  { path: '/citizen/insurance', icon: Shield, label: 'Insurance' },
-  { path: '/citizen/bank', icon: Building2, label: 'Bank & Finance' },
-  { path: '/citizen/property', icon: Home, label: 'Assets & Property' },
-  { path: '/citizen/tickets', icon: Ticket, label: 'My Tickets' },
-  { path: '/citizen/finance', icon: TrendingUp, label: 'Economy & Finance' },
-  { path: '/citizen/fayda-id', icon: Fingerprint, label: 'Fayda Digital ID' },
-  { path: '/citizen/verification', icon: BadgeCheck, label: 'Verification & Badges' },
-  { path: '/citizen/jobs', icon: Briefcase, label: 'Jobs & Opportunities' },
-  { path: '/citizen/legal', icon: Scale, label: 'Legal & Representation' },
-  { path: '/citizen/eservices', icon: Globe, label: 'E-Services' },
-  { path: '/citizen/trading', icon: CandlestickChart, label: 'Trading' },
-  { path: '/citizen/profile', icon: User, label: 'Profile' }
+const navItemDefs = [
+  { path: '/citizen/dashboard', icon: LayoutDashboard, key: 'Dashboard' },
+  { path: '/citizen/services', icon: ClipboardList, key: 'Services' },
+  { path: '/citizen/applications', icon: FileText, key: 'My Applications' },
+  { path: '/citizen/documents', icon: Upload, key: 'My Documents' },
+  { path: '/citizen/document-scanner', icon: Scan, key: 'Document Scanner' },
+  { path: '/citizen/pension', icon: PiggyBank, key: 'Pension' },
+  { path: '/citizen/inheritance', icon: FileSignature, key: 'Inheritance & Will' },
+  { path: '/citizen/insurance', icon: Shield, key: 'Insurance' },
+  { path: '/citizen/bank', icon: Building2, key: 'Bank & Finance' },
+  { path: '/citizen/property', icon: Home, key: 'Assets & Property' },
+  { path: '/citizen/tickets', icon: Ticket, key: 'My Tickets' },
+  { path: '/citizen/finance', icon: TrendingUp, key: 'Economy & Finance' },
+  { path: '/citizen/fayda-id', icon: Fingerprint, key: 'Fayda Digital ID' },
+  { path: '/citizen/verification', icon: BadgeCheck, key: 'Verification & Badges' },
+  { path: '/citizen/jobs', icon: Briefcase, key: 'Jobs & Opportunities' },
+  { path: '/citizen/legal', icon: Scale, key: 'Legal & Representation' },
+  { path: '/citizen/eservices', icon: Globe, key: 'E-Services' },
+  { path: '/citizen/trading', icon: CandlestickChart, key: 'Trading' },
+  { path: '/citizen/profile', icon: User, key: 'Profile' }
 ]
 
 export default function CitizenLayout() {
@@ -31,6 +32,7 @@ export default function CitizenLayout() {
   const [citizen, setCitizen] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
+  const { currentLanguage, changeLanguage, languages, t } = useLanguage()
 
   useEffect(() => {
     const session = citizenService.getSession()
@@ -42,6 +44,8 @@ export default function CitizenLayout() {
     citizenService.logout()
     navigate('/citizen-login')
   }
+
+  const navItems = navItemDefs.map(item => ({ ...item, label: t(item.key) }))
 
   if (!citizen) return null
 
@@ -56,7 +60,7 @@ export default function CitizenLayout() {
               <img src="/files/logo.png" alt="MESOB" className="w-9 h-9 object-contain" />
               <div>
                 <p className="font-bold text-blue-900 text-sm">MESOB</p>
-                <p className="text-xs text-gray-500">Citizen Portal</p>
+                <p className="text-xs text-gray-500">{t('Citizen Portal')}</p>
               </div>
             </Link>
           </div>
@@ -89,7 +93,7 @@ export default function CitizenLayout() {
             <button onClick={handleLogout}
               className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition">
               <LogOut className="w-5 h-5" />
-              Sign Out
+              {t('Sign Out')}
             </button>
           </div>
         </div>
@@ -107,11 +111,26 @@ export default function CitizenLayout() {
             </button>
             <div className="flex-1" />
             <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <Globe className="w-4 h-4 text-gray-400" />
+                <select value={currentLanguage} onChange={e => changeLanguage(e.target.value)}
+                  className="text-sm border border-gray-200 rounded-lg px-2 py-1 bg-white text-gray-700 outline-none focus:border-blue-500 cursor-pointer">
+                  {languages.map(lang => (
+                    <option key={lang.code} value={lang.code}>{lang.name}</option>
+                  ))}
+                  {languages.length === 0 && (
+                    <>
+                      <option value="en">English</option>
+                      <option value="am">አማርኛ</option>
+                    </>
+                  )}
+                </select>
+              </div>
               <button className="p-2 rounded-lg hover:bg-gray-100 relative">
                 <Bell className="w-5 h-5 text-gray-500" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
               </button>
-              <Link to="/" className="text-sm text-gray-400 hover:text-gray-600">← Website</Link>
+              <Link to="/" className="text-sm text-gray-400 hover:text-gray-600">{t('← Website')}</Link>
             </div>
           </div>
         </header>

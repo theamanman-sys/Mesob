@@ -4,8 +4,10 @@ import { motion } from 'framer-motion'
 import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, FileText, Fingerprint, CheckCircle } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
 import { renderGoogleButton } from '../../services/googleAuth'
+import { useLanguage } from '../../context/LanguageContext'
 
 export default function CitizenRegister() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [showPassword, setShowPassword] = useState(false)
@@ -41,15 +43,15 @@ export default function CitizenRegister() {
   const handleNext = () => {
     if (step === 1) {
       if (!form.firstName || !form.lastName || !form.email || !form.phone) {
-        setError('Please fill in all personal details.')
+        setError(t('Please fill in all personal details.'))
         return
       }
-      if (!/\S+@\S+\.\S+/.test(form.email)) { setError('Please enter a valid email.'); return }
+      if (!/\S+@\S+\.\S+/.test(form.email)) { setError(t('Please enter a valid email.')); return }
     }
     if (step === 2) {
-      if (!form.idNumber) { setError('Please enter your ID number.'); return }
-      if (form.password.length < 6) { setError('Password must be at least 6 characters.'); return }
-      if (form.password !== form.confirmPassword) { setError('Passwords do not match.'); return }
+      if (!form.idNumber) { setError(t('Please enter your ID number.')); return }
+      if (form.password.length < 6) { setError(t('Password must be at least 6 characters.')); return }
+      if (form.password !== form.confirmPassword) { setError(t('Passwords do not match.')); return }
     }
     setStep(s => s + 1)
   }
@@ -73,8 +75,8 @@ export default function CitizenRegister() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-lg">
           <div className="text-center mb-8">
             <img src="/files/logo.png" alt="MESOB" className="w-16 h-16 object-contain mx-auto mb-4" />
-            <h1 className="text-3xl font-black text-gray-900">Create Account</h1>
-            <p className="text-gray-500 mt-1">Join the MESOB citizen portal</p>
+            <h1 className="text-3xl font-black text-gray-900">{t('Create Account')}</h1>
+            <p className="text-gray-500 mt-1">{t('Join the MESOB citizen portal')}</p>
           </div>
 
           <div className="flex items-center justify-center gap-2 mb-8">
@@ -94,34 +96,34 @@ export default function CitizenRegister() {
             <form onSubmit={step === 3 ? handleSubmit : (e) => { e.preventDefault(); handleNext() }}>
               {step === 1 && (
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Personal Information</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">{t('Personal Information')}</h2>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">First Name</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('First Name')}</label>
                       <input type="text" value={form.firstName} onChange={handleChange('firstName')}
-                        placeholder="John" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
+                        placeholder={t('John')} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Last Name</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Last Name')}</label>
                       <input type="text" value={form.lastName} onChange={handleChange('lastName')}
-                        placeholder="Doe" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
+                        placeholder={t('Doe')} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Email Address')}</label>
                     <div className="relative">
                       <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input type="email" value={form.email} onChange={handleChange('email')}
-                        placeholder="john@example.com" autoComplete="email"
+                        placeholder={t('john@example.com')} autoComplete="email"
                         className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Phone Number')}</label>
                     <div className="relative">
                       <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input type="tel" value={form.phone} onChange={handleChange('phone')}
-                        placeholder="+251 9XX XXX XXXX" autoComplete="tel"
+                        placeholder={t('+251 9XX XXX XXXX')} autoComplete="tel"
                         className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                   </div>
@@ -130,22 +132,22 @@ export default function CitizenRegister() {
 
               {step === 2 && (
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">ID & Security</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">{t('ID & Security')}</h2>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">National ID / Fayda Number</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">{t('National ID / Fayda Number')}</label>
                     <div className="relative">
                       <Fingerprint className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input type="text" value={form.idNumber} onChange={handleChange('idNumber')}
-                        placeholder="Enter your ID number"
+                        placeholder={t('Enter your ID number')}
                         className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Password')}</label>
                     <div className="relative">
                       <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input type={showPassword ? 'text' : 'password'} value={form.password} onChange={handleChange('password')}
-                        placeholder="Min 6 characters" autoComplete="new-password"
+                        placeholder={t('Min 6 characters')} autoComplete="new-password"
                         className="w-full pl-11 pr-12 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                       <button type="button" onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
@@ -154,11 +156,11 @@ export default function CitizenRegister() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Confirm Password</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Confirm Password')}</label>
                     <div className="relative">
                       <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input type="password" value={form.confirmPassword} onChange={handleChange('confirmPassword')}
-                        placeholder="Repeat your password" autoComplete="new-password"
+                        placeholder={t('Repeat your password')} autoComplete="new-password"
                         className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                   </div>
@@ -167,13 +169,13 @@ export default function CitizenRegister() {
 
               {step === 3 && (
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                  <h2 className="text-xl font-bold text-gray-900 mb-1">Review & Confirm</h2>
-                  <p className="text-gray-500 text-sm mb-4">Please verify your details before submitting.</p>
+                  <h2 className="text-xl font-bold text-gray-900 mb-1">{t('Review & Confirm')}</h2>
+                  <p className="text-gray-500 text-sm mb-4">{t('Please verify your details before submitting.')}</p>
                   <div className="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
-                    <div className="flex justify-between"><span className="text-gray-500">Name</span><span className="font-semibold">{form.firstName} {form.lastName}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">Email</span><span className="font-semibold">{form.email}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">Phone</span><span className="font-semibold">{form.phone}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">ID Number</span><span className="font-semibold">{form.idNumber}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t('Name')}</span><span className="font-semibold">{form.firstName} {form.lastName}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t('Email')}</span><span className="font-semibold">{form.email}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t('Phone')}</span><span className="font-semibold">{form.phone}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t('ID Number')}</span><span className="font-semibold">{form.idNumber}</span></div>
                   </div>
                 </motion.div>
               )}
@@ -187,14 +189,14 @@ export default function CitizenRegister() {
                 {step > 1 && (
                   <button type="button" onClick={() => setStep(s => s - 1)}
                     className="flex-1 border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">
-                    Back
+                    {t('Back')}
                   </button>
                 )}
                 <button type="submit" disabled={loading}
                   className={`flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 disabled:opacity-50 transition ${step === 1 ? 'flex-1' : ''}`}>
                   {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    : step === 3 ? <>Create Account <CheckCircle className="w-4 h-4" /></>
-                    : <>Continue <ArrowRight className="w-4 h-4" /></>}
+                    : step === 3 ? <>{t('Create Account')} <CheckCircle className="w-4 h-4" /></>
+                    : <>{t('Continue')} <ArrowRight className="w-4 h-4" /></>}
                 </button>
               </div>
             </form>
@@ -206,7 +208,7 @@ export default function CitizenRegister() {
                     <div className="w-full border-t border-gray-200" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-3 text-gray-400">Or sign up with</span>
+                    <span className="bg-white px-3 text-gray-400">{t('Or sign up with')}</span>
                   </div>
                 </div>
 
@@ -217,11 +219,11 @@ export default function CitizenRegister() {
           </div>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            Already have an account?{' '}
-            <Link to="/citizen-login" className="text-blue-600 font-semibold hover:underline">Sign In</Link>
+            {t('Already have an account?')}{' '}
+            <Link to="/citizen-login" className="text-blue-600 font-semibold hover:underline">{t('Sign In')}</Link>
           </p>
           <p className="text-center text-sm mt-2">
-            <Link to="/" className="text-gray-400 hover:text-gray-600">← Back to Home</Link>
+            <Link to="/" className="text-gray-400 hover:text-gray-600">{t('← Back to Home')}</Link>
           </p>
         </motion.div>
       </div>

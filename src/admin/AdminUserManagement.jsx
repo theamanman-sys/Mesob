@@ -3,7 +3,8 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { usePagination } from '../hooks/usePagination'
-import { Briefcase, GraduationCap, Star, CheckCircle, XCircle, Clock, Search, Filter, Eye, BadgeCheck, DollarSign, FileText, ExternalLink, ChevronDown, ChevronLeft, UserCheck, Send, Users } from 'lucide-react'
+import { Briefcase, GraduationCap, Star, CheckCircle, XCircle, Clock, Search, Filter, Eye, BadgeCheck, DollarSign, FileText, ExternalLink, ChevronDown, ChevronLeft, UserCheck, Send, Users, Edit3, UserX, X } from 'lucide-react'
+import { adminService } from '../services/adminService'
 
 function formatBirr(n) {
   if (!n) return '0'
@@ -23,19 +24,31 @@ function PasswordResetModal({ isOpen, username, password, onClose }) {
   return (<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-md"><h2 className="text-xl font-semibold mb-4">Password Reset</h2><p className="mb-2">New password for <strong>{username}</strong>:</p><div className="flex items-center space-x-2 bg-gray-100 p-3 rounded mb-4"><code className="flex-1 text-sm">{password}</code><button onClick={copyToClipboard} className="bg-blue-600 text-white px-3 py-1 rounded text-sm">{copied ? 'Copied!' : 'Copy'}</button></div><button onClick={onClose} className="bg-gray-600 text-white px-4 py-2 rounded-md">Close</button></div></div>)
 }
 
-function CitizenProfileCard({ citizen, onBack }) {
+function CitizenProfileCard({ citizen, onBack, onToggleBadge, onEdit, onDelete }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-blue-600 font-medium mb-4 hover:text-blue-700"><ChevronLeft className="w-4 h-4" /> Back to users</button>
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="bg-gradient-to-r from-blue-600 to-purple-700 p-6 text-white">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold">{citizen.firstName?.[0]}{citizen.lastName?.[0]}</div>
-            <div><h2 className="text-xl font-bold">{citizen.firstName} {citizen.lastName}</h2><p className="text-blue-200 text-sm">{citizen.email} {citizen.phone ? `• ${citizen.phone}` : ''}</p></div>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold">{citizen.firstName?.[0]}{citizen.lastName?.[0]}</div>
+              <div><h2 className="text-xl font-bold">{citizen.firstName} {citizen.lastName}</h2><p className="text-blue-200 text-sm">{citizen.email} {citizen.phone ? `• ${citizen.phone}` : ''}</p></div>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => onEdit(citizen)} className="flex items-center gap-1 px-3 py-1.5 bg-white/20 text-white rounded-lg text-xs font-medium hover:bg-white/30 transition"><Edit3 className="w-3 h-3" /> Edit</button>
+              <button onClick={() => onDelete(citizen)} className="flex items-center gap-1 px-3 py-1.5 bg-red-500/80 text-white rounded-lg text-xs font-medium hover:bg-red-500 transition"><UserX className="w-3 h-3" /> Delete</button>
+            </div>
           </div>
         </div>
 
         <div className="p-6 space-y-6">
+          <div className="flex items-center gap-3 mb-4">
+            <button onClick={() => onToggleBadge(citizen)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition ${citizen.isMesobVerified ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}>
+              <BadgeCheck className="w-4 h-4" /> {citizen.isMesobVerified ? 'Remove Verified Badge' : 'Add Verified Badge'}
+            </button>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="text-center p-3 bg-yellow-50 rounded-xl"><div className="text-lg font-black text-yellow-700">{citizen.isMesobVerified ? 'Yes' : 'No'}</div><div className="text-xs text-yellow-500"><BadgeCheck className="w-3 h-3 inline" /> MESOB Verified</div></div>
             <div className="text-center p-3 bg-green-50 rounded-xl"><div className="text-lg font-black text-green-700">{citizen.verifiedDocuments}/{citizen.totalDocuments || 0}</div><div className="text-xs text-green-500">Verified Docs</div></div>
@@ -77,6 +90,9 @@ export default function AdminUserManagement() {
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('system')
   const [jobApps, setJobApps] = useState([])
+  const [editUser, setEditUser] = useState(null)
+  const [editForm, setEditForm] = useState({})
+  const [savingEdit, setSavingEdit] = useState(false)
 
   useEffect(() => {
     if (activeTab === 'citizens') {
@@ -86,6 +102,19 @@ export default function AdminUserManagement() {
       ]).then(([c, j]) => { setCitizenUsers(c || []); setJobApps(j || []) })
     }
   }, [activeTab])
+
+  const handleEditUser = async () => {
+    if (!editUser) return
+    setSavingEdit(true)
+    try {
+      await adminService.updateCitizenUser(editUser.id, editForm)
+      setCitizenUsers(prev => prev.map(u => u.id === editUser.id ? { ...u, ...editForm } : u))
+      if (selectedCitizen?.id === editUser.id) setSelectedCitizen(prev => ({ ...prev, ...editForm }))
+      setEditUser(null)
+      showToast('User details updated', 'success')
+    } catch (err) { showToast(err.message, 'error') }
+    setSavingEdit(false)
+  }
 
   if (!isAdmin()) return (<div className="flex items-center justify-center h-64"><div className="text-center"><h3 className="text-lg font-semibold mb-2">Access Denied</h3><p className="text-gray-600">You need admin privileges to access user management.</p></div></div>)
 
@@ -161,7 +190,20 @@ export default function AdminUserManagement() {
       {activeTab === 'citizens' && (
         <div>
           {selectedCitizen ? (
-            <CitizenProfileCard citizen={selectedCitizen} onBack={() => setSelectedCitizen(null)} />
+            <CitizenProfileCard citizen={selectedCitizen} onBack={() => setSelectedCitizen(null)}
+              onToggleBadge={async (u) => {
+                try {
+                  await adminService.updateUserBadge(u.id, { isMesobVerified: !u.isMesobVerified })
+                  setCitizenUsers(prev => prev.map(c => c.id === u.id ? { ...c, isMesobVerified: !u.isMesobVerified } : c))
+                  setSelectedCitizen(prev => ({ ...prev, isMesobVerified: !u.isMesobVerified }))
+                  showToast(`Verified badge ${!u.isMesobVerified ? 'added' : 'removed'}`, 'success')
+                } catch (err) { showToast(err.message, 'error') }
+              }}
+              onEdit={(u) => { setEditUser(u); setEditForm({ firstName: u.firstName, lastName: u.lastName, email: u.email, phone: u.phone || '' }) }}
+              onDelete={async (u) => {
+                if (!window.confirm(`Delete citizen "${u.firstName} ${u.lastName}"? This cannot be undone.`)) return
+                try { await adminService.deleteCitizenUser(u.id); setCitizenUsers(prev => prev.filter(c => c.id !== u.id)); setSelectedCitizen(null); showToast('User deleted', 'success') } catch (err) { showToast(err.message, 'error') }
+              }} />
           ) : (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
@@ -197,6 +239,30 @@ export default function AdminUserManagement() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Edit Citizen User Modal */}
+      {editUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2"><Edit3 className="w-4 h-4 text-blue-600" /> Edit Citizen Details</h3>
+              <button onClick={() => setEditUser(null)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="space-y-3">
+              <div><label className="block text-xs font-medium text-gray-500 mb-1">First Name</label><input type="text" value={editForm.firstName || ''} onChange={e => setEditForm({...editForm, firstName: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-500" /></div>
+              <div><label className="block text-xs font-medium text-gray-500 mb-1">Last Name</label><input type="text" value={editForm.lastName || ''} onChange={e => setEditForm({...editForm, lastName: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-500" /></div>
+              <div><label className="block text-xs font-medium text-gray-500 mb-1">Email</label><input type="email" value={editForm.email || ''} onChange={e => setEditForm({...editForm, email: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-500" /></div>
+              <div><label className="block text-xs font-medium text-gray-500 mb-1">Phone</label><input type="text" value={editForm.phone || ''} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-500" /></div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={handleEditUser} disabled={savingEdit}
+                className="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-blue-700 disabled:opacity-50 transition"><UserCheck className="w-4 h-4 inline mr-1.5" /> Save Changes</button>
+              <button onClick={() => setEditUser(null)}
+                className="flex-1 bg-gray-100 text-gray-600 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-200 transition">Cancel</button>
+            </div>
+          </motion.div>
         </div>
       )}
     </div>

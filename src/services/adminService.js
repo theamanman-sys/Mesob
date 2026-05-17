@@ -116,5 +116,19 @@ export const adminService = {
   async getCitizenUsers() {
     const { data } = await api.get('/admin/users').catch(() => ({ data: { data: [] } }))
     return data.data || []
+  },
+
+  async updateUserBadge(userId, body) {
+    const { data } = await api.put(`/admin/users/${userId}/badge`, body).catch(() => ({ data: { data: {} } }))
+    return data.data || {}
+  },
+
+  async updateCitizenUser(userId, body) {
+    const { data } = await api.put(`/admin/users/${userId}`, body).catch(() => ({ data: { data: {} } }))
+    return data.data || {}
+  },
+
+  async deleteCitizenUser(userId) {
+    await api.delete(`/admin/users/${userId}`).catch(() => {})
   }
 }

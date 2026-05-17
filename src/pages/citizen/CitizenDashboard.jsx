@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { FileText, ClipboardList, Upload, Clock, CheckCircle, XCircle, AlertCircle, ArrowRight, TrendingUp, FileCheck2, Building2, User, Scan, Camera, X, Image, RefreshCw, BadgeCheck, Hash, Globe, Wallet, Trophy, HeartHandshake, BarChart3, DollarSign, PiggyBank, Plus, Minus, Landmark, Target, Users, Ticket, Calendar } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
 import { createWorker } from 'tesseract.js'
+import { useLanguage } from '../../context/LanguageContext'
 
 function parseIdText(text) {
   const lines = text.split('\n').filter(l => l.trim())
@@ -33,6 +34,7 @@ function parseIdText(text) {
 }
 
 function IdScannerModal({ open, onClose }) {
+  const { t } = useLanguage()
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
   const fileInputRef = useRef(null)
@@ -51,7 +53,7 @@ function IdScannerModal({ open, onClose }) {
       const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing } })
       if (videoRef.current) videoRef.current.srcObject = s
       setStream(s); setCameraActive(true)
-    } catch { alert('Camera access denied or not available.') }
+    } catch { alert(t('Camera access denied')) }
   }
   const stopCamera = () => {
     if (stream) stream.getTracks().forEach(t => t.stop())
@@ -109,7 +111,7 @@ function IdScannerModal({ open, onClose }) {
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
         className="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden">
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
-          <h2 className="font-bold text-lg text-gray-900">Scan ID Document</h2>
+          <h2 className="font-bold text-lg text-gray-900">{t('Scan ID Document')}</h2>
           <button onClick={handleClose} className="p-2 rounded-lg hover:bg-gray-100"><X className="w-5 h-5 text-gray-500" /></button>
         </div>
         <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
@@ -117,11 +119,11 @@ function IdScannerModal({ open, onClose }) {
             <div className="space-y-3">
               <button onClick={startCamera} className="w-full flex items-center justify-center gap-3 p-6 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50 hover:bg-blue-100 transition">
                 <Camera className="w-8 h-8 text-blue-600" />
-                <div className="text-left"><p className="font-semibold text-blue-700">Open Camera</p><p className="text-sm text-blue-500">Position your ID in the frame</p></div>
+                <div className="text-left"><p className="font-semibold text-blue-700">{t('Open Camera')}</p><p className="text-sm text-blue-500">{t('Position ID in frame')}</p></div>
               </button>
-              <div className="relative"><div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200" /></div><div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-3 text-gray-400">or</span></div></div>
+              <div className="relative"><div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200" /></div><div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-3 text-gray-400">{t('OR')}</span></div></div>
               <button onClick={() => fileInputRef.current?.click()} className="w-full flex items-center justify-center gap-3 p-4 border-2 border-dashed border-gray-200 rounded-xl hover:border-gray-300 transition">
-                <Image className="w-5 h-5 text-gray-500" /><span className="text-sm text-gray-600 font-medium">Upload from device</span>
+                <Image className="w-5 h-5 text-gray-500" />                <span className="text-sm text-gray-600 font-medium">{t('Upload from device')}</span>
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
             </div>
@@ -134,7 +136,7 @@ function IdScannerModal({ open, onClose }) {
                 <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 border-2 border-dashed border-yellow-400/70 h-40 rounded-lg" />
               </div>
               <div className="flex gap-3">
-                <button onClick={capture} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">Capture</button>
+                <button onClick={capture} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">{t('Capture')}</button>
                 <button onClick={flipCamera} className="px-4 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition"><RefreshCw className="w-4 h-4" /></button>
                 <button onClick={stopCamera} className="px-4 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition"><X className="w-4 h-4" /></button>
               </div>
@@ -142,17 +144,17 @@ function IdScannerModal({ open, onClose }) {
           )}
           {showPreview && (
             <div className="space-y-4">
-              <div className="rounded-xl overflow-hidden bg-gray-100"><img src={captured ? URL.createObjectURL(captured) : ''} alt="Captured ID" className="w-full h-48 object-contain" /></div>
+              <div className="rounded-xl overflow-hidden bg-gray-100"><img src={captured ? URL.createObjectURL(captured) : ''} alt={t('Captured ID')} className="w-full h-48 object-contain" /></div>
               {scanning && (
                 <div className="flex items-center justify-center gap-3 py-6 text-gray-500">
                   <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-sm font-medium">Reading ID data...</span>
+                  <span className="text-sm font-medium">{t('Reading ID data...')}</span>
                 </div>
               )}
               {!scanning && Object.keys(editedData).length > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
-                  <p className="text-sm font-bold text-blue-800 flex items-center gap-2"><BadgeCheck className="w-4 h-4" /> Extracted Information</p>
-                  <p className="text-xs text-blue-600">Edit the fields if needed before uploading.</p>
+                  <p className="text-sm font-bold text-blue-800 flex items-center gap-2"><BadgeCheck className="w-4 h-4" /> {t('Extracted Information')}</p>
+                  <p className="text-xs text-blue-600">{t('Edit fields if needed')}</p>
                   {Object.entries(editedData).map(([key, value]) => (
                     <div key={key}>
                       <label className="block text-xs font-semibold text-blue-700 mb-1">{key}</label>
@@ -164,9 +166,9 @@ function IdScannerModal({ open, onClose }) {
               )}
               {!scanning && Object.keys(editedData).length === 0 && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 space-y-3">
-                  <p className="text-sm text-yellow-700 font-medium">Could not read ID text.</p>
-                  <p className="text-xs text-yellow-600">Enter the details manually:</p>
-                  {['Full Name', 'ID Number', 'Date of Birth'].map((field) => (
+                  <p className="text-sm text-yellow-700 font-medium">{t('Could not read ID text')}</p>
+                  <p className="text-xs text-yellow-600">{t('Enter details manually')}</p>
+                  {[t('Full Name'), t('ID Number'), t('Date of Birth')].map((field) => (
                     <div key={field}>
                       <label className="block text-xs font-semibold text-yellow-700 mb-1">{field}</label>
                       <input type="text" value={editedData[field] || ''} onChange={(e) => setEditedData(prev => ({ ...prev, [field]: e.target.value }))}
@@ -178,10 +180,10 @@ function IdScannerModal({ open, onClose }) {
               <div className="flex gap-3">
                 <button onClick={handleUpload} disabled={uploading}
                   className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
-                  {uploading ? <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Uploading</>
-                    : <><Upload className="w-4 h-4" /> Upload to Documents</>}
+                  {uploading ? <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> {t('Uploading...')}</>
+                    : <>                <Upload className="w-4 h-4" /> {t('Upload to Documents')}</>}
                 </button>
-                <button onClick={handleRetake} className="px-6 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">Retake</button>
+                <button onClick={handleRetake} className="px-6 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">{t('Retake')}</button>
               </div>
             </div>
           )}
@@ -193,6 +195,7 @@ function IdScannerModal({ open, onClose }) {
 }
 
 function ContributionModal({ open, onClose, departments }) {
+  const { t } = useLanguage()
   const [amount, setAmount] = useState('')
   const [department, setDepartment] = useState(departments[0] || 'General')
   const [message, setMessage] = useState('')
@@ -205,7 +208,7 @@ function ContributionModal({ open, onClose, departments }) {
     try {
       await citizenService.submitContribution(department, Number(amount), message)
       onClose(true)
-    } catch { alert('Failed to submit contribution') }
+    } catch { alert(t('Failed to submit contribution')) }
     setLoading(false)
   }
 
@@ -214,33 +217,33 @@ function ContributionModal({ open, onClose, departments }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
         className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><HeartHandshake className="w-5 h-5 text-red-500" /> Contribute to a Department</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><HeartHandshake className="w-5 h-5 text-red-500" /> {t('Contribute to Department')}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Department</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Department')}</label>
             <select value={department} onChange={(e) => setDepartment(e.target.value)}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
               {departments.map((d, i) => <option key={i} value={d}>{d}</option>)}
-              <option value="General">General</option>
+               <option value="General">{t('General')}</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Amount (ETB)</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Amount (ETB)')}</label>
             <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} min="1"
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="1000" />
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" placeholder={t('Enter amount')} />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Message (optional)</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Message (optional)')}</label>
             <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={2}
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Supporting our community..." />
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" placeholder={t('Supporting our community')} />
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={loading}
               className="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-red-700 disabled:opacity-50 transition">
-              {loading ? 'Submitting...' : 'Submit Contribution'}
+              {loading ? t('Submitting...') : t('Submit Contribution')}
             </button>
             <button type="button" onClick={() => onClose(false)}
-              className="px-6 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">Cancel</button>
+              className="px-6 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">{t('Cancel')}</button>
           </div>
         </form>
       </motion.div>
@@ -249,6 +252,7 @@ function ContributionModal({ open, onClose, departments }) {
 }
 
 function NetWorthModal({ open, onClose, current, onSave }) {
+  const { t } = useLanguage()
   const [netWorth, setNetWorth] = useState(current?.netWorth || '')
 
   useEffect(() => {
@@ -264,16 +268,16 @@ function NetWorthModal({ open, onClose, current, onSave }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
         className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><Wallet className="w-5 h-5 text-green-600" /> Update Net Worth</h2>
-        <p className="text-sm text-gray-500 mb-4">Enter your estimated total net worth (assets minus liabilities). This data is private and used for ranking.</p>
+        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><Wallet className="w-5 h-5 text-green-600" /> {t('Update Net Worth')}</h2>
+        <p className="text-sm text-gray-500 mb-4">{t('Enter your total net worth to track your ranking')}</p>
         <div className="relative mb-4">
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">ETB</span>
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">{t('etb')}</span>
           <input type="number" value={netWorth} onChange={(e) => setNetWorth(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-lg font-bold" placeholder="0" />
+            className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-lg font-bold" placeholder={t('Enter net worth')} />
         </div>
         <div className="flex gap-3">
-          <button onClick={handleSave} className="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-green-700 transition">Save</button>
-          <button onClick={() => onClose()} className="px-6 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">Cancel</button>
+          <button onClick={handleSave} className="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-green-700 transition">{t('Save')}</button>
+          <button onClick={() => onClose()} className="px-6 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">{t('Cancel')}</button>
         </div>
       </motion.div>
     </div>
@@ -299,6 +303,7 @@ function StatCard({ icon: Icon, label, value, color, bg, delay = 0 }) {
 const DEPARTMENTS = ['Ministry of Trade', 'Immigration Service', 'Ministry of Revenues', 'National ID Program', 'Ministry of Labor', 'Ministry of Health', 'Education Authority']
 
 export default function CitizenDashboard() {
+  const { t } = useLanguage()
   const [citizen, setCitizen] = useState(null)
   const [applications, setApplications] = useState([])
   const [documents, setDocuments] = useState([])
@@ -335,7 +340,7 @@ export default function CitizenDashboard() {
       setNetWorthModal(false)
       const r = await citizenService.getNetWorthRankings()
       setRankings(r)
-    } catch { alert('Failed to update net worth') }
+    } catch { alert(t('Failed to update net worth')) }
   }
 
   const handleContribClose = (success) => {
@@ -351,10 +356,10 @@ export default function CitizenDashboard() {
   if (!citizen) return null
 
   const stats = [
-    { icon: FileText, label: 'Applications', value: applications.length, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { icon: CheckCircle, label: 'Approved', value: applications.filter(a => a.status === 'approved').length, color: 'text-green-600', bg: 'bg-green-50' },
-    { icon: Clock, label: 'Pending', value: applications.filter(a => a.status === 'submitted' || a.status === 'processing').length, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-    { icon: Ticket, label: 'Tickets', value: tickets.length, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { icon: FileText, label: t('Applications'), value: applications.length, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { icon: CheckCircle, label: t('Approved'), value: applications.filter(a => a.status === 'approved').length, color: 'text-green-600', bg: 'bg-green-50' },
+    { icon: Clock, label: t('Pending'), value: applications.filter(a => a.status === 'submitted' || a.status === 'processing').length, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+    { icon: Ticket, label: t('Tickets'), value: tickets.length, color: 'text-purple-600', bg: 'bg-purple-50' },
   ]
 
   const statusIcon = (status) => {
@@ -377,15 +382,15 @@ export default function CitizenDashboard() {
       <ContributionModal open={contribModal} onClose={handleContribClose} departments={DEPARTMENTS} />
 
       <div className="mb-8">
-        <h1 className="text-2xl font-black text-gray-900">Welcome back, {citizen.firstName}!</h1>
-        <p className="text-gray-500 mt-1">Here's an overview of your citizen portal.</p>
+        <h1 className="text-2xl font-black text-gray-900">{t('Welcome back, {name}', { name: citizen.firstName })}</h1>
+        <p className="text-gray-500 mt-1">{t('Your personal citizen portal overview')}</p>
       </div>
 
       {contribSuccess && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
           className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
           <CheckCircle className="w-5 h-5 text-green-600" />
-          <p className="text-sm font-medium text-green-800">Thank you! Your contribution has been submitted successfully.</p>
+          <p className="text-sm font-medium text-green-800">{t('Thank you! Your contribution has been submitted successfully.')}</p>
         </motion.div>
       )}
 
@@ -399,18 +404,18 @@ export default function CitizenDashboard() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Wallet className="w-5 h-5" />
-              <h2 className="font-bold">Net Worth</h2>
+              <h2 className="font-bold">{t('Net Worth')}</h2>
             </div>
             <button onClick={() => setNetWorthModal(true)}
-              className="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg font-semibold transition">Update</button>
+              className="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg font-semibold transition">{t('Update')}</button>
           </div>
           <p className="text-3xl font-black mb-1">{netWorthData?.netWorth?.toLocaleString() || 0} ETB</p>
           <div className="flex items-center gap-2 text-green-200 text-sm mb-4">
             <Trophy className="w-4 h-4 text-yellow-300" />
-            <span>Rank #{netWorthData?.rank || '-'} of {netWorthData?.totalParticipants || 0} participants</span>
+            <span>{t('Rank')} #{netWorthData?.rank || '-'} {t('of')} {netWorthData?.totalParticipants || 0} {t('participants')}</span>
           </div>
           <div className="bg-white/10 rounded-xl p-3">
-            <p className="text-xs text-green-200 mb-1">Your share of top wealth</p>
+            <p className="text-xs text-green-200 mb-1">{t('Your share of top wealth')}</p>
             <div className="flex items-center gap-2">
               <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
                 <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${Math.min(Number(userShare), 100)}%` }} />
@@ -423,25 +428,25 @@ export default function CitizenDashboard() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-blue-600" /> Ethiopia Economy
+            <BarChart3 className="w-5 h-5 text-blue-600" /> {t('Ethiopian Economy')}
           </h2>
           {economyData ? (
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="bg-blue-50 rounded-xl p-3">
-                  <p className="text-xs text-blue-600 font-semibold">GDP</p>
+                  <p className="text-xs text-blue-600 font-semibold">{t('GDP')}</p>
                   <p className="text-lg font-black text-gray-900">${economyData.gdp}B</p>
                 </div>
                 <div className="bg-green-50 rounded-xl p-3">
-                  <p className="text-xs text-green-600 font-semibold">Growth</p>
+                  <p className="text-xs text-green-600 font-semibold">{t('Growth')}</p>
                   <p className="text-lg font-black text-gray-900">{economyData.gdpGrowth}%</p>
                 </div>
                 <div className="bg-yellow-50 rounded-xl p-3">
-                  <p className="text-xs text-yellow-600 font-semibold">Population</p>
+                  <p className="text-xs text-yellow-600 font-semibold">{t('Population')}</p>
                   <p className="text-lg font-black text-gray-900">{economyData.population}M</p>
                 </div>
                 <div className="bg-purple-50 rounded-xl p-3">
-                  <p className="text-xs text-purple-600 font-semibold">GDP/Capita</p>
+                  <p className="text-xs text-purple-600 font-semibold">{t('GDP per Capita')}</p>
                   <p className="text-lg font-black text-gray-900">${economyData.gdpPerCapita}</p>
                 </div>
               </div>
@@ -460,7 +465,7 @@ export default function CitizenDashboard() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-6 text-gray-400 text-sm">Loading economy data...</div>
+            <div className="text-center py-6 text-gray-400 text-sm">{t('Loading economy data...')}</div>
           )}
         </motion.div>
 
@@ -468,27 +473,27 @@ export default function CitizenDashboard() {
           className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-gray-900 flex items-center gap-2">
-              <HeartHandshake className="w-5 h-5 text-red-500" /> Contributions
+              <HeartHandshake className="w-5 h-5 text-red-500" /> {t('Contributions')}
             </h2>
             <button onClick={() => setContribModal(true)}
-              className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg font-semibold transition">Donate</button>
+              className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg font-semibold transition">{t('Donate')}</button>
           </div>
           <div className="space-y-3 mb-4">
             <div className="bg-red-50 rounded-xl p-3">
-              <p className="text-xs text-red-600 font-semibold">Total Contributions</p>
+              <p className="text-xs text-red-600 font-semibold">{t('Total Contributions')}</p>
               <p className="text-xl font-black text-gray-900">{contribStats?.totalContributions?.toLocaleString() || 0} ETB</p>
             </div>
             <div className="bg-orange-50 rounded-xl p-3">
-              <p className="text-xs text-orange-600 font-semibold">Your Contributions</p>
+              <p className="text-xs text-orange-600 font-semibold">{t('Your Contributions')}</p>
               <p className="text-xl font-black text-gray-900">{userContribs.reduce((s, c) => s + (c.amount || 0), 0).toLocaleString()} ETB</p>
             </div>
           </div>
           {contribStats?.byDepartment && Object.keys(contribStats.byDepartment).length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-gray-500 mb-2">By Department</p>
+              <p className="text-xs font-semibold text-gray-500 mb-2">{t('By Department')}</p>
               {Object.entries(contribStats.byDepartment).slice(0, 4).map(([dept, amt]) => (
                 <div key={dept} className="flex items-center justify-between py-1.5">
-                  <span className="text-xs text-gray-600 truncate max-w-[140px]">{dept}</span>
+                  <span className="text-xs text-gray-600 truncate max-w-[100px] sm:max-w-[140px]">{dept}</span>
                   <span className="text-xs font-bold text-gray-900">{amt.toLocaleString()} ETB</span>
                 </div>
               ))}
@@ -501,16 +506,16 @@ export default function CitizenDashboard() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
           className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
           <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-yellow-500" /> Wealth Distribution Board — Top Ranked
+            <Trophy className="w-5 h-5 text-yellow-500" /> {t('Wealth Distribution Board — Top Ranked')}
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 rounded-xl">
-                  <th className="text-left p-3 font-semibold text-gray-600">Rank</th>
-                  <th className="text-left p-3 font-semibold text-gray-600">Name</th>
-                  <th className="text-right p-3 font-semibold text-gray-600">Net Worth (ETB)</th>
-                  <th className="text-right p-3 font-semibold text-gray-600">Share</th>
+                  <th className="text-left p-3 font-semibold text-gray-600">{t('Rank')}</th>
+                  <th className="text-left p-3 font-semibold text-gray-600">{t('Name')}</th>
+                  <th className="text-right p-3 font-semibold text-gray-600">{t('Net Worth (ETB)')}</th>
+                  <th className="text-right p-3 font-semibold text-gray-600">{t('Share')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -523,7 +528,7 @@ export default function CitizenDashboard() {
                           {i === 0 ? <Trophy className="w-4 h-4 text-yellow-500" /> : i === 1 ? <Trophy className="w-4 h-4 text-gray-400" /> : i === 2 ? <Trophy className="w-4 h-4 text-orange-500" /> : <span className="text-gray-400 w-4 text-center">{i + 1}</span>}
                         </div>
                       </td>
-                      <td className="p-3 font-medium text-gray-900">{r.displayName || r.fullName || r.email} {r.citizenId === citizen?.id ? '(You)' : ''}</td>
+                      <td className="p-3 font-medium text-gray-900">{r.displayName || r.fullName || r.email} {r.citizenId === citizen?.id ? t('(You)') : ''}</td>
                       <td className="p-3 text-right font-bold text-gray-900">{r.netWorth?.toLocaleString() || 0}</td>
                       <td className="p-3 text-right">
                         <div className="flex items-center justify-end gap-2">
@@ -546,15 +551,15 @@ export default function CitizenDashboard() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
           className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between p-5 border-b border-gray-100">
-            <h2 className="font-bold text-gray-900">Recent Applications</h2>
-            <Link to="/citizen/applications" className="text-sm text-blue-600 font-medium hover:underline">View all</Link>
+            <h2 className="font-bold text-gray-900">{t('Recent Applications')}</h2>
+            <Link to="/citizen/applications" className="text-sm text-blue-600 font-medium hover:underline">{t('View all')}</Link>
           </div>
           <div className="p-5">
             {applications.length === 0 ? (
               <div className="text-center py-8">
                 <FileText className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500 text-sm">No applications yet</p>
-                <Link to="/citizen/services" className="text-blue-600 text-sm font-medium hover:underline mt-2 inline-block">Browse services →</Link>
+                <p className="text-gray-500 text-sm">{t('No applications yet')}</p>
+                <Link to="/citizen/services" className="text-blue-600 text-sm font-medium hover:underline mt-2 inline-block">{t('Browse services')} →</Link>
               </div>
             ) : (
               <div className="space-y-3">
@@ -581,16 +586,16 @@ export default function CitizenDashboard() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
           className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between p-5 border-b border-gray-100">
-            <h2 className="font-bold text-gray-900">Quick Actions</h2>
+            <h2 className="font-bold text-gray-900">{t('Quick Actions')}</h2>
           </div>
           <div className="p-5 space-y-3">
             {[
-              { icon: Scan, label: 'Scan ID', desc: 'Capture your ID with camera', action: () => setScannerOpen(true), color: 'text-indigo-600', bg: 'bg-indigo-50' },
-              { icon: Wallet, label: 'Update Net Worth', desc: 'Track your wealth & ranking', action: () => setNetWorthModal(true), color: 'text-green-600', bg: 'bg-green-50' },
-              { icon: HeartHandshake, label: 'Contribute', desc: 'Support a department', action: () => setContribModal(true), color: 'text-red-600', bg: 'bg-red-50' },
-              { icon: ClipboardList, label: 'Browse Services', desc: 'Explore government services', to: '/citizen/services', color: 'text-blue-600', bg: 'bg-blue-50' },
-              { icon: FileText, label: 'My Applications', desc: 'Track submissions', to: '/citizen/applications', color: 'text-green-600', bg: 'bg-green-50' },
-              { icon: User, label: 'Update Profile', desc: 'Manage personal info', to: '/citizen/profile', color: 'text-orange-600', bg: 'bg-orange-50' },
+              { icon: Scan, label: t('Scan ID'), desc: t('Capture your ID with camera'), action: () => setScannerOpen(true), color: 'text-indigo-600', bg: 'bg-indigo-50' },
+              { icon: Wallet, label: t('Update Net Worth'), desc: t('Track your wealth & ranking'), action: () => setNetWorthModal(true), color: 'text-green-600', bg: 'bg-green-50' },
+              { icon: HeartHandshake, label: t('Contribute'), desc: t('Support a department'), action: () => setContribModal(true), color: 'text-red-600', bg: 'bg-red-50' },
+              { icon: ClipboardList, label: t('Browse Services'), desc: t('Explore government services'), to: '/citizen/services', color: 'text-blue-600', bg: 'bg-blue-50' },
+              { icon: FileText, label: t('My Applications'), desc: t('Track submissions'), to: '/citizen/applications', color: 'text-green-600', bg: 'bg-green-50' },
+              { icon: User, label: t('Update Profile'), desc: t('Manage personal info'), to: '/citizen/profile', color: 'text-orange-600', bg: 'bg-orange-50' },
             ].map((item, i) => (
               item.action ? (
                 <button key={i} onClick={item.action}
@@ -630,27 +635,27 @@ export default function CitizenDashboard() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
           className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Ticket className="w-5 h-5 text-purple-600" /> My Appointment Tickets
+            <Ticket className="w-5 h-5 text-purple-600" /> {t('My Appointment Tickets')}
           </h2>
           <div className="space-y-3">
-            {tickets.slice(0, 5).map((t) => (
-              <div key={t.id} className="flex items-center justify-between p-4 rounded-xl bg-purple-50 border border-purple-100">
+            {tickets.slice(0, 5).map((ticket) => (
+              <div key={ticket.id} className="flex items-center justify-between p-4 rounded-xl bg-purple-50 border border-purple-100">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-purple-700">{t.ticketNumber}</span>
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${t.status === 'active' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-600'}`}>{t.status}</span>
+                    <span className="text-sm font-bold text-purple-700">{ticket.ticketNumber}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${ticket.status === 'active' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-600'}`}>{ticket.status}</span>
                   </div>
-                  <p className="text-sm text-gray-700 mt-1">{t.serviceTitle}</p>
+                  <p className="text-sm text-gray-700 mt-1">{ticket.serviceTitle}</p>
                   <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
                     <Calendar className="w-3 h-3" />
-                    <span>{t.appointmentDate ? new Date(t.appointmentDate).toLocaleDateString() : 'TBD'}</span>
+                    <span>{ticket.appointmentDate ? new Date(ticket.appointmentDate).toLocaleDateString() : t('TBD')}</span>
                     <Clock className="w-3 h-3" />
-                    <span>{t.appointmentTime || 'TBD'}</span>
+                    <span>{ticket.appointmentTime || t('TBD')}</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-black text-purple-700">{t.fee?.toLocaleString()} ETB</p>
-                  <p className="text-xs text-gray-500">Fee</p>
+                  <p className="text-lg font-black text-purple-700">{ticket.fee?.toLocaleString()} ETB</p>
+                  <p className="text-xs text-gray-500">{t('Fee')}</p>
                 </div>
               </div>
             ))}

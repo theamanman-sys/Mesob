@@ -21,7 +21,7 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: process.env.MONGODB_URI ? 'http://localhost:3002' : 'http://localhost:3001',
+        target: 'http://localhost:3001',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }

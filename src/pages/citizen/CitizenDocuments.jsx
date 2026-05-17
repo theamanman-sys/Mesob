@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Upload, FileText, Trash2, Search, Calendar, Pencil, X, Save } from 'lucide-react'
+import { useLanguage } from '../../context/LanguageContext'
 import { citizenService } from '../../services/citizenService'
 
 const docTypes = [
@@ -17,6 +18,7 @@ function EditDocModal({ doc, open, onClose, onSave }) {
   const [type, setType] = useState('id')
   const [extractedData, setExtractedData] = useState({})
   const [saving, setSaving] = useState(false)
+  const { t } = useLanguage()
 
   useEffect(() => {
     if (doc) {
@@ -27,7 +29,7 @@ function EditDocModal({ doc, open, onClose, onSave }) {
   }, [doc])
 
   const addField = () => {
-    const key = prompt('Field name:')
+    const key = prompt(t('fieldNamePrompt'))
     if (key) setExtractedData(prev => ({ ...prev, [key]: '' }))
   }
 
@@ -57,7 +59,7 @@ function EditDocModal({ doc, open, onClose, onSave }) {
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
         className="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden">
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
-          <h2 className="font-bold text-lg text-gray-900">Edit Document</h2>
+          <h2 className="font-bold text-lg text-gray-900">{t('editDocument')}</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100">
             <X className="w-5 h-5 text-gray-500" />
           </button>
@@ -71,13 +73,13 @@ function EditDocModal({ doc, open, onClose, onSave }) {
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Document Name</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('documentName')}</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm" />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Document Type</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('documentType')}</label>
             <select value={type} onChange={e => setType(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white text-sm">
               {docTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
@@ -86,9 +88,9 @@ function EditDocModal({ doc, open, onClose, onSave }) {
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-semibold text-gray-700">Extracted Fields</label>
+              <label className="text-sm font-semibold text-gray-700">{t('extractedFields')}</label>
               <button onClick={addField}
-                className="text-xs text-blue-600 font-medium hover:underline">+ Add field</button>
+                className="text-xs text-blue-600 font-medium hover:underline">{t('addField')}</button>
             </div>
             <div className="space-y-2">
               {Object.entries(extractedData).map(([key, value]) => (
@@ -112,12 +114,12 @@ function EditDocModal({ doc, open, onClose, onSave }) {
         <div className="p-5 border-t border-gray-100 flex gap-3">
           <button onClick={onClose}
             className="flex-1 border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">
-            Cancel
+            {t('cancel')}
           </button>
           <button onClick={handleSave} disabled={saving}
             className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
-            {saving ? <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Saving</>
-              : <><Save className="w-4 h-4" /> Save Changes</>}
+            {saving ? <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> {t('saving')}</>
+              : <><Save className="w-4 h-4" /> {t('saveChanges')}</>}
           </button>
         </div>
       </motion.div>
@@ -132,6 +134,7 @@ export default function CitizenDocuments() {
   const [uploading, setUploading] = useState(false)
   const [type, setType] = useState('id')
   const [editingDoc, setEditingDoc] = useState(null)
+  const { t } = useLanguage()
 
   useEffect(() => {
     const session = citizenService.getSession()
@@ -161,7 +164,7 @@ export default function CitizenDocuments() {
   }
 
   const handleDelete = async (docId) => {
-    if (!confirm('Delete this document?')) return
+    if (!confirm(t('deleteDocumentConfirm'))) return
     try {
       await citizenService.deleteDocument(docId)
       setDocuments(prev => prev.filter(d => d.id !== docId))
@@ -181,15 +184,15 @@ export default function CitizenDocuments() {
       <EditDocModal doc={editingDoc} open={!!editingDoc} onClose={() => setEditingDoc(null)} onSave={handleEditSave} />
 
       <div className="mb-8">
-        <h1 className="text-2xl font-black text-gray-900">My Documents</h1>
-        <p className="text-gray-500 mt-1">Upload and manage your documents for applications.</p>
+        <h1 className="text-2xl font-black text-gray-900">{t('myDocuments')}</h1>
+        <p className="text-gray-500 mt-1">{t('uploadAndManageDocuments')}</p>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
-        <h2 className="font-bold text-gray-900 mb-4">Upload New Document</h2>
+        <h2 className="font-bold text-gray-900 mb-4">{t('uploadNewDocument')}</h2>
         <div className="flex flex-col sm:flex-row gap-3">
           <select value={type} onChange={e => setType(e.target.value)}
-            className="px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white text-sm min-w-[180px]">
+            className="px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white text-sm min-w-[120px] sm:min-w-[180px]">
             {docTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
           <div className="flex-1 relative">
@@ -200,7 +203,7 @@ export default function CitizenDocuments() {
               {uploading ? (
                 <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
               ) : (
-                <><Upload className="w-4 h-4" /> Choose file to upload</>
+                <><Upload className="w-4 h-4" /> {t('chooseFileToUpload')}</>
               )}
             </label>
           </div>
@@ -210,14 +213,14 @@ export default function CitizenDocuments() {
       <div className="relative mb-6">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Search documents..."
+          placeholder={t('searchDocuments')}
           className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white" />
       </div>
 
       {filtered.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
           <Upload className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">{documents.length === 0 ? 'No documents uploaded yet.' : 'No documents match your search.'}</p>
+          <p className="text-gray-500">{documents.length === 0 ? t('noDocumentsUploaded') : t('noDocumentsMatch')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

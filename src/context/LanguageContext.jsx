@@ -14,7 +14,7 @@ export const useLanguage = () => useContext(LanguageContext)
 
 export function LanguageProvider({ children }) {
   const [currentLanguage, setCurrentLanguage] = useState(() => {
-    return sessionStorage.getItem('lang') || 'en'
+    return localStorage.getItem('lang') || 'en'
   })
   const [languages, setLanguages] = useState([])
   const [isLoadingLanguages, setIsLoadingLanguages] = useState(true)
@@ -68,13 +68,24 @@ export function LanguageProvider({ children }) {
 
   const changeLanguage = useCallback((langCode) => {
     setCurrentLanguage(langCode)
-    sessionStorage.setItem('lang', langCode)
+    localStorage.setItem('lang', langCode)
   }, [])
 
-  const t = useCallback((textKey, lang = currentLanguage) => {
+  const t = useCallback((textKey, params) => {
+    const lang = (params && typeof params === 'string') ? params : currentLanguage
     if (!textKey) return ''
-    if (lang === 'en' || !translations[lang]) return textKey
-    return translations[lang][textKey] || textKey
+    if (lang === 'en' || !translations[lang]) {
+      let result = textKey
+      if (params && typeof params === 'object') {
+        Object.entries(params).forEach(([k, v]) => { result = result.replace(`{${k}}`, v) })
+      }
+      return result
+    }
+    let result = translations[lang][textKey] || textKey
+    if (params && typeof params === 'object') {
+      Object.entries(params).forEach(([k, v]) => { result = result.replace(`{${k}}`, v) })
+    }
+    return result
   }, [currentLanguage])
 
   return (

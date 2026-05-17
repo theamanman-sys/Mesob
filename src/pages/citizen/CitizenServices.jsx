@@ -8,7 +8,7 @@ import { useLanguage } from '../../context/LanguageContext'
 import { getTranslatedService } from '../../i18n/serviceTranslations'
 
 export default function CitizenServices() {
-  const { currentLanguage } = useLanguage()
+  const { currentLanguage, t } = useLanguage()
   const [citizen, setCitizen] = useState(null)
   const [search, setSearch] = useState('')
   const [selectedOrg, setSelectedOrg] = useState('all')
@@ -90,23 +90,23 @@ export default function CitizenServices() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-black text-gray-900">Government Services</h1>
-        <p className="text-gray-500 mt-1">Browse and apply for services from all government departments.</p>
+        <h1 className="text-2xl font-black text-gray-900">{t('Government Services')}</h1>
+        <p className="text-gray-500 mt-1">{t('Browse and apply for government services')}</p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search services..." className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white" />
+            placeholder={t('Search services...')} className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white" />
         </div>
         <div className="relative">
           <Filter className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
           <select value={selectedOrg} onChange={e => setSelectedOrg(e.target.value)}
-            className="pl-11 pr-8 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none cursor-pointer min-w-[200px]">
-            <option value="all">All Departments</option>
+            className="pl-11 pr-8 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none cursor-pointer min-w-[140px] sm:min-w-[200px]">
+            <option value="all">{t('All Departments')}</option>
             {organizations.map(o => (
-              <option key={o.id} value={o.id}>{o.shortName || o.name}</option>
+              <option key={o.id} value={o.id}>{o.shortName ? o.shortName : t(o.name)}</option>
             ))}
           </select>
           <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -127,8 +127,8 @@ export default function CitizenServices() {
                     <img src={org.icon} alt="" className="w-10 h-10 object-contain" onError={(e) => { e.target.style.display = 'none' }} />
                   ) : <Building2 className="w-10 h-10 text-gray-400" />}
                   <div className="text-left">
-                    <h3 className="font-bold text-gray-900">{org.name}</h3>
-                    <p className="text-sm text-gray-500">{orgServices.length} service{orgServices.length !== 1 ? 's' : ''}</p>
+                    <h3 className="font-bold text-gray-900">{t(org.name)}</h3>
+                    <p className="text-sm text-gray-500">{orgServices.length} {orgServices.length === 1 ? t('service') : t('services')}</p>
                   </div>
                 </div>
                 <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${expandedOrg === orgId ? 'rotate-180' : ''}`} />
@@ -158,7 +158,7 @@ export default function CitizenServices() {
                             </div>
                             <button onClick={() => { setShowApply(service); setStep(1); setAppForm({}); setAppDocs([]); setSuccess(false) }}
                               className="shrink-0 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition">
-                              Apply
+                              {t('Apply')}
                             </button>
                           </div>
                         </div>
@@ -173,7 +173,7 @@ export default function CitizenServices() {
         {Object.keys(groupedByOrg).length === 0 && (
           <div className="text-center py-16">
             <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500">No services found matching your search.</p>
+            <p className="text-gray-500">{t('No services found')}</p>
           </div>
         )}
       </div>
@@ -185,7 +185,7 @@ export default function CitizenServices() {
               className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
                 <div>
-                  <h2 className="font-bold text-gray-900">{success ? 'Application Submitted' : 'Apply for Service'}</h2>
+                  <h2 className="font-bold text-gray-900">{success ? t('Application submitted!') : t('Apply for Service')}</h2>
                   <p className="text-sm text-gray-500">{success ? '' : showApply.title}</p>
                 </div>
                 <button onClick={resetApply} className="p-2 rounded-lg hover:bg-gray-100"><X className="w-5 h-5" /></button>
@@ -199,7 +199,7 @@ export default function CitizenServices() {
                         {step > s ? <CheckCircle className="w-3.5 h-3.5" /> : s}
                       </div>
                       <span className={`text-xs font-medium ${step >= s ? 'text-blue-600' : 'text-gray-400'}`}>
-                        {s === 1 ? 'Details' : 'Documents'}
+                        {s === 1 ? t('Details') : t('Documents')}
                       </span>
                       {s < 2 && <div className={`w-8 h-0.5 ${step > s ? 'bg-blue-600' : 'bg-gray-200'}`} />}
                     </div>
@@ -213,68 +213,68 @@ export default function CitizenServices() {
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <CheckCircle className="w-8 h-8 text-green-600" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Application Submitted!</h3>
-                    <p className="text-gray-500 text-sm mb-4">Your application has been received. You can track its status in My Applications.</p>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">{t('Application Submitted')}</h3>
+                    <p className="text-gray-500 text-sm mb-4">{t('We have received your application. You will be contacted soon.')}</p>
                     {appTicket && (
                       <div className="bg-blue-50 rounded-xl p-4 mb-4 text-left max-w-sm mx-auto border border-blue-100">
-                        <div className="flex items-center gap-2 text-blue-700 font-semibold text-sm mb-2"><Ticket className="w-4 h-4" /> Appointment Ticket Generated</div>
-                        <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">Ticket #</span><span className="font-bold text-gray-800">{appTicket.ticketNumber}</span></div>
-                        <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">Date</span><span className="font-medium text-gray-800">{new Date(appTicket.appointmentDate).toLocaleDateString()}</span></div>
-                        <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">Time</span><span className="font-medium text-gray-800">{appTicket.appointmentTime}</span></div>
-                        <div className="flex items-center justify-between text-sm"><span className="text-gray-500">Fee</span><span className="font-medium text-gray-800">{appTicket.fee} ETB</span></div>
+                        <div className="flex items-center gap-2 text-blue-700 font-semibold text-sm mb-2"><Ticket className="w-4 h-4" /> {t('Appointment Ticket Generated')}</div>
+                        <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">{t('Ticket Number')}</span><span className="font-bold text-gray-800">{appTicket.ticketNumber}</span></div>
+                        <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">{t('Date')}</span><span className="font-medium text-gray-800">{new Date(appTicket.appointmentDate).toLocaleDateString()}</span></div>
+                        <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">{t('Time')}</span><span className="font-medium text-gray-800">{appTicket.appointmentTime}</span></div>
+                        <div className="flex items-center justify-between text-sm"><span className="text-gray-500">{t('Fee')}</span><span className="font-medium text-gray-800">{appTicket.fee} ETB</span></div>
                       </div>
                     )}
                     <div className="flex gap-3 justify-center">
-                      <button onClick={resetApply} className="px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Close</button>
+                      <button onClick={resetApply} className="px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">{t('Close')}</button>
                       <Link to="/citizen/tickets" className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
-                        onClick={resetApply}>View Tickets</Link>
+                        onClick={resetApply}>{t('View Tickets')}</Link>
                     </div>
                   </div>
                 ) : step === 1 ? (
                   <form onSubmit={(e) => { e.preventDefault(); setStep(2) }} className="space-y-4">
-                    <p className="text-sm text-gray-600">Please provide additional details for your application.</p>
+                    <p className="text-sm text-gray-600">{t('Provide additional details for your application')}</p>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Full Name')}</label>
                       <input type="text" value={appForm.fullName || citizen?.firstName + ' ' + citizen?.lastName || ''}
                         onChange={e => setAppForm({ ...appForm, fullName: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Email')}</label>
                       <input type="email" value={appForm.email || citizen?.email || ''}
                         onChange={e => setAppForm({ ...appForm, email: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Phone')}</label>
                       <input type="tel" value={appForm.phone || citizen?.phone || ''}
                         onChange={e => setAppForm({ ...appForm, phone: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Additional Notes</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Additional Notes')}</label>
                       <textarea value={appForm.notes || ''} onChange={e => setAppForm({ ...appForm, notes: e.target.value })}
-                        rows={3} placeholder="Any additional information..."
+                        rows={3} placeholder={t('Any additional information...')}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition resize-none" />
                     </div>
                     <div className="flex gap-3 pt-2">
                       <button type="button" onClick={resetApply} className="flex-1 border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">
-                        Cancel
+                        {t('Cancel')}
                       </button>
                       <button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">
-                        Next: Documents <ArrowRight className="w-4 h-4 inline ml-1" />
+                        {t('Next: Documents')} <ArrowRight className="w-4 h-4 inline ml-1" />
                       </button>
                     </div>
                   </form>
                 ) : (
                   <form onSubmit={handleApply} className="space-y-4">
-                    <p className="text-sm text-gray-600">Upload any required documents for this application.</p>
+                    <p className="text-sm text-gray-600">{t('Upload the required documents')}</p>
                     <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-blue-400 transition">
                       <Upload className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500 mb-1">Drag files here or click to browse</p>
+                      <p className="text-sm text-gray-500 mb-1">{t('Drag files here or click to upload')}</p>
                       <input type="file" multiple onChange={handleFileAdd} className="hidden" id="file-upload" />
                       <label htmlFor="file-upload" className="inline-block px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-semibold cursor-pointer hover:bg-blue-100 transition">
-                        Browse Files
+                        {t('Browse Files')}
                       </label>
                     </div>
                     {appDocs.length > 0 && (
@@ -294,11 +294,11 @@ export default function CitizenServices() {
                     )}
                     <div className="flex gap-3 pt-2">
                       <button type="button" onClick={() => setStep(1)} className="flex-1 border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">
-                        Back
+                        {t('Back')}
                       </button>
                       <button type="submit" disabled={loading}
                         className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
-                        {loading ? <Loader className="w-5 h-5 animate-spin" /> : <>Submit Application <CheckCircle className="w-4 h-4" /></>}
+                        {loading ? <Loader className="w-5 h-5 animate-spin" /> : <>{t('Submit Application')} <CheckCircle className="w-4 h-4" /></>}
                       </button>
                     </div>
                   </form>

@@ -35,7 +35,7 @@ export default function AdminAccountSettings() {
       setSubmitting(true)
       await userService.changePassword(passwordForm)
       showToast('Password updated successfully', 'success')
-      sessionStorage.removeItem('mustChangePassword')
+      localStorage.removeItem('mustChangePassword')
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
     } catch (err) {
       showToast(err?.response?.data?.message || 'Failed to update password', 'error')

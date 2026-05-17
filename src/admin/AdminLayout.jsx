@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useLanguage } from '../context/LanguageContext'
 import AdminSidebar from '../components/AdminSidebar'
-import { Menu, LogOut } from 'lucide-react'
+import { Menu, LogOut, Globe } from 'lucide-react'
 
 export default function AdminLayout() {
   const { user, logout, isAuthenticated, loading } = useAuth()
+  const { currentLanguage, changeLanguage, languages, t } = useLanguage()
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const navigate = useNavigate()
 
@@ -42,10 +44,25 @@ export default function AdminLayout() {
           <div className="flex-1" />
           <div className="flex items-center space-x-4">
             <span className="text-sm text-gray-700 dark:text-gray-300">{user?.username}</span>
+            <div className="flex items-center gap-1">
+              <Globe className="w-4 h-4 text-gray-400" />
+              <select value={currentLanguage} onChange={e => changeLanguage(e.target.value)}
+                className="text-sm border border-gray-200 rounded-lg px-2 py-1 bg-white text-gray-700 outline-none focus:border-blue-500 cursor-pointer">
+                {languages.map(lang => (
+                  <option key={lang.code} value={lang.code}>{lang.name}</option>
+                ))}
+                {languages.length === 0 && (
+                  <>
+                    <option value="en">English</option>
+                    <option value="am">አማርኛ</option>
+                  </>
+                )}
+              </select>
+            </div>
             <button onClick={async () => { await logout(); navigate('/login') }}
               className="flex items-center space-x-1 text-sm text-red-600 hover:text-red-700">
               <LogOut className="w-4 h-4" />
-              <span>Logout</span>
+              <span>{t('Sign Out')}</span>
             </button>
           </div>
         </header>

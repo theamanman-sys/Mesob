@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { Upload, FileText, Scan, CreditCard, BookOpen, Building2, Shield, FileSignature, Loader2, CheckCircle, X, Camera, Fingerprint, Eye } from 'lucide-react'
 import Tesseract from 'tesseract.js'
+import { useLanguage } from '../../context/LanguageContext'
 
 const docTypes = [
   { id: 'driving', label: 'Driving License', icon: CreditCard, color: 'bg-blue-500' },
@@ -50,6 +51,7 @@ function autoDetectType(text) {
 }
 
 export default function CitizenDocumentScanner() {
+  const { t } = useLanguage()
   const [activeTab, setActiveTab] = useState('scan')
   const [files, setFiles] = useState([])
   const [scanned, setScanned] = useState([])
@@ -74,7 +76,7 @@ export default function CitizenDocumentScanner() {
       setStream(s)
       setCameraMode(true)
       if (videoRef.current) videoRef.current.srcObject = s
-    } catch (err) { alert('Camera access denied: ' + err.message) }
+    } catch (err) { alert(t('Camera access denied') + ': ' + err.message) }
   }
 
   const stopCamera = () => {
@@ -103,7 +105,7 @@ export default function CitizenDocumentScanner() {
   const processOcr = useCallback(async (file, type, isCamera = false) => {
     setScanning(true)
     setScanProgress(0)
-    setScanStatus('Processing...')
+    setScanStatus(t('Processing...'))
     const previewUrl = URL.createObjectURL(file)
     setPreview(previewUrl)
     try {
@@ -111,10 +113,10 @@ export default function CitizenDocumentScanner() {
         logger: (m) => {
           if (m.status === 'recognizing text') {
             setScanProgress(Math.round(m.progress * 100))
-            setScanStatus(`Processing... ${Math.round(m.progress * 100)}%`)
-          } else if (m.status === 'loading tesseract core') setScanStatus('Loading...')
-          else if (m.status === 'initializing tesseract') setScanStatus('Initializing...')
-          else if (m.status === 'loading language traineddata') setScanStatus('Loading language data...')
+            setScanStatus(`${t('Processing...')} ${Math.round(m.progress * 100)}%`)
+          } else if (m.status === 'loading tesseract core') setScanStatus(t('Loading...'))
+          else if (m.status === 'initializing tesseract') setScanStatus(t('Initializing...'))
+          else if (m.status === 'loading language traineddata') setScanStatus(t('Loading language data...'))
           else setScanStatus(m.status)
         }
       })
@@ -125,11 +127,11 @@ export default function CitizenDocumentScanner() {
         status: 'completed', text: data.text, confidence: Math.round(data.confidence),
         fields, preview: previewUrl,
         fileName: isCamera ? `camera_${Date.now()}.jpg` : file.name,
-        detected: isCamera ? `Auto-detected: ${docTypes.find((d) => d.id === detectedType)?.label || detectedType}` : null,
+        detected: isCamera ? `${t('Auto-detected')}: ${docTypes.find((d) => d.id === detectedType)?.label || detectedType}` : null,
       }
       setScanned((prev) => [entry, ...prev])
-      setScanStatus('Complete!')
-    } catch (err) { setScanStatus('Error: ' + err.message) }
+      setScanStatus(t('Complete!'))
+    } catch (err) { setScanStatus(`${t('Error')}: ${err.message}`) }
     setScanning(false)
   }, [])
 
@@ -165,7 +167,7 @@ export default function CitizenDocumentScanner() {
       {cameraMode && (
         <div className="fixed inset-0 z-50 bg-black flex flex-col">
           <div className="flex items-center justify-between p-4 bg-black/80">
-            <h2 className="text-white font-semibold">Camera Scanner</h2>
+            <h2 className="text-white font-semibold">{t('Camera Scanner')}</h2>
             <button onClick={stopCamera} className="text-white/70 hover:text-white p-2"><X className="w-5 h-5" /></button>
           </div>
           <div className="flex-1 flex items-center justify-center relative">
@@ -177,15 +179,15 @@ export default function CitizenDocumentScanner() {
                 <Camera className="w-6 h-6 text-blue-600" />
               </div>
             </button>
-            <button onClick={stopCamera} className="px-6 py-3 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition">Cancel</button>
+            <button onClick={stopCamera} className="px-6 py-3 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition">{t('Cancel')}</button>
           </div>
         </div>
       )}
 
       <div className="flex items-center gap-3 mb-6">
         <Scan className="w-7 h-7 text-blue-600" />
-        <h1 className="text-2xl font-bold text-gray-900">Document Scanner</h1>
-        {scanned.length > 0 && <span className="text-sm text-gray-500">{scanned.length} scanned</span>}
+        <h1 className="text-2xl font-bold text-gray-900">{t('Document Scanner')}</h1>
+        {scanned.length > 0 && <span className="text-sm text-gray-500">{scanned.length} {t('scanned')}</span>}
       </div>
 
       <div className="flex gap-2 mb-6 flex-wrap">
@@ -193,7 +195,7 @@ export default function CitizenDocumentScanner() {
           <button key={tab} onClick={() => { if (tab === 'camera') { startCamera(); return }; setActiveTab(tab) }}
             className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition ${tab === 'camera' ? 'bg-rose-600 text-white hover:bg-rose-700' : activeTab === tab ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}>
             {tab === 'camera' ? <Camera className="w-4 h-4 inline mr-1" /> : tab === 'scan' ? <Scan className="w-4 h-4 inline mr-1" /> : <Upload className="w-4 h-4 inline mr-1" />}
-            {tab}
+            {t(tab)}
           </button>
         ))}
       </div>
@@ -212,27 +214,27 @@ export default function CitizenDocumentScanner() {
             </div>
           )}
 
-          <p className="text-gray-600 mb-4">Select document type to scan:</p>
+          <p className="text-gray-600 mb-4">{t('Select document type to scan:')}</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {docTypes.map((dt) => (
               <button key={dt.id} onClick={() => handleScanClick(dt.id)} disabled={scanning}
                 className="flex flex-col items-center gap-2 p-6 rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition disabled:opacity-40 disabled:cursor-not-allowed">
                 <div className={`p-3 rounded-full ${dt.color} text-white`}><dt.icon className="w-6 h-6" /></div>
-                <span className="text-sm font-medium text-gray-800">{dt.label}</span>
+                <span className="text-sm font-medium text-gray-800">{t(dt.label)}</span>
               </button>
             ))}
           </div>
 
           <div className="mt-8">
-            <p className="text-gray-600 mb-4">Biometric & Identity Scanners:</p>
+            <p className="text-gray-600 mb-4">{t('Biometric & Identity Scanners:')}</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {scanners.map((s) => (
                 <button key={s.id} disabled
                   className="flex flex-col items-center gap-2 p-6 rounded-xl border-2 border-gray-300 opacity-60 cursor-not-allowed relative">
                   <div className={`p-3 rounded-full ${s.color} text-white`}><s.icon className="w-6 h-6" /></div>
-                  <span className="text-sm font-medium text-gray-800">{s.label}</span>
-                  <span className="text-xs text-gray-400">{s.desc}</span>
-                  <span className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">Coming</span>
+                  <span className="text-sm font-medium text-gray-800">{t(s.label)}</span>
+                  <span className="text-xs text-gray-400">{t(s.desc)}</span>
+                  <span className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">{t('Coming')}</span>
                 </button>
               ))}
             </div>
@@ -240,7 +242,7 @@ export default function CitizenDocumentScanner() {
 
           {scanned.length > 0 && (
             <div className="mt-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Scan Results</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('Scan Results')}</h3>
               <div className="space-y-4">
                 {scanned.map((s) => (
                   <div key={s.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -250,7 +252,7 @@ export default function CitizenDocumentScanner() {
                           {(() => { const Icon = docTypes.find((d) => d.id === s.type)?.icon || FileText; return <Icon className="w-4 h-4" /> })()}
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-800 capitalize">{s.type} Document</p>
+                          <p className="text-sm font-medium text-gray-800 capitalize">{s.type} {t('Document')}</p>
                           <p className="text-xs text-gray-400">{s.date} &middot; {s.fileName}</p>
                           {s.detected && <p className="text-xs text-green-600 mt-0.5">{s.detected}</p>}
                         </div>
@@ -266,7 +268,7 @@ export default function CitizenDocumentScanner() {
                     </div>
                     {s.preview && (
                       <div className="px-4 py-2 border-b border-gray-100">
-                        <img src={s.preview} alt="Scan preview" className="h-32 w-auto object-contain rounded-lg bg-gray-100" />
+                        <img src={s.preview} alt={t('Scan preview')} className="h-32 w-auto object-contain rounded-lg bg-gray-100" />
                       </div>
                     )}
                     {Object.keys(s.fields).length > 0 && (
@@ -282,7 +284,7 @@ export default function CitizenDocumentScanner() {
                     {s.text && (
                       <div className="px-4 pb-4">
                         <details className="text-xs text-gray-400">
-                          <summary className="cursor-pointer hover:text-gray-600">Raw text</summary>
+                          <summary className="cursor-pointer hover:text-gray-600">{t('Raw text')}</summary>
                           <p className="mt-2 p-2 bg-gray-50 rounded whitespace-pre-wrap font-mono text-[11px] leading-relaxed">{s.text}</p>
                         </details>
                       </div>
@@ -299,13 +301,13 @@ export default function CitizenDocumentScanner() {
         <div>
           <label className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
             <Upload className="w-10 h-10 text-gray-400 mb-3" />
-            <p className="text-lg font-medium text-gray-700">Drop files or click to upload</p>
-            <p className="text-sm text-gray-400 mt-1">PDF, JPG, PNG up to 20MB</p>
+            <p className="text-lg font-medium text-gray-700">{t('Drop files or click to upload')}</p>
+            <p className="text-sm text-gray-400 mt-1">{t('PDF, JPG, PNG up to 20MB')}</p>
             <input type="file" multiple accept="image/*,.pdf" onChange={handleUpload} className="hidden" />
           </label>
           {files.length > 0 && (
             <div className="mt-6 space-y-2">
-              <h3 className="text-lg font-semibold text-gray-800">Uploaded Files</h3>
+              <h3 className="text-lg font-semibold text-gray-800">{t('Uploaded Files')}</h3>
               {files.map((f, i) => (
                 <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group">
                   <div className="flex items-center gap-3">
@@ -323,11 +325,11 @@ export default function CitizenDocumentScanner() {
       {activeTab === 'history' && (
         <div className="text-center py-12 text-gray-400">
           <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          {scanned.length === 0 ? <p>No scan history yet</p> : (
+          {scanned.length === 0 ? <p>{t('No scan history yet')}</p> : (
             <div className="space-y-3 text-left max-w-lg mx-auto">
               {scanned.map((s) => (
                 <div key={s.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div><p className="text-sm font-medium text-gray-800 capitalize">{s.type} Document</p><p className="text-xs text-gray-400">{s.date}</p></div>
+                  <div><p className="text-sm font-medium text-gray-800 capitalize">{s.type} {t('Document')}</p><p className="text-xs text-gray-400">{s.date}</p></div>
                   <span className="text-xs text-green-600">{s.confidence}%</span>
                 </div>
               ))}

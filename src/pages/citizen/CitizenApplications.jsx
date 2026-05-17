@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, ChevronDown, Building2, Calendar, ArrowRight, Plus, Trash2, Edit3, Upload, X, Loader } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
+import { useLanguage } from '../../context/LanguageContext'
 
 const statusConfig = {
   submitted: { icon: Clock, label: 'Submitted', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
@@ -22,6 +23,7 @@ export default function CitizenApplications() {
   const [editDocs, setEditDocs] = useState([])
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { t } = useLanguage()
 
   useEffect(() => {
     const session = citizenService.getSession()
@@ -40,7 +42,7 @@ export default function CitizenApplications() {
 
   const handleDelete = async (appId, e) => {
     e.stopPropagation()
-    if (!confirm('Cancel this application?')) return
+    if (!confirm(t('Cancel this application?'))) return
     setLoading(true)
     try {
       await citizenService.deleteApplication(appId)
@@ -62,11 +64,11 @@ export default function CitizenApplications() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-gray-900">My Applications</h1>
-          <p className="text-gray-500 mt-1">Track the status of your submitted applications.</p>
+          <h1 className="text-2xl font-black text-gray-900">{t('My Applications')}</h1>
+          <p className="text-gray-500 mt-1">{t('Track the status of your submitted applications.')}</p>
         </div>
         <Link to="/citizen/services" className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition shadow-sm">
-          <Plus className="w-4 h-4" /> New Application
+          <Plus className="w-4 h-4" /> {t('New Application')}
         </Link>
       </div>
 
@@ -74,29 +76,29 @@ export default function CitizenApplications() {
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search applications..." className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white" />
+            placeholder={t('Search applications...')} className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white" />
         </div>
         <div className="relative">
           <select value={filter} onChange={e => setFilter(e.target.value)}
-            className="pl-4 pr-8 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none cursor-pointer min-w-[160px]">
-            <option value="all">All Status</option>
-            <option value="submitted">Submitted</option>
-            <option value="processing">Processing</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
+            className="pl-4 pr-8 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none cursor-pointer min-w-[120px] sm:min-w-[160px]">
+            <option value="all">{t('All Status')}</option>
+            <option value="submitted">{t('Submitted')}</option>
+            <option value="processing">{t('Processing')}</option>
+            <option value="approved">{t('Approved')}</option>
+            <option value="rejected">{t('Rejected')}</option>
           </select>
           <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className={`${selected ? 'hidden lg:block' : ''} lg:col-span-${selected ? '1' : '3'}`}>
+        <div className={selected ? 'hidden lg:block lg:col-span-1' : 'lg:col-span-3'}>
           {filtered.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
               <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">No applications found.</p>
+              <p className="text-gray-500">{t('No applications found.')}</p>
               <Link to="/citizen/services" className="text-blue-600 text-sm font-medium hover:underline mt-2 inline-block">
-                Browse services →
+                {t('Browse services')} →
               </Link>
             </div>
           ) : (
@@ -118,12 +120,12 @@ export default function CitizenApplications() {
                         <div className="min-w-0">
                           <p className="font-semibold text-gray-900 truncate">{app.serviceTitle}</p>
                           <p className="text-xs text-gray-500">
-                            Submitted {new Date(app.createdAt).toLocaleDateString()} • ID: {app.id.slice(0, 8)}
+                            {t('Submitted')} {new Date(app.createdAt).toLocaleDateString()} • {t('ID:')} {app.id.slice(0, 8)}
                           </p>
                         </div>
                       </div>
                       <span className={`shrink-0 px-3 py-1 rounded-full text-xs font-semibold ${cfg.bg} ${cfg.color}`}>
-                        {cfg.label}
+                        {t(cfg.label)}
                       </span>
                       <button onClick={(e) => { e.stopPropagation(); setEditing(app); setEditForm(app.formData || {}); setEditDocs(app.documents || []) }}
                         className="shrink-0 p-1.5 rounded-lg hover:bg-blue-50 text-blue-400 hover:text-blue-600 transition opacity-0 group-hover:opacity-100">
@@ -152,11 +154,11 @@ export default function CitizenApplications() {
                     <XCircle className="w-5 h-5 text-gray-400" />
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">Application ID: {selected.id}</p>
+                <p className="text-sm text-gray-500 mt-1">{t('Application ID:')} {selected.id}</p>
               </div>
               <div className="p-5 space-y-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Application Details</h3>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">{t('Application Details')}</h3>
                   <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
                     {Object.entries(selected.formData || {}).map(([key, val]) => (
                       <div key={key} className="flex justify-between">
@@ -168,7 +170,7 @@ export default function CitizenApplications() {
                 </div>
                 {selected.documents?.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Documents ({selected.documents.length})</h3>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">{t('Documents')} ({selected.documents.length})</h3>
                     <div className="space-y-2">
                       {selected.documents.map((doc, i) => (
                         <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
@@ -180,7 +182,7 @@ export default function CitizenApplications() {
                   </div>
                 )}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Timeline</h3>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">{t('Timeline')}</h3>
                   <div className="relative pl-6 space-y-4">
                     {selected.timeline?.map((event, i) => (
                       <div key={i} className="relative">
@@ -209,33 +211,33 @@ export default function CitizenApplications() {
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
-                <h2 className="font-bold text-gray-900">Edit Application</h2>
+                <h2 className="font-bold text-gray-900">{t('Edit Application')}</h2>
                 <button onClick={() => setEditing(null)} className="p-2 rounded-lg hover:bg-gray-100"><X className="w-5 h-5" /></button>
               </div>
               <div className="p-5 space-y-4">
                 <p className="text-sm text-gray-600 font-medium">{editing.serviceTitle}</p>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Full Name')}</label>
                   <input type="text" value={editForm.fullName || ''} onChange={e => setEditForm({ ...editForm, fullName: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Email')}</label>
                   <input type="email" value={editForm.email || ''} onChange={e => setEditForm({ ...editForm, email: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Phone')}</label>
                   <input type="tel" value={editForm.phone || ''} onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Additional Notes</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Additional Notes')}</label>
                   <textarea value={editForm.notes || ''} onChange={e => setEditForm({ ...editForm, notes: e.target.value })}
                     rows={2} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition resize-none" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Documents ({editDocs.length})</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t('Documents')} ({editDocs.length})</label>
                   <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-400 transition">
                     <Upload className="w-6 h-6 text-gray-300 mx-auto mb-1" />
                     <input type="file" multiple onChange={(e) => {
@@ -245,7 +247,7 @@ export default function CitizenApplications() {
                         reader.readAsDataURL(f)
                       })
                     }} className="hidden" id="edit-file-upload" />
-                    <label htmlFor="edit-file-upload" className="text-sm text-blue-600 cursor-pointer font-medium hover:underline">Add files</label>
+                    <label htmlFor="edit-file-upload" className="text-sm text-blue-600 cursor-pointer font-medium hover:underline">{t('Add files')}</label>
                   </div>
                   {editDocs.length > 0 && (
                     <div className="mt-2 space-y-1">
@@ -263,7 +265,7 @@ export default function CitizenApplications() {
               </div>
               <div className="flex gap-3 p-5 border-t border-gray-100">
                 <button onClick={() => setEditing(null)} className="flex-1 py-3 rounded-xl font-bold text-sm border-2 border-gray-200 text-gray-700 hover:bg-gray-50 transition">
-                  Cancel
+                  {t('Cancel')}
                 </button>
                 <button onClick={async () => {
                   setSaving(true)
@@ -278,7 +280,7 @@ export default function CitizenApplications() {
                 }} disabled={saving}
                   className="flex-1 py-3 rounded-xl font-bold text-sm bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
                   {saving ? <Loader className="w-4 h-4 animate-spin" /> : null}
-                  Save Changes
+                  {t('Save Changes')}
                 </button>
               </div>
             </motion.div>

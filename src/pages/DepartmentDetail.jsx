@@ -79,7 +79,7 @@ export default function DepartmentDetail() {
                 )}
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold">{department.name}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold">{t(department.name)}</h1>
                 <p className="text-blue-200 mt-1">{t('Department')}</p>
               </div>
             </div>

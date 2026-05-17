@@ -66,7 +66,7 @@ export default function Departments() {
                     )}
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition">
-                    {dept.name}
+                    {t(dept.name)}
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
                     {dept.description || t('No description available.')}

@@ -972,7 +972,7 @@ app.get('/admin/users', requireAuth, (_req, res) => {
       totalDocuments: cv.length,
       tinStatus: tin?.status || 'unregistered',
       tinNumber: tin?.tinNumber || '',
-      isMesobVerified: verifiedDocs >= 2,
+      isMesobVerified: verifiedDocs >= 2 || !!badge,
       hasBadge: !!badge,
       education: c.education || [],
       experience: c.experience || [],
@@ -981,6 +981,51 @@ app.get('/admin/users', requireAuth, (_req, res) => {
   })
 
   res.json(wrap(enriched))
+})
+
+// Admin: Update individual citizen user details
+app.put('/admin/users/:id', requireAuth, (req, res) => {
+  const citizens = db.citizens || []
+  const idx = citizens.findIndex(c => c.id === parseInt(req.params.id))
+  if (idx === -1) return res.status(404).json(err('Citizen not found', 404))
+  const { firstName, lastName, email, phone } = req.body
+  if (firstName !== undefined) citizens[idx].firstName = firstName
+  if (lastName !== undefined) citizens[idx].lastName = lastName
+  if (email !== undefined) citizens[idx].email = email
+  if (phone !== undefined) citizens[idx].phone = phone
+  saveDb()
+  res.json(wrap(citizens[idx], 'Citizen updated'))
+})
+
+// Admin: Toggle verified badge
+app.put('/admin/users/:id/badge', requireAuth, (req, res) => {
+  const citizens = db.citizens || []
+  const citizen = citizens.find(c => c.id === parseInt(req.params.id))
+  if (!citizen) return res.status(404).json(err('Citizen not found', 404))
+  const { isMesobVerified } = req.body
+  if (!db.verifiedUsers) db.verifiedUsers = []
+  const existing = db.verifiedUsers.findIndex(b => b.citizenId === parseInt(req.params.id))
+  if (isMesobVerified && existing === -1) {
+    db.verifiedUsers.push({ citizenId: parseInt(req.params.id), verifiedAt: new Date().toISOString(), verifiedBy: req.user?.username || 'admin' })
+  } else if (!isMesobVerified && existing !== -1) {
+    db.verifiedUsers.splice(existing, 1)
+  }
+  saveDb()
+  res.json(wrap({ citizenId: parseInt(req.params.id), isMesobVerified }, `Badge ${isMesobVerified ? 'added' : 'removed'}`))
+})
+
+// Admin: Delete citizen user
+app.delete('/admin/users/:id', requireAuth, (req, res) => {
+  const citizens = db.citizens || []
+  const idx = citizens.findIndex(c => c.id === parseInt(req.params.id))
+  if (idx === -1) return res.status(404).json(err('Citizen not found', 404))
+  const [removed] = citizens.splice(idx, 1)
+  // Also clean up related data
+  ;['citizenVerifications','citizenTins','citizenFaydaIds','netWorth','citizenApplications','citizenDocuments'].forEach(coll => {
+    if (db[coll]) db[coll] = db[coll].filter(item => item.citizenId !== removed.id)
+  })
+  saveDb()
+  res.json(wrap(null, 'Citizen deleted'))
 })
 
 // ─── Tickets ────────────────────────────────────────────────────────
@@ -1747,6 +1792,22 @@ app.delete('/citizens/bank-portfolio/:bankId', requireCitizenAuth, (req, res) =>
   if (idx === -1) return res.status(404).json(err('Bank not in portfolio', 404))
   db.citizenBankPortfolio.splice(idx, 1); saveDb()
   res.json(wrap(null, 'Bank removed from portfolio'))
+})
+
+// Bank balance endpoint (simulated)
+app.get('/citizens/bank-portfolio/:bankId/balance', requireCitizenAuth, (req, res) => {
+  const bk = BANKS_LIST.find(bb => bb.id === parseInt(req.params.bankId))
+  if (!bk) return res.status(404).json(err('Bank not in portfolio', 404))
+  const balance = {
+    balance: Math.floor(Math.random() * 500000) + 10000,
+    credit: Math.floor(Math.random() * 200000) + 5000,
+    debt: Math.floor(Math.random() * 100000) + 1000,
+    currency: 'ETB',
+    lastUpdated: new Date().toISOString(),
+    accountNumber: `****${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`,
+    bankName: bk.name
+  }
+  res.json(wrap(balance))
 })
 
 app.get('/proxy/bank', async (req, res) => {

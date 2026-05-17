@@ -7,10 +7,10 @@ export const citizenService = {
     const { data: response } = await api.post(`${CITIZEN_BASE}/register`, data)
     const result = response.data || response
     if (result.accessToken) {
-      sessionStorage.setItem('citizen_token', result.accessToken)
+      localStorage.setItem('citizen_token', result.accessToken)
     }
     if (result.citizen) {
-      sessionStorage.setItem('citizen_user', JSON.stringify(result.citizen))
+      localStorage.setItem('citizen_user', JSON.stringify(result.citizen))
     }
     return result
   },
@@ -19,10 +19,10 @@ export const citizenService = {
     const { data: response } = await api.post(`${CITIZEN_BASE}/login`, { identifier, password })
     const result = response.data || response
     if (result.accessToken) {
-      sessionStorage.setItem('citizen_token', result.accessToken)
+      localStorage.setItem('citizen_token', result.accessToken)
     }
     if (result.citizen) {
-      sessionStorage.setItem('citizen_user', JSON.stringify(result.citizen))
+      localStorage.setItem('citizen_user', JSON.stringify(result.citizen))
     }
     return result
   },
@@ -31,26 +31,26 @@ export const citizenService = {
     const { data: response } = await api.post(`${CITIZEN_BASE}/google`, { credential })
     const result = response.data || response
     if (result.accessToken) {
-      sessionStorage.setItem('citizen_token', result.accessToken)
+      localStorage.setItem('citizen_token', result.accessToken)
     }
     if (result.citizen) {
-      sessionStorage.setItem('citizen_user', JSON.stringify(result.citizen))
+      localStorage.setItem('citizen_user', JSON.stringify(result.citizen))
     }
     return result
   },
 
   logout() {
-    sessionStorage.removeItem('citizen_token')
-    sessionStorage.removeItem('citizen_user')
+    localStorage.removeItem('citizen_token')
+    localStorage.removeItem('citizen_user')
   },
 
   getSession() {
-    const raw = sessionStorage.getItem('citizen_user')
+    const raw = localStorage.getItem('citizen_user')
     return raw ? JSON.parse(raw) : null
   },
 
   isLoggedIn() {
-    return !!sessionStorage.getItem('citizen_token')
+    return !!localStorage.getItem('citizen_token')
   },
 
   async getApplications() {
@@ -108,7 +108,7 @@ export const citizenService = {
     const { data: response } = await api.put(`${CITIZEN_BASE}/profile`, updates)
     const result = response.data || response
     if (result) {
-      sessionStorage.setItem('citizen_user', JSON.stringify(result))
+      localStorage.setItem('citizen_user', JSON.stringify(result))
     }
     return result
   },
@@ -117,7 +117,7 @@ export const citizenService = {
     const { data: response } = await api.get(`${CITIZEN_BASE}/session`)
     const result = response.data || response
     if (result) {
-      sessionStorage.setItem('citizen_user', JSON.stringify(result))
+      localStorage.setItem('citizen_user', JSON.stringify(result))
     }
     return result
   },
@@ -546,6 +546,11 @@ export const citizenService = {
 
   async removeBankFromPortfolio(bankId) {
     await api.delete(`${CITIZEN_BASE}/bank-portfolio/${bankId}`)
+  },
+
+  async getBankBalance(bankId) {
+    const { data: response } = await api.get(`${CITIZEN_BASE}/bank-portfolio/${bankId}/balance`)
+    return response.data || { balance: 0, credit: 0, debt: 0, currency: 'ETB' }
   },
 
   // Business News
