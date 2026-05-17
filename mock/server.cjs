@@ -665,7 +665,8 @@ app.post('/citizens/applications', requireCitizenAuth, (req, res) => {
   // Auto-generate ticket for the application
   if (!db.tickets) db.tickets = []
   const ticketNumber = `TKT-${Date.now().toString(36).toUpperCase()}`
-  const appointmentDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000)
+  const now = new Date()
+  const appointmentDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
   const ticket = {
     id: db.tickets.length + 1,
     ticketNumber,
@@ -673,12 +674,12 @@ app.post('/citizens/applications', requireCitizenAuth, (req, res) => {
     citizenName: `${req.citizen.firstName} ${req.citizen.lastName}`,
     serviceId, serviceTitle,
     department: formData?.department || '',
-    fee: formData?.fee ? Number(formData.fee) : Math.floor(Math.random() * 500) + 50,
-    timestamp: new Date().toISOString(),
+    fee: formData?.fee ? Number(formData.fee) : 50,
+    timestamp: now.toISOString(),
     appointmentDate: appointmentDate.toISOString(),
-    appointmentTime: `${String(8 + Math.floor(Math.random() * 8)).padStart(2, '0')}:${String(Math.floor(Math.random() * 4) * 15).padStart(2, '0')}`,
+    appointmentTime: '10:00',
     status: 'active',
-    createdAt: new Date().toISOString()
+    createdAt: now.toISOString()
   }
   db.tickets.push(ticket); saveDb()
 

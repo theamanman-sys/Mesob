@@ -113,25 +113,29 @@ exports.handler = async (event) => {
 
     if (method === 'POST' && p === '/citizens/applications') {
       const citizen = (data.citizens || []).find(c => c.id === citizenId)
-      const ticketNumber = 'TKT-' + Date.now().toString(36).toUpperCase()
-      const appointmentDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000)
-      const refNumber = 'APP-' + Date.now().toString(36).toUpperCase() + '-' + String(Math.floor(Math.random() * 9000) + 1000)
+      const now = new Date()
+      const ticketNumber = 'TKT-' + now.getTime().toString(36).toUpperCase()
+      const apptDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
+      const seq = ((data.citizenApplications || []).length + 1).toString().padStart(4, '0')
+      const refNumber = 'APP-' + now.getFullYear() + seq
       const app = {
-        id: Date.now().toString(36), citizenId, referenceNumber: refNumber,
+        id: now.getTime().toString(36), citizenId, referenceNumber: refNumber,
         ticketNumber, ...body,
-        status: 'submitted', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-        timeline: [{ status: 'submitted', date: new Date().toISOString(), note: 'Application submitted' }]
+        status: 'submitted', createdAt: now.toISOString(), updatedAt: now.toISOString(),
+        timeline: [{ status: 'submitted', date: now.toISOString(), note: 'Application submitted' }]
       }
       if (!data.citizenApplications) data.citizenApplications = []
       data.citizenApplications.push(app)
+      const serviceFee = body.serviceId && data.services ? (data.services.find(s => s.id == body.serviceId)?.ServiceFee) : null
+      const feeAmount = serviceFee && serviceFee !== '-' ? parseInt(String(serviceFee).replace(/,/g, '')) || 50 : 50
       const ticket = {
-        id: Date.now(), ticketNumber, citizenId,
+        id: now.getTime(), ticketNumber, citizenId,
         citizenName: citizen ? `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim() : '',
         serviceId: body.serviceId, serviceTitle: body.serviceTitle,
-        department: '', fee: Math.floor(Math.random() * 500) + 50,
-        timestamp: new Date().toISOString(), appointmentDate: appointmentDate.toISOString(),
-        appointmentTime: `${String(8 + Math.floor(Math.random() * 8)).padStart(2, '0')}:${String(Math.floor(Math.random() * 4) * 15).padStart(2, '0')}`,
-        status: 'active', createdAt: new Date().toISOString()
+        department: '', fee: feeAmount,
+        timestamp: now.toISOString(), appointmentDate: apptDate.toISOString(),
+        appointmentTime: '10:00',
+        status: 'active', createdAt: now.toISOString()
       }
       if (!data.tickets) data.tickets = []
       data.tickets.push(ticket)
