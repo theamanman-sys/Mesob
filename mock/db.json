@@ -464,7 +464,7 @@
         "iss": "https://accounts.google.com"
       },
       "createdAt": "2026-05-16T07:38:03.329Z",
-      "updatedAt": "2026-05-16T20:13:20.184Z",
+      "updatedAt": "2026-05-17T06:39:34.542Z",
       "status": "active",
       "shareName": false
     },
@@ -810,7 +810,36 @@
       "title": "2 Days Urgent Passport Renewal",
       "description": "Express passport renewal within 2 working days for citizens requiring immediate travel.",
       "processingTime": "2 days",
-      "ServiceFee": "28,000-33,000 ETB"
+      "ServiceFee": "28,000-33,000 ETB",
+      "requirements": [
+        "Original expired passport",
+        "Copy of expired passport data page",
+        "Valid National ID (Fayda)",
+        "Digital passport photo (taken at office)",
+        "Proof of urgent travel (optional but recommended)"
+      ],
+      "steps": [
+        {
+          "title": "Online Appointment",
+          "desc": "Book your appointment through the official ICS portal."
+        },
+        {
+          "title": "Visit ICS Office",
+          "desc": "Present yourself at the selected ICS branch with documents."
+        },
+        {
+          "title": "Biometric Capture",
+          "desc": "Renew your fingerprint and photo data."
+        },
+        {
+          "title": "Priority Processing",
+          "desc": "Your application is fast-tracked through the express lane."
+        },
+        {
+          "title": "Passport Collection",
+          "desc": "Pick up your new passport after 48 hours."
+        }
+      ]
     },
     {
       "id": 14,
@@ -925,12 +954,148 @@
       "ServiceFee": "162-324 Birr + 100"
     },
     {
+      "id": 242,
+      "organizationId": 5,
+      "title": "Authentication of Driver's License",
+      "description": "Authentication of driving licenses for international use.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 246,
+      "organizationId": 5,
+      "title": "Forensic and Criminal Record Authentication",
+      "description": "Authentication of police clearance and criminal records.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "150-300 Birr + 100"
+    },
+    {
+      "id": 248,
+      "organizationId": 5,
+      "title": "Authentication of Court Documents",
+      "description": "Authentication of court decisions, rulings, and orders.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 250,
+      "organizationId": 5,
+      "title": "Authentication of Power of Attorney",
+      "description": "Authentication of power of attorney, declarations, and affidavits.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "150-300 Birr + 100"
+    },
+    {
+      "id": 252,
+      "organizationId": 5,
+      "title": "Authentication of Trade Licenses",
+      "description": "Authentication of business licenses and commercial documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 254,
+      "organizationId": 5,
+      "title": "Authentication of Investment License",
+      "description": "Authentication of investment permits and related documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 256,
+      "organizationId": 5,
+      "title": "Authentication of Land Ownership Documents",
+      "description": "Authentication of land titles, ownership, and house map documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 258,
+      "organizationId": 5,
+      "title": "Car Ownership Document Authentication",
+      "description": "Authentication of vehicle ownership documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 260,
+      "organizationId": 5,
+      "title": "Authentication of Hajj and Umrah Documents",
+      "description": "Authentication of Hajj and Umrah travel documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 262,
+      "organizationId": 5,
+      "title": "Authentication of \"To Whom It May Concern\" Documents",
+      "description": "Authentication of general reference documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 264,
+      "organizationId": 5,
+      "title": "Documents of Foreign Employment Agencies",
+      "description": "Authentication of foreign employment agency documents.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 266,
+      "organizationId": 5,
+      "title": "Authentication of Other Domestic Documents",
+      "description": "Authentication of other documents from Ethiopian institutions.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 268,
+      "organizationId": 5,
+      "title": "Verification of Foreign-Issued Documents",
+      "description": "Verification of documents issued by foreign institutions.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
+      "id": 270,
+      "organizationId": 5,
+      "title": "Authentication of Translated Legal Documents",
+      "description": "Authentication of translated documents alongside originals.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "162-324 Birr + 100"
+    },
+    {
       "id": 24,
       "organizationId": 6,
       "title": "Taxpayer Registration (TIN)",
       "description": "Register for a Taxpayer Identification Number (TIN) required for all commercial and legal transactions.",
       "processingTime": "30-45 minutes",
-      "ServiceFee": "None"
+      "ServiceFee": "None",
+      "requirements": [
+        "Valid National ID (Fayda) or Passport",
+        "Two recent passport-sized photos",
+        "Business license (if applicable)",
+        "Completed application form"
+      ],
+      "steps": [
+        {
+          "title": "Visit Branch",
+          "desc": "Go to your nearest Ministry of Revenues branch."
+        },
+        {
+          "title": "Verification",
+          "desc": "Present your ID for biometric verification."
+        },
+        {
+          "title": "Data Entry",
+          "desc": "An officer will enter your details into the SIGTAS system."
+        },
+        {
+          "title": "TIN Issuance",
+          "desc": "Receive your TIN certificate immediately."
+        }
+      ]
     },
     {
       "id": 26,
@@ -971,6 +1136,86 @@
       "description": "Register and authenticate translated documents.",
       "processingTime": "15 minutes",
       "ServiceFee": "200-400 Birr + duty"
+    },
+    {
+      "id": 272,
+      "organizationId": 7,
+      "title": "Memorandum of Association (Plc. & One Man Plc.)",
+      "description": "Registration of memorandum of association documents.",
+      "processingTime": "1 hour",
+      "ServiceFee": "1,000-2,000 Birr + duty"
+    },
+    {
+      "id": 275,
+      "organizationId": 7,
+      "title": "Affidavit Documents",
+      "description": "Registration and authentication of affidavits.",
+      "processingTime": "25 minutes",
+      "ServiceFee": "200-400 Birr + duty"
+    },
+    {
+      "id": 276,
+      "organizationId": 7,
+      "title": "True Copy of Documents",
+      "description": "Certified true copy registration.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "200-400 Birr + duty"
+    },
+    {
+      "id": 278,
+      "organizationId": 7,
+      "title": "Minutes/Resolution of Plc. & One Man Plc.",
+      "description": "Registration of company minutes and resolutions.",
+      "processingTime": "40 minutes",
+      "ServiceFee": "400-800 Birr + duty"
+    },
+    {
+      "id": 373,
+      "organizationId": 7,
+      "title": "Power of Attorney Authentication and Registration",
+      "description": "Authentication and registration of power of attorney documents.",
+      "processingTime": "-",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 375,
+      "organizationId": 7,
+      "title": "Sales Documents Authentication and Registration",
+      "description": "Authentication and registration of sales documents.",
+      "processingTime": "-",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 377,
+      "organizationId": 7,
+      "title": "Gifts Agreement Authentication and Registration",
+      "description": "Authentication and registration of gift agreements.",
+      "processingTime": "-",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 379,
+      "organizationId": 7,
+      "title": "Loan Agreement Authentication and Registration",
+      "description": "Authentication and registration of loan agreements.",
+      "processingTime": "-",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 381,
+      "organizationId": 7,
+      "title": "Rent Agreement Authentication and Registration",
+      "description": "Authentication and registration of rent/lease agreements.",
+      "processingTime": "-",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 383,
+      "organizationId": 7,
+      "title": "Import/Export Document Registration",
+      "description": "Registration of documents for exported and imported goods.",
+      "processingTime": "-",
+      "ServiceFee": "-"
     },
     {
       "id": 36,
@@ -1045,6 +1290,38 @@
       "ServiceFee": "100 USD"
     },
     {
+      "id": 345,
+      "organizationId": 9,
+      "title": "Customs Duty Exemption for Vehicles",
+      "description": "Request customs duty exemption for vehicles.",
+      "processingTime": "1 day",
+      "ServiceFee": "20 USD/request"
+    },
+    {
+      "id": 405,
+      "organizationId": 9,
+      "title": "Customs Duty Exemption for Spare Parts",
+      "description": "Request customs duty exemption for spare parts.",
+      "processingTime": "1 day",
+      "ServiceFee": "20 USD/request"
+    },
+    {
+      "id": 406,
+      "organizationId": 9,
+      "title": "Customs Duty Exemption for Construction Materials",
+      "description": "Request customs duty exemption for construction materials.",
+      "processingTime": "2 days",
+      "ServiceFee": "20 USD/request"
+    },
+    {
+      "id": 407,
+      "organizationId": 9,
+      "title": "Customs Duty Exemption for Capital Goods",
+      "description": "Request customs duty exemption for capital goods.",
+      "processingTime": "1 day",
+      "ServiceFee": "20 USD/request"
+    },
+    {
       "id": 159,
       "organizationId": 10,
       "title": "National ID (NID) Card Printing & Distribution",
@@ -1077,6 +1354,286 @@
       "ServiceFee": "100 birr"
     },
     {
+      "id": 166,
+      "organizationId": 11,
+      "title": "Qualification for Individual Guides (New Guide ID)",
+      "description": "Apply for a new tourist guide license.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 168,
+      "organizationId": 11,
+      "title": "Qualification for Individual Guides (Renewal)",
+      "description": "Renew tourist guide license.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 170,
+      "organizationId": 11,
+      "title": "Qualification for Tour Operators (New)",
+      "description": "Apply for new tour operator license.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 448,
+      "organizationId": 11,
+      "title": "Qualification for Tour Operators (Renewal)",
+      "description": "Renew tour operator license.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 450,
+      "organizationId": 11,
+      "title": "Classification of Tourist Services",
+      "description": "Apply for classification of tourism service providers.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 452,
+      "organizationId": 11,
+      "title": "Tax-Free Incentive Letter (Hotel Sector)",
+      "description": "Letter of support for hotel sector tax incentives.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 454,
+      "organizationId": 11,
+      "title": "Tax-Free Incentive Letter (Tourism Sector)",
+      "description": "Letter of support for tourism sector tax incentives.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 456,
+      "organizationId": 11,
+      "title": "Letter of Support to National Bank",
+      "description": "Letter of support addressed to the National Bank.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 458,
+      "organizationId": 11,
+      "title": "Letter of Support to Civil Aviation Authority",
+      "description": "Letter of support for civil aviation matters.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 460,
+      "organizationId": 11,
+      "title": "Letter of Support to Ministry of Revenue",
+      "description": "Letter of support for revenue-related matters.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 birr"
+    },
+    {
+      "id": 175,
+      "organizationId": 12,
+      "title": "Temporary Warehouse License (New)",
+      "description": "Apply for a new temporary warehouse license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 176,
+      "organizationId": 12,
+      "title": "Temporary Warehouse License (Renewal)",
+      "description": "Renew a temporary warehouse license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 177,
+      "organizationId": 12,
+      "title": "Bonded Warehouse License (New)",
+      "description": "Apply for a new bonded warehouse license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 178,
+      "organizationId": 12,
+      "title": "Bonded Warehouse License (Renewal)",
+      "description": "Renew a bonded warehouse license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 179,
+      "organizationId": 12,
+      "title": "Private Warehouse License (New)",
+      "description": "Apply for a new private warehouse license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 180,
+      "organizationId": 12,
+      "title": "Private Warehouse License (Renewal)",
+      "description": "Renew a private warehouse license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 181,
+      "organizationId": 12,
+      "title": "Duty Free Shop License (New)",
+      "description": "Apply for a new duty-free shop license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 182,
+      "organizationId": 12,
+      "title": "Duty Free Shop License (Renewal)",
+      "description": "Renew a duty-free shop license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 183,
+      "organizationId": 12,
+      "title": "Transit Shed License (New)",
+      "description": "Apply for a new transit shed license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 184,
+      "organizationId": 12,
+      "title": "Transit Shed License (Renewal)",
+      "description": "Renew a transit shed license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 185,
+      "organizationId": 12,
+      "title": "Shipping Agent License (New)",
+      "description": "Apply for a new shipping agent license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 186,
+      "organizationId": 12,
+      "title": "Shipping Agent License (Renewal)",
+      "description": "Renew a shipping agent license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 187,
+      "organizationId": 12,
+      "title": "Airline Agent License (New)",
+      "description": "Apply for a new airline agent license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 188,
+      "organizationId": 12,
+      "title": "Airline Agent License (Renewal)",
+      "description": "Renew an airline agent license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 189,
+      "organizationId": 12,
+      "title": "Freight Forwarder License (New)",
+      "description": "Apply for a new freight forwarder license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 190,
+      "organizationId": 12,
+      "title": "Freight Forwarder License (Renewal)",
+      "description": "Renew a freight forwarder license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 191,
+      "organizationId": 12,
+      "title": "Customs Broker License (New)",
+      "description": "Apply for a new customs broker license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,000 ETB/year"
+    },
+    {
+      "id": 192,
+      "organizationId": 12,
+      "title": "Customs Broker License (Renewal)",
+      "description": "Renew a customs broker license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,000 ETB/year"
+    },
+    {
+      "id": 193,
+      "organizationId": 12,
+      "title": "Customs Declaration Processing",
+      "description": "Process customs declarations for imports and exports.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 194,
+      "organizationId": 12,
+      "title": "Transit Goods Declaration",
+      "description": "Declare goods in transit through Ethiopian customs.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 462,
+      "organizationId": 12,
+      "title": "Warehouse License Name Transfer",
+      "description": "Transfer warehouse license name to another entity.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 463,
+      "organizationId": 12,
+      "title": "Warehouse License Address Change",
+      "description": "Change address on warehouse license.",
+      "processingTime": "35-50 minutes",
+      "ServiceFee": "1,250 ETB/year"
+    },
+    {
+      "id": 172,
+      "organizationId": 14,
+      "title": "Issuance of Advocates License",
+      "description": "Apply for a new advocate license.",
+      "processingTime": "5 days",
+      "ServiceFee": "400 birr"
+    },
+    {
+      "id": 173,
+      "organizationId": 14,
+      "title": "Renewal of Advocates License",
+      "description": "Renew your advocate professional license.",
+      "processingTime": "15 minutes",
+      "ServiceFee": "300 birr"
+    },
+    {
+      "id": 174,
+      "organizationId": 14,
+      "title": "Upgrading of Federal Advocates License",
+      "description": "Upgrade your federal advocate license level.",
+      "processingTime": "5 days",
+      "ServiceFee": "400 birr"
+    },
+    {
       "id": 38,
       "organizationId": 15,
       "title": "Medical Treatment Abroad (Non-Transplant)",
@@ -1090,6 +1647,518 @@
       "title": "Organ Transplant Abroad",
       "description": "Apply for referral for organ transplant abroad.",
       "processingTime": "40 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 82,
+      "organizationId": 15,
+      "title": "Renewal of Referral Document",
+      "description": "Renex your medical referral document.",
+      "processingTime": "40 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 84,
+      "organizationId": 15,
+      "title": "Replacement of Referral Document",
+      "description": "Replace a lost or damaged referral document.",
+      "processingTime": "40 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 87,
+      "organizationId": 15,
+      "title": "New Professional License for Health Professionals from Abroad",
+      "description": "License for foreign health professionals to practice in Ethiopia.",
+      "processingTime": "1 hour",
+      "ServiceFee": "0-100 USD/ETB"
+    },
+    {
+      "id": 92,
+      "organizationId": 15,
+      "title": "Renewal of License for Foreign Healthcare Professionals",
+      "description": "Renew professional license for foreign healthcare workers.",
+      "processingTime": "45 minutes",
+      "ServiceFee": "50 USD"
+    },
+    {
+      "id": 93,
+      "organizationId": 15,
+      "title": "Replacement for Lost/Damaged License",
+      "description": "Replace a lost or damaged health professional license.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "50 USD/ETB"
+    },
+    {
+      "id": 333,
+      "organizationId": 15,
+      "title": "Letter of Good Standing for Health Professionals",
+      "description": "Request a letter of good standing for health professionals.",
+      "processingTime": "30 minutes",
+      "ServiceFee": "100 USD"
+    },
+    {
+      "id": 284,
+      "organizationId": 16,
+      "title": "New Professional License (Engineer - National)",
+      "description": "New engineering license for Ethiopian nationals.",
+      "processingTime": "-",
+      "ServiceFee": "54.6-315 ETB"
+    },
+    {
+      "id": 285,
+      "organizationId": 16,
+      "title": "Professional License Renewal (Engineer - National)",
+      "description": "Renew engineering license for Ethiopian nationals.",
+      "processingTime": "-",
+      "ServiceFee": "54.6-315 ETB"
+    },
+    {
+      "id": 286,
+      "organizationId": 16,
+      "title": "New Professional License (Engineer - Foreign)",
+      "description": "New engineering license for foreign professionals.",
+      "processingTime": "-",
+      "ServiceFee": "52.50-105 USD"
+    },
+    {
+      "id": 287,
+      "organizationId": 16,
+      "title": "Professional License Renewal (Engineer - Foreign)",
+      "description": "Renew engineering license for foreign professionals.",
+      "processingTime": "-",
+      "ServiceFee": "52.50-105 USD"
+    },
+    {
+      "id": 288,
+      "organizationId": 16,
+      "title": "Upgrading of Professional License (Engineer)",
+      "description": "Upgrade engineering professional license level.",
+      "processingTime": "-",
+      "ServiceFee": "54.6-315 ETB"
+    },
+    {
+      "id": 290,
+      "organizationId": 16,
+      "title": "Replacement of License (Engineer)",
+      "description": "Replace lost or damaged engineering license.",
+      "processingTime": "-",
+      "ServiceFee": "54.6-315 ETB"
+    },
+    {
+      "id": 291,
+      "organizationId": 16,
+      "title": "New Water Works Professional License (National)",
+      "description": "New water works license for Ethiopian nationals.",
+      "processingTime": "-",
+      "ServiceFee": "54.6-315 ETB"
+    },
+    {
+      "id": 292,
+      "organizationId": 16,
+      "title": "Water Works License Renewal (National)",
+      "description": "Renew water works license for nationals.",
+      "processingTime": "-",
+      "ServiceFee": "54.6-315 ETB"
+    },
+    {
+      "id": 293,
+      "organizationId": 16,
+      "title": "New Water Works License (Foreign)",
+      "description": "New water works license for foreign professionals.",
+      "processingTime": "-",
+      "ServiceFee": "52.50-105 USD"
+    },
+    {
+      "id": 294,
+      "organizationId": 16,
+      "title": "Water Works License Renewal (Foreign)",
+      "description": "Renew water works license for foreign professionals.",
+      "processingTime": "-",
+      "ServiceFee": "52.50-105 USD"
+    },
+    {
+      "id": 295,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Pesticide Manufacturer)",
+      "description": "Competency certificate for pesticide manufacturers.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 296,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Pesticide Importer)",
+      "description": "Competency certificate for pesticide importers.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 297,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Fertilizer Manufacturer)",
+      "description": "Competency certificate for fertilizer manufacturers.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 298,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Fertilizer Importer)",
+      "description": "Competency certificate for fertilizer importers.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 299,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Plant Product Importer)",
+      "description": "Competency certificate for plant product importers.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 300,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Veterinary Drug Importer)",
+      "description": "Competency certificate for veterinary drug importers.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 301,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Fumigation Operator)",
+      "description": "Competency certificate for fumigation operators.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 302,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Seed Manufacturer)",
+      "description": "Competency certificate for seed manufacturers.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "200-360 Birr"
+    },
+    {
+      "id": 303,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Seed Importer)",
+      "description": "Competency certificate for seed importers.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "200-360 Birr"
+    },
+    {
+      "id": 304,
+      "organizationId": 17,
+      "title": "Certificate of Competency (Seed Exporter)",
+      "description": "Competency certificate for seed exporters.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "200-360 Birr"
+    },
+    {
+      "id": 305,
+      "organizationId": 17,
+      "title": "Pesticide Sales Site Change",
+      "description": "Change the sales site for pesticide operations.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 306,
+      "organizationId": 17,
+      "title": "Pesticide Storage Site Change",
+      "description": "Change the storage site for pesticide operations.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 307,
+      "organizationId": 17,
+      "title": "Fertilizer Sales Site Change",
+      "description": "Change the sales site for fertilizer operations.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 308,
+      "organizationId": 17,
+      "title": "Fertilizer Storage Site Change",
+      "description": "Change the storage site for fertilizer operations.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 309,
+      "organizationId": 17,
+      "title": "Veterinary Drug Site Change",
+      "description": "Change site for veterinary drug operations.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 310,
+      "organizationId": 17,
+      "title": "Fumigation Site Change",
+      "description": "Change site for fumigation operations.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 311,
+      "organizationId": 17,
+      "title": "Plant Product Site Change",
+      "description": "Change site for plant product operations.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 312,
+      "organizationId": 17,
+      "title": "Seed Type Addition",
+      "description": "Add new seed type to existing certificate.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "200-360 Birr"
+    },
+    {
+      "id": 313,
+      "organizationId": 17,
+      "title": "Seed Site Change",
+      "description": "Change site for seed operations.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "200-360 Birr"
+    },
+    {
+      "id": 314,
+      "organizationId": 17,
+      "title": "Upgrading Certificate of Competency",
+      "description": "Upgrade existing certificate of competency.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 315,
+      "organizationId": 17,
+      "title": "Replacement of Certificate of Competency",
+      "description": "Replace lost or damaged certificate.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 316,
+      "organizationId": 17,
+      "title": "Renewal of Certificate of Competency",
+      "description": "Renew certificate of competency.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 317,
+      "organizationId": 17,
+      "title": "Cancellation/Revocation of Certificate",
+      "description": "Cancel or revoke a certificate of competency.",
+      "processingTime": "9-25 working hours",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 318,
+      "organizationId": 19,
+      "title": "Medicine Importer License (New)",
+      "description": "Apply for new medicine importer license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 319,
+      "organizationId": 19,
+      "title": "Medicine Importer License (Renewal)",
+      "description": "Renew medicine importer license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 320,
+      "organizationId": 19,
+      "title": "Medicine Wholesaler License (New)",
+      "description": "Apply for new medicine wholesaler license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 321,
+      "organizationId": 19,
+      "title": "Medicine Wholesaler License (Renewal)",
+      "description": "Renew medicine wholesaler license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 322,
+      "organizationId": 19,
+      "title": "Medicine Retailer License (New)",
+      "description": "Apply for new medicine retailer license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 323,
+      "organizationId": 19,
+      "title": "Medicine Retailer License (Renewal)",
+      "description": "Renew medicine retailer license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 324,
+      "organizationId": 19,
+      "title": "Medical Device Importer License (New)",
+      "description": "Apply for new medical device importer license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 325,
+      "organizationId": 19,
+      "title": "Medical Device Importer License (Renewal)",
+      "description": "Renew medical device importer license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 326,
+      "organizationId": 19,
+      "title": "Medical Device Wholesaler License (New)",
+      "description": "Apply for new medical device wholesaler license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 327,
+      "organizationId": 19,
+      "title": "Medical Device Wholesaler License (Renewal)",
+      "description": "Renew medical device wholesaler license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 328,
+      "organizationId": 19,
+      "title": "Medical Device Retailer License (New)",
+      "description": "Apply for new medical device retailer license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 329,
+      "organizationId": 19,
+      "title": "Medical Device Retailer License (Renewal)",
+      "description": "Renew medical device retailer license.",
+      "processingTime": "30 min - 5 hrs",
+      "ServiceFee": "500-750 birr"
+    },
+    {
+      "id": 334,
+      "organizationId": 20,
+      "title": "Organization Environmental License (New)",
+      "description": "New environmental license for organizations.",
+      "processingTime": "20 min - 1 hr",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 335,
+      "organizationId": 20,
+      "title": "Organization Environmental License (Renewal)",
+      "description": "Renew organization environmental license.",
+      "processingTime": "20 min - 1 hr",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 336,
+      "organizationId": 20,
+      "title": "Individual Environmental License (New)",
+      "description": "New environmental license for individuals.",
+      "processingTime": "20 min - 1 hr",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 337,
+      "organizationId": 20,
+      "title": "Individual Environmental License (Renewal)",
+      "description": "Renew individual environmental license.",
+      "processingTime": "20 min - 1 hr",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 338,
+      "organizationId": 20,
+      "title": "Environmental License Upgrade",
+      "description": "Upgrade existing environmental license.",
+      "processingTime": "20 min - 1 hr",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 339,
+      "organizationId": 20,
+      "title": "Environmental License Replacement",
+      "description": "Replace lost or damaged environmental license.",
+      "processingTime": "20 min - 1 hr",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 340,
+      "organizationId": 20,
+      "title": "Non-GMO Declaration Certificate",
+      "description": "Certificate declaring products are GMO-free.",
+      "processingTime": "20 min - 1 hr",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 341,
+      "organizationId": 20,
+      "title": "NON-GMO Certificate of Compliance",
+      "description": "Certificate of compliance for non-GMO products.",
+      "processingTime": "20 min - 1 hr",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 342,
+      "organizationId": 20,
+      "title": "Certificate of Origin",
+      "description": "Certificate of origin for Ethiopian products.",
+      "processingTime": "20 min - 1 hr",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 142,
+      "organizationId": 21,
+      "title": "Authentication of Educational Credentials",
+      "description": "Verify and authenticate educational credentials.",
+      "processingTime": "50 minutes",
+      "ServiceFee": "200-400 ETB"
+    },
+    {
+      "id": 144,
+      "organizationId": 21,
+      "title": "Equivalence of Educational Credentials",
+      "description": "Determine equivalence of foreign educational credentials.",
+      "processingTime": "50 minutes",
+      "ServiceFee": "225-450 ETB"
+    },
+    {
+      "id": 50,
+      "organizationId": 23,
+      "title": "Telebirr Service",
+      "description": "Mobile money and payment services via Telebirr.",
+      "processingTime": "5 minutes",
+      "ServiceFee": "None"
+    },
+    {
+      "id": 52,
+      "organizationId": 23,
+      "title": "Enterprise Service",
+      "description": "Enterprise telecom solutions and services.",
+      "processingTime": "5 minutes",
       "ServiceFee": "None"
     },
     {
@@ -1109,20 +2178,68 @@
       "ServiceFee": "None"
     },
     {
-      "id": 50,
-      "organizationId": 23,
-      "title": "Telebirr Service",
-      "description": "Mobile money and payment services via Telebirr.",
-      "processingTime": "5 minutes",
-      "ServiceFee": "None"
+      "id": 385,
+      "organizationId": 26,
+      "title": "Public Transport Operator License (New)",
+      "description": "Apply for new public transport operator license.",
+      "processingTime": "20 min - 2 hr",
+      "ServiceFee": "1,000-40,000 Birr"
     },
     {
-      "id": 52,
-      "organizationId": 23,
-      "title": "Enterprise Service",
-      "description": "Enterprise telecom solutions and services.",
-      "processingTime": "5 minutes",
-      "ServiceFee": "None"
+      "id": 386,
+      "organizationId": 26,
+      "title": "Public Transport Operator License (Renewal)",
+      "description": "Renew public transport operator license.",
+      "processingTime": "20 min - 2 hr",
+      "ServiceFee": "1,000-40,000 Birr"
+    },
+    {
+      "id": 387,
+      "organizationId": 26,
+      "title": "Freight Transport Operator License (New)",
+      "description": "Apply for new freight transport operator license.",
+      "processingTime": "20 min - 2 hr",
+      "ServiceFee": "1,000-40,000 Birr"
+    },
+    {
+      "id": 388,
+      "organizationId": 26,
+      "title": "Freight Transport Operator License (Renewal)",
+      "description": "Renew freight transport operator license.",
+      "processingTime": "20 min - 2 hr",
+      "ServiceFee": "1,000-40,000 Birr"
+    },
+    {
+      "id": 389,
+      "organizationId": 26,
+      "title": "Transport Route Permit",
+      "description": "Apply for transport route operation permit.",
+      "processingTime": "20 min - 2 hr",
+      "ServiceFee": "1,000-40,000 Birr"
+    },
+    {
+      "id": 390,
+      "organizationId": 26,
+      "title": "Transport Service Quality Certificate",
+      "description": "Apply for transport service quality certification.",
+      "processingTime": "20 min - 2 hr",
+      "ServiceFee": "1,000-40,000 Birr"
+    },
+    {
+      "id": 499,
+      "organizationId": 27,
+      "title": "Supplier Registration Service",
+      "description": "Register as a supplier for federal procurement.",
+      "processingTime": "-",
+      "ServiceFee": "-"
+    },
+    {
+      "id": 501,
+      "organizationId": 27,
+      "title": "Supplier Registration Revision Service",
+      "description": "Revise or update supplier registration details.",
+      "processingTime": "-",
+      "ServiceFee": "-"
     }
   ],
   "tickets": [],
@@ -3279,7 +4396,7 @@
     {
       "title": "Ethiopia's Economy Grows 6.5% in Fiscal Year",
       "source": "Ethiopian News Agency",
-      "publishedAt": "2026-05-16T20:13:54.063Z",
+      "publishedAt": "2026-05-17T06:40:39.825Z",
       "url": "https://www.ena.et",
       "description": "The National Bank of Ethiopia reports steady economic growth driven by agriculture and services sectors.",
       "category": "economy"
@@ -3287,7 +4404,7 @@
     {
       "title": "Coffee Exports Reach Record $1.4B",
       "source": "Ethiopian Commodity Exchange",
-      "publishedAt": "2026-05-16T20:13:54.063Z",
+      "publishedAt": "2026-05-17T06:40:39.825Z",
       "url": "https://www.ecx.com.et",
       "description": "Ethiopian coffee exports hit an all-time high as global demand for specialty coffee continues to rise.",
       "category": "commodities"
@@ -3295,7 +4412,7 @@
     {
       "title": "New Banking Regulation Opens Sector to Foreign Investors",
       "source": "The Reporter",
-      "publishedAt": "2026-05-16T20:13:54.063Z",
+      "publishedAt": "2026-05-17T06:40:39.825Z",
       "url": "https://www.thereporterethiopia.com",
       "description": "Ethiopian parliament passes law allowing foreign banks to establish operations in the country.",
       "category": "finance"
@@ -3303,7 +4420,7 @@
     {
       "title": "Ethiopia Launches Digital Currency Pilot",
       "source": "Capital Ethiopia",
-      "publishedAt": "2026-05-16T20:13:54.063Z",
+      "publishedAt": "2026-05-17T06:40:39.825Z",
       "url": "https://www.capitalethiopia.com",
       "description": "The National Bank of Ethiopia launches a central bank digital currency pilot program.",
       "category": "technology"
@@ -3311,7 +4428,7 @@
     {
       "title": "Construction Sector Booms with New Infrastructure Projects",
       "source": "Fortune Ethiopia",
-      "publishedAt": "2026-05-16T20:13:54.063Z",
+      "publishedAt": "2026-05-17T06:40:39.825Z",
       "url": "https://www.fortuneethiopia.com",
       "description": "Major infrastructure investments drive growth in Ethiopia's construction sector.",
       "category": "economy"
@@ -3319,7 +4436,7 @@
     {
       "title": "Ethiopian Airlines Reports Record Revenue",
       "source": "Addis Fortune",
-      "publishedAt": "2026-05-16T20:13:54.063Z",
+      "publishedAt": "2026-05-17T06:40:39.825Z",
       "url": "https://www.addisfortune.com",
       "description": "Africa's largest carrier posts record revenue, expands routes to new destinations.",
       "category": "business"
@@ -3327,7 +4444,7 @@
     {
       "title": "Gold Mining Output Increases 15% Year-over-Year",
       "source": "Mining Ethiopia",
-      "publishedAt": "2026-05-16T20:13:54.063Z",
+      "publishedAt": "2026-05-17T06:40:39.825Z",
       "url": "#",
       "description": "Ethiopia's gold production sees significant increase as new mining operations come online.",
       "category": "commodities"
@@ -3335,13 +4452,13 @@
     {
       "title": "Stock Market Development: Ethiopia Prepares for Exchange Launch",
       "source": "Bloomberg",
-      "publishedAt": "2026-05-16T20:13:54.063Z",
+      "publishedAt": "2026-05-17T06:40:39.825Z",
       "url": "#",
       "description": "Ethiopia moves forward with plans to establish a securities exchange, aiming to boost capital markets.",
       "category": "finance"
     },
     {
-      "_lastFetch": 1778962434063
+      "_lastFetch": 1779000039825
     }
   ],
   "tradingAccounts": [

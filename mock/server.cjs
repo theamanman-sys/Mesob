@@ -2,18 +2,55 @@ const express = require('express')
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
+const mongoose = require('mongoose')
 
 const PORT = 3001
 const DB_PATH = path.join(__dirname, 'db.json')
+const USE_MONGODB = process.env.MONGODB_URI && !process.env.USE_MOCK_DB
 
 const app = express()
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
 
-let db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
+let db = USE_MONGODB ? null : JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'))
 
-function saveDb() {
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf-8')
+async function connectMongoDB() {
+  if (USE_MONGODB) {
+    await mongoose.connect(process.env.MONGODB_URI)
+    console.log('Connected to MongoDB')
+  }
+}
+
+function getCollection(name) {
+  if (USE_MONGODB) {
+    return mongoose.connection.db.collection(name)
+  }
+  return db[name]
+}
+
+async function readDB(name) {
+  if (USE_MONGODB) {
+    return await getCollection(name).find().toArray()
+  }
+  return db[name]
+}
+
+async function saveDB(name, data) {
+  if (USE_MONGODB) {
+    const coll = getCollection(name)
+    await coll.deleteMany({})
+    if (data.length) await coll.insertMany(data)
+  } else {
+    db[name] = data
+    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf-8')
+  }
+}
+
+// Keep old saveDb function for backward compatibility
+const saveDb = () => {
+  if (!USE_MONGODB) {
+    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf-8')
+  }
 }
 
 function wrap(data, msg = 'Success') {
@@ -1988,7 +2025,17 @@ app.get('/proxy/eservices', async (_req, res) => {
 // Error handler
 app.use((_req, res) => res.status(404).json(err('Not found', 404)))
 
+// Connect to MongoDB if URI is set
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err))
+}
+
 app.listen(PORT, () => {
   console.log(`Mock API server running at http://localhost:${PORT}`)
   console.log(`Demo admin: admin / admin123`)
+  if (process.env.MONGODB_URI) {
+    console.log('MongoDB mode enabled')
+  }
 })
