@@ -492,6 +492,45 @@
       "createdAt": "2026-05-16T10:24:25.089Z",
       "updatedAt": "2026-05-16T15:57:38.528Z",
       "status": "active"
+    },
+    {
+      "id": 3,
+      "userId": 3,
+      "firstName": "VTest2",
+      "lastName": "User",
+      "email": "verify@test.com",
+      "phone": "",
+      "idNumber": "",
+      "password": "",
+      "picture": "",
+      "googleId": "g-1779049146304",
+      "googleData": {
+        "sub": "g-1779049146304",
+        "email": "verify@test.com",
+        "email_verified": true,
+        "given_name": "VTest2",
+        "family_name": "User",
+        "picture": ""
+      },
+      "createdAt": "2026-05-17T20:14:14.736Z",
+      "updatedAt": "2026-05-17T20:19:06.325Z",
+      "status": "active"
+    },
+    {
+      "userId": 4,
+      "id": 4,
+      "firstName": "Verify",
+      "lastName": "User",
+      "email": "reg@test.com",
+      "phone": "",
+      "idNumber": "",
+      "password": "pw",
+      "picture": "",
+      "googleId": null,
+      "googleData": null,
+      "createdAt": "2026-05-17T20:14:15.009Z",
+      "updatedAt": "2026-05-17T20:14:15.009Z",
+      "status": "active"
     }
   ],
   "citizenApplications": [
@@ -4571,29 +4610,173 @@
     }
   ],
   "tradingCommodities": [
-    { "id": 1, "name": "Coffee - Washed Sidama G2", "symbol": "LWSD2", "category": "COFFEE", "unit": "qtl", "currentPrice": 14000, "change": -0.63 },
-    { "id": 2, "name": "Coffee - Washed Jimma G2", "symbol": "LWJM2", "category": "COFFEE", "unit": "qtl", "currentPrice": 12231, "change": 1.78 },
-    { "id": 3, "name": "Coffee - Washed Guji G2", "symbol": "LWGj2", "category": "COFFEE", "unit": "qtl", "currentPrice": 14000, "change": 0.00 },
-    { "id": 4, "name": "Coffee - Washed Byproduct G3", "symbol": "LWBP3", "category": "COFFEE", "unit": "qtl", "currentPrice": 14000, "change": 0.00 },
-    { "id": 5, "name": "Coffee - Unwashed Lekempti G4", "symbol": "LUWL4", "category": "COFFEE", "unit": "qtl", "currentPrice": 9089, "change": 0.84 },
-    { "id": 6, "name": "Coffee - Unwashed Byproduct G5", "symbol": "LUBPAA5", "category": "COFFEE", "unit": "qtl", "currentPrice": 10528, "change": -0.45 },
-    { "id": 7, "name": "Coffee - Unwashed Byproduct G4", "symbol": "LUBPAA4", "category": "COFFEE", "unit": "qtl", "currentPrice": 11000, "change": 3.12 },
-    { "id": 8, "name": "Coffee - Unwashed Byproduct G3", "symbol": "LUBPAA3", "category": "COFFEE", "unit": "qtl", "currentPrice": 12500, "change": -4.58 },
-    { "id": 9, "name": "Sesame - Whitish Wolloga G2", "symbol": "WWSS2", "category": "SESAME", "unit": "qtl", "currentPrice": 15500, "change": 0.00 },
-    { "id": 10, "name": "Sesame - Whitish Humera/Gondar G3", "symbol": "WHGS3", "category": "SESAME", "unit": "qtl", "currentPrice": 17300, "change": 1.16 },
-    { "id": 11, "name": "Sesame - Whitish Humera/Gondar G2", "symbol": "WHGS2", "category": "SESAME", "unit": "qtl", "currentPrice": 18716, "change": 0.65 },
-    { "id": 12, "name": "Green Mung Beans Shoa G3", "symbol": "GMBS3", "category": "PULSES", "unit": "qtl", "currentPrice": 17000, "change": 0.00 },
-    { "id": 13, "name": "White Pea Beans - Round G3", "symbol": "RWPA3", "category": "PULSES", "unit": "qtl", "currentPrice": 13000, "change": -3.70 },
-    { "id": 14, "name": "Chickpeas - Brown Desi G3", "symbol": "BRDC3", "category": "PULSES", "unit": "qtl", "currentPrice": 3900, "change": 0.00 },
-    { "id": 15, "name": "Soya Beans Wolloga G2", "symbol": "SBWO2", "category": "OILSEEDS", "unit": "qtl", "currentPrice": 7200, "change": 10.00 }
+    {
+      "id": 1,
+      "name": "Coffee - Washed Sidama G2",
+      "symbol": "LWSD2",
+      "category": "COFFEE",
+      "unit": "qtl",
+      "currentPrice": 14000,
+      "change": -0.63
+    },
+    {
+      "id": 2,
+      "name": "Coffee - Washed Jimma G2",
+      "symbol": "LWJM2",
+      "category": "COFFEE",
+      "unit": "qtl",
+      "currentPrice": 12231,
+      "change": 1.78
+    },
+    {
+      "id": 3,
+      "name": "Coffee - Washed Guji G2",
+      "symbol": "LWGj2",
+      "category": "COFFEE",
+      "unit": "qtl",
+      "currentPrice": 14000,
+      "change": 0
+    },
+    {
+      "id": 4,
+      "name": "Coffee - Washed Byproduct G3",
+      "symbol": "LWBP3",
+      "category": "COFFEE",
+      "unit": "qtl",
+      "currentPrice": 14000,
+      "change": 0
+    },
+    {
+      "id": 5,
+      "name": "Coffee - Unwashed Lekempti G4",
+      "symbol": "LUWL4",
+      "category": "COFFEE",
+      "unit": "qtl",
+      "currentPrice": 9089,
+      "change": 0.84
+    },
+    {
+      "id": 6,
+      "name": "Coffee - Unwashed Byproduct G5",
+      "symbol": "LUBPAA5",
+      "category": "COFFEE",
+      "unit": "qtl",
+      "currentPrice": 10528,
+      "change": -0.45
+    },
+    {
+      "id": 7,
+      "name": "Coffee - Unwashed Byproduct G4",
+      "symbol": "LUBPAA4",
+      "category": "COFFEE",
+      "unit": "qtl",
+      "currentPrice": 11000,
+      "change": 3.12
+    },
+    {
+      "id": 8,
+      "name": "Coffee - Unwashed Byproduct G3",
+      "symbol": "LUBPAA3",
+      "category": "COFFEE",
+      "unit": "qtl",
+      "currentPrice": 12500,
+      "change": -4.58
+    },
+    {
+      "id": 9,
+      "name": "Sesame - Whitish Wolloga G2",
+      "symbol": "WWSS2",
+      "category": "SESAME",
+      "unit": "qtl",
+      "currentPrice": 15500,
+      "change": 0
+    },
+    {
+      "id": 10,
+      "name": "Sesame - Whitish Humera/Gondar G3",
+      "symbol": "WHGS3",
+      "category": "SESAME",
+      "unit": "qtl",
+      "currentPrice": 17300,
+      "change": 1.16
+    },
+    {
+      "id": 11,
+      "name": "Sesame - Whitish Humera/Gondar G2",
+      "symbol": "WHGS2",
+      "category": "SESAME",
+      "unit": "qtl",
+      "currentPrice": 18716,
+      "change": 0.65
+    },
+    {
+      "id": 12,
+      "name": "Green Mung Beans Shoa G3",
+      "symbol": "GMBS3",
+      "category": "PULSES",
+      "unit": "qtl",
+      "currentPrice": 17000,
+      "change": 0
+    },
+    {
+      "id": 13,
+      "name": "White Pea Beans - Round G3",
+      "symbol": "RWPA3",
+      "category": "PULSES",
+      "unit": "qtl",
+      "currentPrice": 13000,
+      "change": -3.7
+    },
+    {
+      "id": 14,
+      "name": "Chickpeas - Brown Desi G3",
+      "symbol": "BRDC3",
+      "category": "PULSES",
+      "unit": "qtl",
+      "currentPrice": 3900,
+      "change": 0
+    },
+    {
+      "id": 15,
+      "name": "Soya Beans Wolloga G2",
+      "symbol": "SBWO2",
+      "category": "OILSEEDS",
+      "unit": "qtl",
+      "currentPrice": 7200,
+      "change": 10
+    }
   ],
   "exchangeRates": [
-    { "pair": "USD/ETB", "rate": 127.45, "change": 0.15 },
-    { "pair": "EUR/ETB", "rate": 138.20, "change": -0.32 },
-    { "pair": "GBP/ETB", "rate": 161.80, "change": 0.08 },
-    { "pair": "CNY/ETB", "rate": 17.56, "change": 0.02 },
-    { "pair": "AED/ETB", "rate": 34.70, "change": -0.05 },
-    { "pair": "SAR/ETB", "rate": 33.98, "change": 0.03 }
+    {
+      "pair": "USD/ETB",
+      "rate": 127.45,
+      "change": 0.15
+    },
+    {
+      "pair": "EUR/ETB",
+      "rate": 138.2,
+      "change": -0.32
+    },
+    {
+      "pair": "GBP/ETB",
+      "rate": 161.8,
+      "change": 0.08
+    },
+    {
+      "pair": "CNY/ETB",
+      "rate": 17.56,
+      "change": 0.02
+    },
+    {
+      "pair": "AED/ETB",
+      "rate": 34.7,
+      "change": -0.05
+    },
+    {
+      "pair": "SAR/ETB",
+      "rate": 33.98,
+      "change": 0.03
+    }
   ],
   "citizenBankPortfolio": [
     {

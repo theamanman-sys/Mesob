@@ -37,6 +37,10 @@ function json(code, data, msg) {
   return { statusCode: code, body: JSON.stringify({ data, message: msg || 'Success', success: code < 400 }) }
 }
 
+function sendRes(res, result) {
+  res.status(result.statusCode).setHeader('Content-Type', 'application/json').send(result.body)
+}
+
 function getPath(req) {
   try { return new URL(req.url, 'http://localhost').pathname.replace(/^\/api/, '') } catch { return '' }
 }
@@ -60,10 +64,12 @@ function getCitizenId(token) {
   return isNaN(id) ? null : id
 }
 
-// ── Load ─────────────────────────────────────────────────────────
+// ── Mock DB ──────────────────────────────────────────────────────
 
 function loadMockDB() { return JSON.parse(fs.readFileSync(MOCK_DB_PATH, 'utf-8')) }
 function saveMockDB(db) { try { fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(db, null, 2), 'utf-8') } catch (_) {} }
+
+// ── MongoDB ──────────────────────────────────────────────────────
 
 let _mongoConn = null, _mongoDb = null
 async function mongo() {
@@ -77,15 +83,9 @@ async function mongo() {
   return _mongoDb
 }
 
-// ── DB abstraction ───────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────
 
 function safeCitizen(c) { const { password, _id, ...r } = c; return r }
-
-function toListQuery(body, extraFilter) {
-  const filter = { ...(extraFilter || {}) }
-  // support simple text search too
-  return filter
-}
 
 // ─────────────────────────────────────────────────────────────────
 //  REGISTER
@@ -111,7 +111,6 @@ async function doRegister(body) {
   const coll = db.collection('citizens')
   if (await coll.findOne({ email })) return json(400, null, 'Email already registered')
   if (idNumber && await coll.findOne({ idNumber })) return json(400, null, 'ID already registered')
-
   const newId = (await coll.countDocuments()) + 1
   const doc = { _id: String(newId), id: newId, userId: newId, firstName, lastName, email, phone: phone || '', idNumber: idNumber || '', password: password || '', picture: '', googleId: null, googleData: null, createdAt: new Date(), updatedAt: new Date(), status: 'active' }
   await coll.insertOne(doc)
@@ -132,26 +131,23 @@ async function doLogin(body) {
       (c.email === identifier || c.idNumber === identifier) && c.password === pwd
     )
     if (!citizen) {
-      // allow Google-only citizens (no password set) to re-login via email
       citizen = db.citizens?.find((c) =>
         (c.email === identifier || c.idNumber === identifier) && !c.password
       )
     }
     if (!citizen) return json(401, null, 'Invalid credentials')
-    const safe = safeCitizen(citizen)
-    return json(200, { citizen: safe, accessToken: signJwt(citizen) }, 'Login successful')
+    return json(200, { citizen: safeCitizen(citizen), accessToken: signJwt(citizen) }, 'Login successful')
   }
 
-  // MongoDB — plaintext match first
   const db = await mongo()
   const coll = db.collection('citizens')
+
   let citizen = await coll.findOne({
     $or: [{ email: identifier }, { idNumber: identifier }],
     password: pwd,
   })
 
   if (!citizen) {
-    // bcrypt fallback
     const candidates = await coll.find({
       $or: [{ email: identifier }, { idNumber: identifier }],
     }).toArray()
@@ -165,6 +161,96 @@ async function doLogin(body) {
 
   if (!citizen) return json(401, null, 'Invalid credentials')
   return json(200, { citizen: safeCitizen(citizen), accessToken: signJwt(citizen) }, 'Login successful')
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  GOOGLE LOGIN
+// ─────────────────────────────────────────────────────────────────
+
+async function doGoogleLogin(body) {
+  const { credential } = body
+  if (!credential) return json(400, null, 'Missing credential')
+
+  let payload
+  try {
+    payload = JSON.parse(b64Decode(credential.split('.')[1]))
+  } catch {
+    return json(400, null, 'Invalid credential')
+  }
+
+  console.log('[Google]', payload.email, USE_MOCK ? '[MOCK]' : '[MongoDB]')
+
+  const googleInfo = {
+    googleId: payload.sub,
+    googleData: {
+      sub: payload.sub, email: payload.email, email_verified: payload.email_verified,
+      name: payload.name, given_name: payload.given_name, family_name: payload.family_name,
+      picture: payload.picture, locale: payload.locale,
+    },
+  }
+
+  if (USE_MOCK) {
+    const db = loadMockDB()
+    let citizen = (db.citizens || []).find((c) => c.email === payload.email)
+
+    if (citizen) {
+      Object.assign(citizen, {
+        firstName: payload.given_name || citizen.firstName,
+        lastName: payload.family_name || citizen.lastName,
+        picture: payload.picture || citizen.picture,
+        ...googleInfo,
+        updatedAt: new Date().toISOString(),
+      })
+    } else {
+      const newId = (db.citizens || []).length + 1
+      citizen = {
+        id: newId, userId: newId,
+        firstName: payload.given_name || '',
+        lastName: payload.family_name || '',
+        email: payload.email, phone: '', idNumber: '', password: '',
+        picture: payload.picture || '',
+        ...googleInfo,
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), status: 'active',
+      }
+      db.citizens = db.citizens || []
+      db.citizens.push(citizen)
+    }
+    saveMockDB(db)
+
+    const { password: _, ...safe } = citizen
+    return json(200, { citizen: safe, accessToken: signJwt(citizen) }, 'Login successful')
+  }
+
+  try {
+    const db = await mongo()
+    const coll = db.collection('citizens')
+
+    let citizen = await coll.findOne({ email: payload.email })
+
+    if (citizen) {
+      await coll.updateOne(
+        { _id: citizen._id },
+        { $set: { firstName: payload.given_name || citizen.firstName, lastName: payload.family_name || citizen.lastName, picture: payload.picture || citizen.picture, ...googleInfo, updatedAt: new Date() } },
+      )
+    } else {
+      const newId = (await coll.countDocuments()) + 1
+      const newCitizen = {
+        _id: String(newId), id: newId, userId: newId,
+        firstName: payload.given_name || '', lastName: payload.family_name || '',
+        email: payload.email, phone: '', idNumber: '', password: '',
+        picture: payload.picture || '',
+        ...googleInfo, createdAt: new Date(), updatedAt: new Date(), status: 'active',
+      }
+      await coll.insertOne(newCitizen)
+      citizen = newCitizen
+    }
+
+    const safe = safeCitizen(citizen)
+    return json(200, { citizen: safe, accessToken: signJwt(citizen) }, 'Login successful')
+  } catch (err) {
+    console.error('[Google MongoDB]', err.message)
+    return json(500, null, 'Database error: ' + err.message)
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -254,28 +340,38 @@ module.exports = async function handler(request, response) {
   const p = getPath(request)
 
   try {
-    if (request.method === 'POST' && p === '/citizens/register')  return sendRes(response, await doRegister(parseBody(request)))
-    if (request.method === 'POST' && p === '/citizens/login')     return sendRes(response, await doLogin(parseBody(request)))
-    // POST /citizens/google is owned by google.cjs
-    if (request.method === 'POST' && p === '/citizens/google')    return response.status(501).setHeader('Content-Type','application/json').send(JSON.stringify(json(501,null,'Use /api/citizens/google').body))
-    if (request.method === 'GET'  && p === '/citizens/session')   return sendRes(response, await doSession(request))
-    if (request.method === 'GET'  && p === '/citizens/applications') return sendRes(response, await doApplications(request))
-    if (request.method === 'GET'  && p === '/citizens/documents')    return sendRes(response, await doDocuments(request))
-    if (request.method === 'GET'  && p === '/citizens/tickets')      return sendRes(response, await doTickets())
-    if (request.method === 'GET'  && p === '/citizens/net-worth')    return sendRes(response, await doNetWorth(request))
+    if (request.method === 'POST' && p === '/citizens/register')
+      return sendRes(response, await doRegister(parseBody(request)))
+
+    if (request.method === 'POST' && p === '/citizens/login')
+      return sendRes(response, await doLogin(parseBody(request)))
+
+    if (request.method === 'POST' && p === '/citizens/google')
+      return sendRes(response, await doGoogleLogin(parseBody(request)))
+
+    if (request.method === 'GET' && p === '/citizens/session')
+      return sendRes(response, await doSession(request))
+
+    if (request.method === 'GET' && p === '/citizens/applications')
+      return sendRes(response, await doApplications(request))
+
+    if (request.method === 'GET' && p === '/citizens/documents')
+      return sendRes(response, await doDocuments(request))
+
+    if (request.method === 'GET' && p === '/citizens/tickets')
+      return sendRes(response, await doTickets())
+
+    if (request.method === 'GET' && p === '/citizens/net-worth')
+      return sendRes(response, await doNetWorth(request))
 
     const r = json(404, null, 'Not found')
     return response.status(404).setHeader('Content-Type', 'application/json').send(r.body)
   } catch (err) {
-    console.error('[Citizens API]', err)
+    console.error('[Citizens API]', err.message || err)
     response.status(500).setHeader('Content-Type', 'application/json').send(
       JSON.stringify({ data: null, message: err.message || 'Server Error', success: false })
     )
   }
-}
-
-function sendRes(res, result) {
-  res.status(result.statusCode).setHeader('Content-Type', 'application/json').send(result.body)
 }
 
 // ── Dev server runner ────────────────────────────────────────────
