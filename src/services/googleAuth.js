@@ -1,4 +1,4 @@
-const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '684481615293-5ah46hm3dccnfbqj4rbuga2knpvtevma.apps.googleusercontent.com'
 let initialized = false
 
 export function getGoogleCredential() {
