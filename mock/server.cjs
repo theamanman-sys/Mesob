@@ -5,7 +5,7 @@ const crypto = require('crypto')
 const mongoose = require('mongoose')
 
 const PORT = 3001
-const DB_PATH = path.join(__dirname, 'db.json')
+const DB_PATH = path.join(path.dirname(__filename), 'db.json')
 const USE_MONGODB = process.env.MONGODB_URI && !process.env.USE_MOCK_DB
 
 const app = express()
@@ -2093,10 +2093,14 @@ if (process.env.MONGODB_URI) {
     .catch(err => console.error('MongoDB connection error:', err))
 }
 
-app.listen(PORT, () => {
-  console.log(`Mock API server running at http://localhost:${PORT}`)
-  console.log(`Demo admin: admin / admin123`)
-  if (process.env.MONGODB_URI) {
-    console.log('MongoDB mode enabled')
-  }
-})
+if (process.env.NETLIFY) {
+  module.exports = app
+} else {
+  app.listen(PORT, () => {
+    console.log(`Mock API server running at http://localhost:${PORT}`)
+    console.log(`Demo admin: admin / admin123`)
+    if (process.env.MONGODB_URI) {
+      console.log('MongoDB mode enabled')
+    }
+  })
+}
