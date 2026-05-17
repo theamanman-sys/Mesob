@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Ticket, Calendar, Clock, FileText, Search, ExternalLink, X, ChevronDown } from 'lucide-react'
+import { Ticket, Calendar, Clock, FileText, Search, ExternalLink, X, ChevronDown, Download, Image, FileDown } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
+import { Barcode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
 
 const statusConfig = {
   active: { color: 'text-green-700', bg: 'bg-green-100' },
@@ -154,6 +155,22 @@ export default function CitizenTickets() {
                       <span className="font-medium text-purple-700">{selected.fee?.toLocaleString()} ETB</span>
                     </div>
                   </div>
+                </div>
+
+                <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
+                  <Barcode value={selected.ticketNumber} height={50} className="mx-auto" />
+                  <p className="text-xs text-gray-500 mt-2 font-mono">{selected.ticketNumber}</p>
+                </div>
+
+                <div className="flex gap-2">
+                  <button onClick={() => downloadTicketImage(selected)}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 transition">
+                    <Image className="w-4 h-4" /> {t('Save as Image')}
+                  </button>
+                  <button onClick={() => downloadTicketPDF(selected)}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition">
+                    <FileDown className="w-4 h-4" /> {t('Export PDF')}
+                  </button>
                 </div>
 
                 {selected.documents?.length > 0 && (

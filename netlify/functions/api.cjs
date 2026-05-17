@@ -112,10 +112,30 @@ exports.handler = async (event) => {
     }
 
     if (method === 'POST' && p === '/citizens/applications') {
-      const app = { id: Date.now(), citizenId, ...body, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+      const citizen = (data.citizens || []).find(c => c.id === citizenId)
+      const ticketNumber = 'TKT-' + Date.now().toString(36).toUpperCase()
+      const appointmentDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000)
+      const refNumber = 'APP-' + Date.now().toString(36).toUpperCase() + '-' + String(Math.floor(Math.random() * 9000) + 1000)
+      const app = {
+        id: Date.now().toString(36), citizenId, referenceNumber: refNumber,
+        ticketNumber, ...body,
+        status: 'submitted', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+        timeline: [{ status: 'submitted', date: new Date().toISOString(), note: 'Application submitted' }]
+      }
       if (!data.citizenApplications) data.citizenApplications = []
       data.citizenApplications.push(app)
-      return respond(200, app, 'Application submitted')
+      const ticket = {
+        id: Date.now(), ticketNumber, citizenId,
+        citizenName: citizen ? `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim() : '',
+        serviceId: body.serviceId, serviceTitle: body.serviceTitle,
+        department: '', fee: Math.floor(Math.random() * 500) + 50,
+        timestamp: new Date().toISOString(), appointmentDate: appointmentDate.toISOString(),
+        appointmentTime: `${String(8 + Math.floor(Math.random() * 8)).padStart(2, '0')}:${String(Math.floor(Math.random() * 4) * 15).padStart(2, '0')}`,
+        status: 'active', createdAt: new Date().toISOString()
+      }
+      if (!data.tickets) data.tickets = []
+      data.tickets.push(ticket)
+      return respond(200, { application: app, ticket }, 'Application submitted with ticket')
     }
 
     if (method === 'PUT' && p?.startsWith('/citizens/applications/')) {
@@ -306,7 +326,55 @@ exports.handler = async (event) => {
       }))
       return respond(200, anonymized)
     }
-    if (method === 'GET' && p === '/contributions/stats') return respond(200, data.contributions || [])
+    if (method === 'GET' && p === '/contributions') {
+      if (!data.contributions) data.contributions = []
+      return respond(200, [...data.contributions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)))
+    }
+
+    if (method === 'GET' && p === '/contributions/stats') {
+      if (!data.contributions) data.contributions = []
+      const total = data.contributions.reduce((s, c) => s + (c.amount || 0), 0)
+      const byDept = {}
+      data.contributions.forEach(c => {
+        const dept = c.department || 'Other'
+        byDept[dept] = (byDept[dept] || 0) + (c.amount || 0)
+      })
+      return respond(200, { totalContributions: total, contributionCount: data.contributions.length, byDepartment: byDept })
+    }
+
+    if (method === 'POST' && p === '/contributions') {
+      const { department, amount, message } = body
+      if (!amount || Number(amount) <= 0) return respond(400, null, 'Invalid amount')
+      const citizen = (data.citizens || []).find(c => c.id === citizenId)
+      let netWorthEntry = (data.netWorth || []).find(n => n.citizenId === citizenId)
+      if (!netWorthEntry) {
+        netWorthEntry = { id: Date.now(), citizenId, fullName: citizen ? `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim() : '', email: citizen?.email || '', netWorth: 0, assets: [], liabilities: [], shareName: false }
+        if (!data.netWorth) data.netWorth = []
+        data.netWorth.push(netWorthEntry)
+      }
+      const contributionAmount = Number(amount)
+      if (contributionAmount > (netWorthEntry.netWorth || 0)) return respond(400, null, 'Insufficient net worth')
+      netWorthEntry.netWorth = (netWorthEntry.netWorth || 0) - contributionAmount
+      netWorthEntry.updatedAt = new Date().toISOString()
+      const deptName = department || 'General'
+      const deptBudget = (data.departmentBudgets || []).find(d => d.departmentName === deptName)
+      if (deptBudget) {
+        deptBudget.revenueGenerated = (deptBudget.revenueGenerated || 0) + contributionAmount
+        deptBudget.remaining = (deptBudget.remaining || 0) + contributionAmount
+      }
+      const contribution = {
+        id: Date.now(), citizenId, citizenName: citizen ? `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim() : '',
+        department: deptName, amount: contributionAmount, message: message || '', createdAt: new Date().toISOString()
+      }
+      if (!data.contributions) data.contributions = []
+      data.contributions.push(contribution)
+      return respond(200, contribution, 'Contribution submitted')
+    }
+
+    if (method === 'GET' && p === '/citizens/contributions') {
+      if (!data.contributions) data.contributions = []
+      return respond(200, data.contributions.filter(c => c.citizenId === citizenId))
+    }
     if (method === 'GET' && p === '/tickets/stats') return respond(200, { total: (data.tickets || []).length })
 
     // ========== BANKS ==========

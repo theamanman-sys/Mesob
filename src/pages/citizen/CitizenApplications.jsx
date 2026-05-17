@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, ChevronDown, Building2, Calendar, ArrowRight, Plus, Trash2, Edit3, Upload, X, Loader } from 'lucide-react'
+import { FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, ChevronDown, Building2, Calendar, ArrowRight, Plus, Trash2, Edit3, Upload, X, Loader, Ticket, Download } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
+import { Barcode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
 
 const statusConfig = {
   submitted: { icon: Clock, label: 'Submitted', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
@@ -168,6 +169,34 @@ export default function CitizenApplications() {
                     ))}
                   </div>
                 </div>
+                {selected.ticketNumber && (
+                  <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
+                    <div className="flex items-center gap-2 text-purple-700 font-semibold text-sm mb-2">
+                      <Ticket className="w-4 h-4" /> {t('Appointment Ticket')}
+                    </div>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="text-gray-500">{t('Ticket Number')}</span>
+                      <span className="font-bold text-gray-800">{selected.ticketNumber}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="text-gray-500">{t('Reference')}</span>
+                      <span className="font-medium text-gray-800">{selected.referenceNumber}</span>
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-purple-200">
+                      <Barcode value={selected.ticketNumber} height={30} />
+                      <div className="flex gap-2 mt-2">
+                        <button onClick={() => downloadTicketImage({ ticketNumber: selected.ticketNumber, serviceTitle: selected.serviceTitle, fee: 0, status: selected.status, appointmentDate: selected.createdAt })}
+                          className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-semibold hover:bg-purple-700 transition">
+                          <Download className="w-3 h-3" /> {t('Image')}
+                        </button>
+                        <button onClick={() => downloadTicketPDF({ ticketNumber: selected.ticketNumber, serviceTitle: selected.serviceTitle, fee: 0, status: selected.status, appointmentDate: selected.createdAt })}
+                          className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition">
+                          <Download className="w-3 h-3" /> PDF
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {selected.documents?.length > 0 && (
                   <div>
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">{t('Documents')} ({selected.documents.length})</h3>

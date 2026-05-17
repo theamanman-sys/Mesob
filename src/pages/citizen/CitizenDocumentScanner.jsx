@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Upload, FileText, Scan, CreditCard, BookOpen, Building2, Shield, FileSignature, Loader2, CheckCircle, X, Camera, Fingerprint, Eye } from 'lucide-react'
+import { Upload, FileText, Scan, CreditCard, BookOpen, Building2, Shield, FileSignature, Loader2, CheckCircle, X, Camera, Fingerprint, Eye, Save } from 'lucide-react'
 import Tesseract from 'tesseract.js'
 import { useLanguage } from '../../context/LanguageContext'
+import { citizenService } from '../../services/citizenService'
 
 const docTypes = [
   { id: 'driving', label: 'Driving License', icon: CreditCard, color: 'bg-blue-500' },
@@ -59,6 +60,8 @@ export default function CitizenDocumentScanner() {
   const [scanProgress, setScanProgress] = useState(0)
   const [scanStatus, setScanStatus] = useState('')
   const [preview, setPreview] = useState(null)
+  const [saving, setSaving] = useState(null)
+  const [saveMsg, setSaveMsg] = useState('')
   const fileInputRef = useRef(null)
   const [pendingType, setPendingType] = useState(null)
   const [cameraMode, setCameraMode] = useState(false)
@@ -147,6 +150,19 @@ export default function CitizenDocumentScanner() {
   const handleUpload = (e) => {
     Array.from(e.target.files).forEach((f) => setFiles((prev) => [...prev, { name: f.name, size: f.size, type: f.type, uploadedAt: new Date().toISOString() }]))
     e.target.value = ''
+  }
+
+  const handleSaveScan = async (entry) => {
+    setSaving(entry.id)
+    setSaveMsg('')
+    try {
+      const blob = await fetch(entry.preview).then(r => r.blob())
+      const file = new File([blob], entry.fileName, { type: 'image/jpeg' })
+      await citizenService.uploadDocument(file, entry.type, { extractedData: entry.fields, ocrText: entry.text, ocrConfidence: entry.confidence })
+      setSaveMsg(entry.id)
+      setTimeout(() => setSaveMsg(''), 2000)
+    } catch (err) { alert(t('Failed to save') + ': ' + err.message) }
+    setSaving(null)
   }
 
   const handleRemoveScan = (id) => {
@@ -261,6 +277,14 @@ export default function CitizenDocumentScanner() {
                         <span className="px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700 flex items-center gap-1">
                           <CheckCircle className="w-3 h-3" /> {s.confidence}%
                         </span>
+                        {saveMsg === s.id ? (
+                          <span className="text-xs text-green-600 font-medium">{t('Saved!')}</span>
+                        ) : (
+                          <button onClick={() => handleSaveScan(s)} disabled={saving === s.id}
+                            className="p-1 rounded-lg hover:bg-green-50 text-gray-400 hover:text-green-600 transition disabled:opacity-40" title={t('Save to Documents')}>
+                            {saving === s.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                          </button>
+                        )}
                         <button onClick={() => handleRemoveScan(s.id)} className="p-1 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition">
                           <X className="w-4 h-4" />
                         </button>
