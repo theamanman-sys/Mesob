@@ -42,7 +42,11 @@ function sendRes(res, result) {
 }
 
 function getPath(req) {
-  try { return new URL(req.url, 'http://localhost').pathname.replace(/^\/api/, '') } catch { return '' }
+  try { 
+    const pathname = new URL(req.url, 'http://localhost').pathname.replace(/^\/api/, '')
+    // Remove trailing slash for consistent matching
+    return pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname
+  } catch { return '' }
 }
 
 function bearerToken(req) {
@@ -60,8 +64,25 @@ function parseBody(req) {
 function unauth() { return json(401, null, 'Unauthorized') }
 
 function getCitizenId(token) {
-  const id = parseInt(token.replace(/^mock-citizen-token-/, ''), 10)
-  return isNaN(id) ? null : id
+  // Handle mock tokens (for backward compatibility)
+  if (token.startsWith('mock-citizen-token-')) {
+    const id = parseInt(token.replace(/^mock-citizen-token-/, ''), 10)
+    return isNaN(id) ? null : id
+  }
+  
+  // Handle JWT tokens
+  try {
+    const parts = token.split('.')
+    if (parts.length === 3) {
+      const payload = JSON.parse(b64Decode(parts[1]))
+      const id = parseInt(payload.sub, 10)
+      return isNaN(id) ? null : id
+    }
+  } catch (e) {
+    console.error('[getCitizenId] Failed to parse JWT:', e.message)
+  }
+  
+  return null
 }
 
 // ── Mock DB ──────────────────────────────────────────────────────

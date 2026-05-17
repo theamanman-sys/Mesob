@@ -1,8 +1,7 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/api/citizens/:path+", "destination": "/api/citizens/index.cjs" },
-    { "source": "/api/:path+",            "destination": "/api/:path+" },
+    { "source": "/api/:path+", "destination": "/api/index.mjs" },
     { "source": "/(.*)",                  "destination": "/index.html" }
   ],
   "headers": [
