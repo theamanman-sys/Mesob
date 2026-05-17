@@ -102,6 +102,15 @@ exports.handler = async (event) => {
       return respond(200, (data.tickets || []).filter(t => t.citizenId === citizenId))
     }
 
+    if (method === 'PUT' && p?.startsWith('/citizens/tickets/')) {
+      const ticketId = parseInt(p.split('/')[3])
+      const idx = (data.tickets || []).findIndex(t => t.id === ticketId && t.citizenId === citizenId)
+      if (idx === -1) return respond(404, null, 'Ticket not found')
+      if (body.appointmentDate) data.tickets[idx].appointmentDate = body.appointmentDate
+      if (body.appointmentTime) data.tickets[idx].appointmentTime = body.appointmentTime
+      return respond(200, data.tickets[idx], 'Ticket updated')
+    }
+
     if (method === 'GET' && p === '/tickets') {
       return respond(200, (data.tickets || []).filter(t => t.citizenId === citizenId))
     }
@@ -115,9 +124,11 @@ exports.handler = async (event) => {
       const citizen = (data.citizens || []).find(c => c.id === citizenId)
       const now = new Date()
       const ticketNumber = 'TKT-' + now.getTime().toString(36).toUpperCase()
-      const apptDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
       const seq = ((data.citizenApplications || []).length + 1).toString().padStart(4, '0')
       const refNumber = 'APP-' + now.getFullYear() + seq
+      const customDate = body.formData?.appointmentDate
+      const customTime = body.formData?.appointmentTime
+      const apptDate = customDate ? new Date(customDate) : new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
       const app = {
         id: now.getTime().toString(36), citizenId, referenceNumber: refNumber,
         ticketNumber, ...body,
@@ -133,8 +144,9 @@ exports.handler = async (event) => {
         citizenName: citizen ? `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim() : '',
         serviceId: body.serviceId, serviceTitle: body.serviceTitle,
         department: '', fee: feeAmount,
-        timestamp: now.toISOString(), appointmentDate: apptDate.toISOString(),
-        appointmentTime: '10:00',
+        timestamp: now.toISOString(),
+        appointmentDate: apptDate.toISOString(),
+        appointmentTime: customTime || '10:00',
         status: 'active', createdAt: now.toISOString()
       }
       if (!data.tickets) data.tickets = []

@@ -263,6 +263,11 @@ export const citizenService = {
     return response.data || []
   },
 
+  async updateTicket(ticketId, updates) {
+    const { data: response } = await api.put(`${CITIZEN_BASE}/tickets/${ticketId}`, updates)
+    return response.data || response
+  },
+
   // Fayda ID
   async getFaydaId() {
     const { data: response } = await api.get(`${CITIZEN_BASE}/fayda-id`)

@@ -20,6 +20,8 @@ export default function CitizenServices() {
   const [appTicket, setAppTicket] = useState(null)
   const [appForm, setAppForm] = useState({})
   const [appDocs, setAppDocs] = useState([])
+  const [apptDate, setApptDate] = useState('')
+  const [apptTime, setApptTime] = useState('10:00')
   const [expandedOrg, setExpandedOrg] = useState(null)
 
   useEffect(() => {
@@ -59,10 +61,12 @@ export default function CitizenServices() {
     e.preventDefault()
     setLoading(true)
     try {
-      const result = await citizenService.submitApplication(showApply.id, showApply.title, appForm, appDocs)
+      const extra = {}
+      if (apptDate) { extra.appointmentDate = new Date(apptDate + 'T' + (apptTime || '10:00')).toISOString(); extra.appointmentTime = apptTime || '10:00' }
+      const result = await citizenService.submitApplication(showApply.id, showApply.title, { ...appForm, ...extra }, appDocs)
       if (result.ticket) setAppTicket(result.ticket)
       setSuccess(true)
-      setStep(3)
+      setStep(4)
     } catch (err) {
       alert(err.response?.data?.message || err.message)
     }
@@ -194,15 +198,15 @@ export default function CitizenServices() {
 
               {!success && (
                 <div className="flex items-center gap-2 px-5 py-4 bg-gray-50 border-b border-gray-100">
-                  {[1, 2].map((s) => (
+                  {[1, 2, 3].map((s) => (
                     <div key={s} className="flex items-center gap-2">
                       <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${step >= s ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
                         {step > s ? <CheckCircle className="w-3.5 h-3.5" /> : s}
                       </div>
                       <span className={`text-xs font-medium ${step >= s ? 'text-blue-600' : 'text-gray-400'}`}>
-                        {s === 1 ? t('Details') : t('Documents')}
+                        {s === 1 ? t('Details') : s === 2 ? t('Schedule') : t('Documents')}
                       </span>
-                      {s < 2 && <div className={`w-8 h-0.5 ${step > s ? 'bg-blue-600' : 'bg-gray-200'}`} />}
+                      {s < 3 && <div className={`w-8 h-0.5 ${step > s ? 'bg-blue-600' : 'bg-gray-200'}`} />}
                     </div>
                   ))}
                 </div>
@@ -280,6 +284,40 @@ export default function CitizenServices() {
                       </button>
                     </div>
                   </form>
+                ) : step === 2 ? (
+                  <form onSubmit={(e) => { e.preventDefault(); setStep(3) }} className="space-y-4">
+                    <p className="text-sm text-gray-600">{t('Choose your preferred appointment date and time')}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Appointment Date')}</label>
+                        <input type="date" value={apptDate}
+                          onChange={e => setApptDate(e.target.value)}
+                          min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Appointment Time')}</label>
+                        <select value={apptTime} onChange={e => setApptTime(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+                          {['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00'].map(t => (
+                            <option key={t} value={t}>{t}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="bg-blue-50 rounded-xl p-4 text-sm text-blue-700">
+                      <Calendar className="w-4 h-4 inline mr-1" />
+                      {t('Appointments are available Monday to Friday, 8:00 AM - 4:00 PM. Leave blank for auto-assignment.')}
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <button type="button" onClick={() => setStep(1)} className="flex-1 border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">
+                        {t('Back')}
+                      </button>
+                      <button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">
+                        {t('Next: Documents')} <ArrowRight className="w-4 h-4 inline ml-1" />
+                      </button>
+                    </div>
+                  </form>
                 ) : (
                   <form onSubmit={handleApply} className="space-y-4">
                     <p className="text-sm text-gray-600">{t('Upload the required documents')}</p>
@@ -307,7 +345,7 @@ export default function CitizenServices() {
                       </div>
                     )}
                     <div className="flex gap-3 pt-2">
-                      <button type="button" onClick={() => setStep(1)} className="flex-1 border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">
+                      <button type="button" onClick={() => setStep(2)} className="flex-1 border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition">
                         {t('Back')}
                       </button>
                       <button type="submit" disabled={loading}

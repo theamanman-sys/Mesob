@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Ticket, Calendar, Clock, FileText, Search, ExternalLink, X, ChevronDown, Download, Image, FileDown } from 'lucide-react'
+import { Ticket, Calendar, Clock, FileText, Search, ExternalLink, X, ChevronDown, Download, Image, FileDown, Check } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
 import { Barcode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
@@ -17,6 +17,8 @@ export default function CitizenTickets() {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
   const [selected, setSelected] = useState(null)
+  const [resched, setResched] = useState({ date: '', time: '' })
+  const [rescheduling, setRescheduling] = useState(false)
   const { t } = useLanguage()
 
   useEffect(() => {
@@ -154,7 +156,49 @@ export default function CitizenTickets() {
                       <span className="text-gray-500">{t('Fee')}</span>
                       <span className="font-medium text-purple-700">{selected.fee?.toLocaleString()} ETB</span>
                     </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">{t('Applied')}</span>
+                      <span className="font-medium text-gray-900">{selected.createdAt ? new Date(selected.createdAt).toLocaleString() : t('TBD')}</span>
+                    </div>
                   </div>
+                  {selected.status === 'active' && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      {resched.date || resched.time ? (
+                        <div className="flex items-center gap-2">
+                          <input type="date" value={resched.date} onChange={e => setResched({ ...resched, date: e.target.value })}
+                            min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+                            className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-purple-400" />
+                          <select value={resched.time} onChange={e => setResched({ ...resched, time: e.target.value })}
+                            className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-purple-400">
+                            {['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00'].map(t => (
+                              <option key={t} value={t}>{t}</option>
+                            ))}
+                          </select>
+                          <button onClick={async () => {
+                            if (!resched.date) return
+                            setRescheduling(true)
+                            try {
+                              await citizenService.updateTicket(selected.id, { appointmentDate: new Date(resched.date + 'T' + (resched.time || '10:00')).toISOString(), appointmentTime: resched.time || '10:00' })
+                              setSelected({ ...selected, appointmentDate: new Date(resched.date + 'T' + (resched.time || '10:00')).toISOString(), appointmentTime: resched.time || '10:00' })
+                              citizenService.getMyTickets().then(setTickets).catch(() => {})
+                              setResched({ date: '', time: '' })
+                            } catch (err) { alert(err.message) }
+                            setRescheduling(false)
+                          }} disabled={rescheduling}
+                            className="p-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition disabled:opacity-50">
+                            <Check className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => setResched({ date: '', time: '' })}
+                            className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition"><X className="w-4 h-4" /></button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setResched({ date: selected.appointmentDate ? selected.appointmentDate.split('T')[0] : '', time: selected.appointmentTime || '10:00' })}
+                          className="w-full py-2 rounded-xl border-2 border-dashed border-gray-200 text-sm text-gray-500 hover:border-purple-400 hover:text-purple-600 transition">
+                          <Calendar className="w-4 h-4 inline mr-1" /> {t('Reschedule')}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
