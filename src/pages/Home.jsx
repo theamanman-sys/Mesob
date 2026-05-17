@@ -146,10 +146,9 @@ function MesobHero({ t }) {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
           poster="/files/Mesob.jpeg"
           aria-hidden="true"
-          loading="lazy"
         >
           <source src="/files/hero-video.mp4" type="video/mp4" />
           <source src="/files/hero-video.mkv" type="video/x-matroska" />
