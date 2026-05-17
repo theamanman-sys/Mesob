@@ -1,5 +1,4 @@
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
-let initialized = false
 
 export function getGoogleCredential() {
   const raw = sessionStorage.getItem('google_credential')
@@ -15,19 +14,18 @@ export function renderGoogleButton(containerId, onSuccess) {
   const container = document.getElementById(containerId)
   if (!container || container.hasChildNodes()) return
 
-  if (!initialized) {
-    initialized = true
-    google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      callback: (response) => {
-        if (response.credential) {
-          const payload = parseJwt(response.credential)
-          sessionStorage.setItem('google_credential', JSON.stringify(payload))
-          onSuccess(response.credential)
-        }
-      },
-    })
-  }
+  google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    ux_mode: 'redirect',
+    login_uri: window.location.origin + window.location.pathname,
+    callback: (response) => {
+      if (response.credential) {
+        const payload = parseJwt(response.credential)
+        sessionStorage.setItem('google_credential', JSON.stringify(payload))
+        onSuccess(response.credential)
+      }
+    },
+  })
 
   google.accounts.id.renderButton(container, {
     type: 'standard',
