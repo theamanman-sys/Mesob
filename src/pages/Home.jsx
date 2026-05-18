@@ -154,6 +154,7 @@ function MesobHero({ t }) {
         <video
           ref={videoRef}
           className="mesob-hero-video"
+          autoPlay
           muted
           loop
           playsInline
