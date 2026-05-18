@@ -72,16 +72,11 @@ function MesobHero({ t }) {
   useEffect(() => {
     const el = videoRef.current
     if (!el) return
-    const tryPlay = () => {
-      el.play().catch(() => {
-        const onInteraction = () => { el.play(); document.removeEventListener('touchstart', onInteraction) }
-        document.addEventListener('touchstart', onInteraction, { once: true })
-      })
-    }
-    if (el.readyState >= 2) { tryPlay(); return }
-    el.addEventListener('canplay', tryPlay, { once: true })
-    el.addEventListener('loadedmetadata', tryPlay, { once: true })
-    setTimeout(tryPlay, 3000)
+    el.play().catch(() => {
+      const once = () => { el.play(); document.removeEventListener('touchstart', once); document.removeEventListener('click', once) }
+      document.addEventListener('touchstart', once, { once: true })
+      document.addEventListener('click', once, { once: true })
+    })
   }, [])
 
   const setCssVar = useCallback((el, name, val) => {
@@ -162,7 +157,7 @@ function MesobHero({ t }) {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           aria-hidden="true"
         >
           <source src="/files/hero-video.mp4" type="video/mp4" />
