@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, FileText, Fingerprint, CheckCircle } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
-import { renderGoogleButton } from '../../services/googleAuth'
+import { renderGoogleButton, getGoogleCredential } from '../../services/googleAuth'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function CitizenRegister() {
@@ -17,9 +17,12 @@ export default function CitizenRegister() {
     firstName: '', lastName: '', idNumber: '', email: '',
     phone: '', password: '', confirmPassword: ''
   })
+  const processed = useRef(false)
 
   const processGoogleCredential = async (credential) => {
+    if (processed.current) return
     try {
+      processed.current = true
       setLoading(true)
       await citizenService.googleLogin(credential)
       navigate('/citizen/dashboard')
@@ -31,6 +34,11 @@ export default function CitizenRegister() {
   }
 
   useEffect(() => {
+    const token = getGoogleCredential()
+    if (token) {
+      processGoogleCredential(token)
+      return
+    }
     if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) return
     renderGoogleButton('google-signup-button', processGoogleCredential)
   }, [])
