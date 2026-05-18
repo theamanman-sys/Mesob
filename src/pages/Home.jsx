@@ -151,6 +151,7 @@ function MesobHero({ t }) {
             controlsList="nofullscreen noremoteplayback"
             disablePictureInPicture
           >
+            <source src="/files/hero-video.mkv" type="video/x-matroska" />
             <source src="/files/hero-video.mp4" type="video/mp4" />
           </video>
           <div className="mesob-hero-video-overlay" />
