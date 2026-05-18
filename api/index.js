@@ -4,7 +4,8 @@ const crypto = require('crypto')
 
 const MOCK_DB_PATH = path.resolve(__dirname, '..', 'mock', 'db.json')
 const MONGODB_URI = process.env.MONGODB_URI
-const USE_MOCK = !MONGODB_URI || String(process.env.USE_MOCK_DB) !== 'false'
+let USE_MOCK = !MONGODB_URI || String(process.env.USE_MOCK_DB) === 'true'
+let _mongoInit = null
 
 function b64Decode(str) {
   const raw = str.replace(/-/g, '+').replace(/_/g, '/')
@@ -73,14 +74,28 @@ function loadMockDB() { return JSON.parse(fs.readFileSync(MOCK_DB_PATH, 'utf-8')
 function saveMockDB(db) { try { fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(db, null, 2), 'utf-8') } catch (_) {} }
 
 let _mongoConn = null, _mongoDb = null
+async function initDb() {
+  if (USE_MOCK || !MONGODB_URI) return
+  if (_mongoDb) return
+  if (_mongoInit) return _mongoInit
+  _mongoInit = (async () => {
+    try {
+      const { MongoClient } = require('mongodb')
+      const client = new MongoClient(MONGODB_URI, { maxPoolSize: 5, serverSelectionTimeoutMS: 5000 })
+      await client.connect()
+      _mongoConn = client
+      _mongoDb = client.db()
+    } catch (e) {
+      console.error('[Mongo] Init failed, falling back to mock:', e.message)
+      USE_MOCK = true
+    }
+  })()
+  return _mongoInit
+}
+
 async function mongo() {
-  if (_mongoDb) return _mongoDb
-  const { MongoClient } = require('mongodb')
-  const client = new MongoClient(MONGODB_URI, { maxPoolSize: 5, serverSelectionTimeoutMS: 5000 })
-  await client.connect()
-  _mongoConn = client
-  _mongoDb = client.db()
-  return _mongoDb
+  await initDb()
+  return _mongoDb || null
 }
 
 function safeCitizen(c) { const { password, _id, ...r } = c; return r }
@@ -400,6 +415,7 @@ module.exports = async function handler(request, response) {
   const body = parseBody(request)
 
   try {
+    await initDb()
     if (request.method === 'GET' && p === '/health')
       return sendRes(response, json(200, { ok: true, cwd: process.cwd(), dir: __dirname, mockPath: MOCK_DB_PATH, useMock: USE_MOCK, node: process.version }))
 
