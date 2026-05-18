@@ -24,25 +24,16 @@ body::-webkit-scrollbar {
   background-size: 42px 42px, auto;
 }
 
-.mesob-hero-video-wrap {
+.mesob-hero-video {
   position: absolute;
   top: 50%;
   left: 0;
   translate: 0 -50%;
   width: 100%;
-  z-index: 3;
-}
-.mesob-hero-video {
-  display: block;
-  width: 100%;
   height: auto;
+  z-index: 3;
   opacity: var(--video-opacity, 0.5);
-}
-.mesob-hero-video-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: transparent;
+  pointer-events: none;
 }
 
 

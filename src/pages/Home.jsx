@@ -140,21 +140,18 @@ function MesobHero({ t }) {
       }}
     >
       <div className="mesob-hero-sticky">
-        <div className="mesob-hero-video-wrap" aria-hidden="true">
-          <video
-            className="mesob-hero-video"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            controlsList="nofullscreen noremoteplayback"
-            disablePictureInPicture
-          >
-            <source src="/files/hero-video.mkv" type="video/x-matroska" />
-          </video>
-          <div className="mesob-hero-video-overlay" />
-        </div>
+        <video
+          className="mesob-hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+        >
+          <source src="/files/hero-video.mp4" type="video/mp4" />
+          <source src="/files/hero-video.mkv" type="video/x-matroska" />
+        </video>
         <div className="mesob-ambient mesob-ambient-one" aria-hidden="true" />
         <div className="mesob-ambient mesob-ambient-two" aria-hidden="true" />
         <div className="mesob-woven-ribbon mesob-woven-ribbon-one" aria-hidden="true" />
