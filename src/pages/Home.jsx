@@ -72,11 +72,12 @@ function MesobHero({ t }) {
   useEffect(() => {
     const el = videoRef.current
     if (!el) return
-    el.play().catch(() => {
-      const once = () => { el.play(); document.removeEventListener('touchstart', once); document.removeEventListener('click', once) }
-      document.addEventListener('touchstart', once, { once: true })
-      document.addEventListener('click', once, { once: true })
-    })
+    let attempts = 0
+    const tryPlay = () => {
+      if (attempts++ > 10) return
+      el.play().catch(() => setTimeout(tryPlay, 500))
+    }
+    tryPlay()
   }, [])
 
   const setCssVar = useCallback((el, name, val) => {
@@ -164,6 +165,7 @@ function MesobHero({ t }) {
           <source src="/files/hero-video.mp4" type="video/mp4" />
           <source src="/files/hero-video.mkv" type="video/x-matroska" />
         </video>
+        <div className="mesob-hero-video-overlay" aria-hidden="true" />
         <div className="mesob-ambient mesob-ambient-one" aria-hidden="true" />
         <div className="mesob-ambient mesob-ambient-two" aria-hidden="true" />
         <div className="mesob-woven-ribbon mesob-woven-ribbon-one" aria-hidden="true" />
