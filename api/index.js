@@ -412,13 +412,22 @@ async function handleRoute(method, p, body, req) {
     return json(200, [])
   }
 
-  if (method === 'GET' && p === '/services') {
+  if (method === 'GET' && (p === '/services' || p === '/Services')) {
     if (USE_MOCK) return json(200, data.services || [])
-    return json(200, [])
+    const db = await mongo()
+    return json(200, await db.collection('services').find().toArray())
   }
-  if (method === 'GET' && p?.startsWith('/services/') && USE_MOCK) {
+  if (method === 'GET' && (p?.startsWith('/services/') || p?.startsWith('/Services/'))) {
     const id = parseInt(p.split('/')[2])
-    return json(200, (data.services || []).find(s => s.id === id) || null)
+    if (USE_MOCK) return json(200, (data.services || []).find(s => s.id === id) || null)
+    const db = await mongo()
+    const service = await db.collection('services').findOne({ id })
+    return json(200, service || null)
+  }
+  if (method === 'GET' && (p === '/organizations' || p === '/Organizations')) {
+    if (USE_MOCK) return json(200, data.organizations || [])
+    const db = await mongo()
+    return json(200, await db.collection('organizations').find().toArray())
   }
   if (method === 'GET' && p === '/banks') {
     if (USE_MOCK) return json(200, data.banks || [])
