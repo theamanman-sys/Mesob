@@ -148,6 +148,8 @@ function MesobHero({ t }) {
           playsInline
           preload="metadata"
           aria-hidden="true"
+          controlsList="nofullscreen noremoteplayback"
+          disablePictureInPicture
         >
           <source src="/files/hero-video.mp4" type="video/mp4" />
           <source src="/files/hero-video.mkv" type="video/x-matroska" />
