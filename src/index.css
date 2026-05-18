@@ -30,25 +30,24 @@ body::-webkit-scrollbar {
   left: 0;
   translate: 0 -50%;
   width: 100%;
-  height: auto;
+  height: 100%;
   z-index: 3;
   opacity: var(--video-opacity, 0.5);
   pointer-events: none;
+}
+.mesob-hero-video-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
 }
 .mesob-hero-video-overlay {
   position: absolute;
   inset: 0;
   z-index: 4;
   background: transparent;
-}
-.mesob-hero-video::-webkit-media-controls {
-  display: none !important;
-}
-.mesob-hero-video::-webkit-media-controls-play-button {
-  display: none !important;
-}
-.mesob-hero-video::-webkit-media-controls-start-playback-button {
-  display: none !important;
 }
 
 

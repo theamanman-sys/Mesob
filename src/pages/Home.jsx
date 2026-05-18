@@ -67,17 +67,40 @@ function MesobHero({ t }) {
   const shouldReduceMotion = useReducedMotion()
   const sectionRef = useRef(null)
   const videoRef = useRef(null)
+  const canvasRef = useRef(null)
+  const rafRef = useRef(null)
   const [activePhase, setActivePhase] = useState(-1)
 
   useEffect(() => {
     const el = videoRef.current
-    if (!el) return
+    const canvas = canvasRef.current
+    if (!el || !canvas) return
+    const ctx = canvas.getContext('2d')
+    const resize = () => {
+      canvas.width = canvas.clientWidth * (window.devicePixelRatio || 1)
+      canvas.height = canvas.clientHeight * (window.devicePixelRatio || 1)
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    const draw = () => {
+      if (!el.paused && !el.ended) {
+        ctx.drawImage(el, 0, 0, canvas.width, canvas.height)
+      }
+      rafRef.current = requestAnimationFrame(draw)
+    }
+
     let attempts = 0
     const tryPlay = () => {
-      if (attempts++ > 10) return
-      el.play().catch(() => setTimeout(tryPlay, 500))
+      if (attempts++ > 15) return
+      el.play().then(() => draw()).catch(() => setTimeout(tryPlay, 500))
     }
     tryPlay()
+
+    return () => {
+      window.removeEventListener('resize', resize)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
   }, [])
 
   return (
@@ -99,7 +122,7 @@ function MesobHero({ t }) {
       <div className="mesob-hero-sticky">
         <video
           ref={videoRef}
-          className="mesob-hero-video"
+          className="mesob-hero-video-hidden"
           autoPlay
           muted
           loop
@@ -109,6 +132,11 @@ function MesobHero({ t }) {
         >
           <source src="/files/hero-video.mp4" type="video/mp4" />
         </video>
+        <canvas
+          ref={canvasRef}
+          className="mesob-hero-video"
+          aria-hidden="true"
+        />
         <div className="mesob-hero-video-overlay" aria-hidden="true" />
         <div className="mesob-ambient mesob-ambient-one" aria-hidden="true" />
         <div className="mesob-ambient mesob-ambient-two" aria-hidden="true" />
