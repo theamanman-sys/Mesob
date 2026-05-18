@@ -35,7 +35,8 @@ function sendRes(res, result) {
 
 function getPath(req) {
   try {
-    const pathname = new URL(req.url, 'http://localhost').pathname.replace(/^\/api/, '')
+    const original = req.headers['x-vercel-rewrite-original-url'] || req.url
+    const pathname = new URL(original, 'http://localhost').pathname.replace(/^\/api/, '')
     return pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname
   } catch { return '' }
 }

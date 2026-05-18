@@ -1,9 +1,13 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/api/:path+", "destination": "/api/index.mjs" },
-    { "source": "/(.*)",                  "destination": "/index.html" }
+    { "source": "/api/:path+", "destination": "/api" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
+  "functions": {
+    "api/**/*.cjs": { "runtime": "@vercel/node@3" },
+    "api/**/*.mjs": { "runtime": "@vercel/node@3" }
+  },
   "headers": [
     {
       "source": "/(.*)",
