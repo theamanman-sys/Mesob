@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import { User, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, FileCheck2, Clock } from 'lucide-react'
 import { renderGoogleButton, getGoogleCredential } from '../services/googleAuth'
 import { citizenService } from '../services/citizenService'
+import { isInAppBrowser } from '../utils/browserCheck'
+import InAppBrowserWarning from '../components/InAppBrowserWarning'
 
 export default function CitizenLogin() {
   const navigate = useNavigate()
@@ -12,6 +14,7 @@ export default function CitizenLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const processed = useRef(false)
+  const [inAppBrowser] = useState(() => isInAppBrowser())
 
   const processGoogleCredential = async (credential) => {
     if (processed.current) return
@@ -60,7 +63,9 @@ export default function CitizenLogin() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <>
+      {inAppBrowser && <InAppBrowserWarning />}
+      <div className="min-h-screen flex">
       <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-72 h-72 bg-yellow-400 rounded-full blur-3xl" />
@@ -178,5 +183,6 @@ export default function CitizenLogin() {
         </motion.div>
       </div>
     </div>
+    </>
   )
 }

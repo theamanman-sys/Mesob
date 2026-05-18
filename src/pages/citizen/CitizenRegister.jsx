@@ -5,6 +5,8 @@ import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, FileText, Fingerprint
 import { citizenService } from '../../services/citizenService'
 import { renderGoogleButton, getGoogleCredential } from '../../services/googleAuth'
 import { useLanguage } from '../../context/LanguageContext'
+import { isInAppBrowser } from '../../utils/browserCheck'
+import InAppBrowserWarning from '../../components/InAppBrowserWarning'
 
 export default function CitizenRegister() {
   const { t } = useLanguage()
@@ -18,6 +20,7 @@ export default function CitizenRegister() {
     phone: '', password: '', confirmPassword: ''
   })
   const processed = useRef(false)
+  const [inAppBrowser] = useState(() => isInAppBrowser())
 
   const processGoogleCredential = async (credential) => {
     if (processed.current) return
@@ -78,7 +81,9 @@ export default function CitizenRegister() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <>
+      {inAppBrowser && <InAppBrowserWarning />}
+      <div className="min-h-screen flex bg-gray-50">
       <div className="flex-1 flex items-center justify-center p-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-lg">
           <div className="text-center mb-8">
@@ -236,5 +241,6 @@ export default function CitizenRegister() {
         </motion.div>
       </div>
     </div>
+    </>
   )
 }
