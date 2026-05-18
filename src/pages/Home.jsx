@@ -104,6 +104,7 @@ function MesobHero({ t }) {
         >
           <source src="/files/hero-video.mp4" type="video/mp4" />
         </video>
+        <div className="mesob-hero-video-overlay" aria-hidden="true" />
         <div className="mesob-ambient mesob-ambient-one" aria-hidden="true" />
         <div className="mesob-ambient mesob-ambient-two" aria-hidden="true" />
         <div className="mesob-woven-ribbon mesob-woven-ribbon-one" aria-hidden="true" />
