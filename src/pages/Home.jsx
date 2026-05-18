@@ -66,7 +66,14 @@ const serviceGroups = [
 function MesobHero({ t }) {
   const shouldReduceMotion = useReducedMotion()
   const sectionRef = useRef(null)
+  const videoRef = useRef(null)
   const [activePhase, setActivePhase] = useState(-1)
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    el.play().catch(() => {})
+  }, [])
 
   return (
     <section
@@ -86,6 +93,7 @@ function MesobHero({ t }) {
     >
       <div className="mesob-hero-sticky">
         <video
+          ref={videoRef}
           className="mesob-hero-video"
           autoPlay
           muted
