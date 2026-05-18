@@ -66,74 +66,7 @@ const serviceGroups = [
 function MesobHero({ t }) {
   const shouldReduceMotion = useReducedMotion()
   const sectionRef = useRef(null)
-  const videoRef = useRef(null)
   const [activePhase, setActivePhase] = useState(-1)
-
-  useEffect(() => {
-    const el = videoRef.current
-    if (!el) return
-    let attempts = 0
-    const tryPlay = () => {
-      if (attempts++ > 10) return
-      el.play().catch(() => setTimeout(tryPlay, 500))
-    }
-    tryPlay()
-  }, [])
-
-  const setCssVar = useCallback((el, name, val) => {
-    if (el && el.style.getPropertyValue(name) !== String(val)) {
-      el.style.setProperty(name, val)
-    }
-  }, [])
-
-  useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-    let ticking = false
-    let lastPhase = -1
-
-    const update = () => {
-      const rect = el.getBoundingClientRect()
-      const h = rect.height - window.innerHeight
-      const raw = h > 0 ? Math.max(0, Math.min(1, -rect.top / h)) : 0
-
-      const eased = shouldReduceMotion ? raw : easeInOutCubic(raw)
-      const scrollAmt = shouldReduceMotion ? Math.min(raw * 1.4, 0.5) : eased
-      const openAmt = shouldReduceMotion ? Math.min(raw * 1.4, 0.82) : easeOutBack(Math.min(1, Math.max(0, (raw - 0.12) / 0.78)))
-
-      const phase = openAmt > 0.85 ? 3 : openAmt > 0.55 ? 2 : openAmt > 0.25 ? 1 : 0
-      if (phase !== lastPhase) { lastPhase = phase; setActivePhase(phase) }
-
-      setCssVar(el, '--open', openAmt)
-      setCssVar(el, '--progress-width', `${scrollAmt * 100}%`)
-      setCssVar(el, '--hero-copy-y', `${Math.round((1 - scrollAmt) * 56)}px`)
-      setCssVar(el, '--stage-y', `${Math.round((1 - scrollAmt) * 32)}px`)
-      setCssVar(el, '--float-a-y', `${scrollAmt * -72}px`)
-      setCssVar(el, '--float-b-y', `${scrollAmt * 56}px`)
-      setCssVar(el, '--float-c-y', `${scrollAmt * -48}px`)
-      setCssVar(el, '--copy-opacity', Math.min(1, Math.max(0, (raw - 0.08) / 0.18)))
-      setCssVar(el, '--video-opacity', scrollAmt > 0 ? 0 : 1)
-
-      ticking = false
-    }
-
-    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update) } }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    update()
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [shouldReduceMotion, setCssVar])
-
-  const chipVariants = {
-    enter: (i) => ({ opacity: 0, y: 12, scale: 0.9, transition: { delay: i * 0.06, duration: 0.3 } }),
-    center: { opacity: 1, y: 0, scale: 1 },
-    exit: (i) => ({ opacity: 0, y: -8, scale: 0.9, transition: { delay: i * 0.03, duration: 0.2 } })
-  }
-
-  const currentGroup = serviceGroups[activePhase >= 0 ? activePhase : 0]
-  const FloatIconA = currentGroup.floats[0]
-  const FloatIconB = currentGroup.floats[1]
-  const FloatIconC = currentGroup.floats[2]
-  const CoreIcon = currentGroup.core
 
   return (
     <section
@@ -153,7 +86,6 @@ function MesobHero({ t }) {
     >
       <div className="mesob-hero-sticky">
         <video
-          ref={videoRef}
           className="mesob-hero-video"
           autoPlay
           muted
@@ -163,9 +95,7 @@ function MesobHero({ t }) {
           aria-hidden="true"
         >
           <source src="/files/hero-video.mp4" type="video/mp4" />
-          <source src="/files/hero-video.mkv" type="video/x-matroska" />
         </video>
-        <div className="mesob-hero-video-overlay" aria-hidden="true" />
         <div className="mesob-ambient mesob-ambient-one" aria-hidden="true" />
         <div className="mesob-ambient mesob-ambient-two" aria-hidden="true" />
         <div className="mesob-woven-ribbon mesob-woven-ribbon-one" aria-hidden="true" />
