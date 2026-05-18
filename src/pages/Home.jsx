@@ -72,7 +72,12 @@ function MesobHero({ t }) {
   useEffect(() => {
     const el = videoRef.current
     if (!el) return
-    el.play().catch(() => {})
+    let attempts = 0
+    const tryPlay = () => {
+      if (attempts++ > 10) return
+      el.play().catch(() => setTimeout(tryPlay, 500))
+    }
+    tryPlay()
   }, [])
 
   return (
@@ -99,7 +104,7 @@ function MesobHero({ t }) {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           aria-hidden="true"
         >
           <source src="/files/hero-video.mp4" type="video/mp4" />
