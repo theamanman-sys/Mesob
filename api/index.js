@@ -199,12 +199,14 @@ async function handleRoute(method, p, body, req) {
       return json(200, { application: app, ticket }, 'Application submitted with ticket')
     }
     const db = await mongo()
-    const app = { citizenId, referenceNumber: refNumber, ticketNumber, serviceId: body.serviceId, serviceTitle: body.serviceTitle, formData: body.formData || {}, documents: body.documents || [], status: 'submitted', createdAt: now, updatedAt: now, timeline: [{ status: 'submitted', date: now, note: 'Application submitted' }] }
-    const result = await db.collection('citizenApplications').insertOne(app)
+    const appId = now.getTime().toString(36)
+    const app = { id: appId, citizenId, referenceNumber: refNumber, ticketNumber, serviceId: body.serviceId, serviceTitle: body.serviceTitle, formData: body.formData || {}, documents: body.documents || [], status: 'submitted', createdAt: now, updatedAt: now, timeline: [{ status: 'submitted', date: now, note: 'Application submitted' }] }
+    await db.collection('citizenApplications').insertOne(app)
     const fee = 50
-    const ticket = { ticketNumber, citizenId, citizenName: `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim(), serviceId: body.serviceId, serviceTitle: body.serviceTitle, department: '', fee, timestamp: now, appointmentDate: apptDate, appointmentTime: customTime || '10:00', status: 'active', createdAt: now }
+    const ticketId = now.getTime()
+    const ticket = { id: ticketId, ticketNumber, citizenId, citizenName: `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim(), serviceId: body.serviceId, serviceTitle: body.serviceTitle, department: '', fee, timestamp: now, appointmentDate: apptDate, appointmentTime: customTime || '10:00', status: 'active', createdAt: now }
     await db.collection('tickets').insertOne(ticket)
-    return json(200, { application: { ...app, _id: result.insertedId }, ticket }, 'Application submitted with ticket')
+    return json(200, { application: app, ticket }, 'Application submitted with ticket')
   }
   if (method === 'PUT' && p?.startsWith('/citizens/applications/') && citizen) {
     const appId = p.split('/')[3]
@@ -218,7 +220,7 @@ async function handleRoute(method, p, body, req) {
       return json(200, data.citizenApplications[idx], 'Application updated')
     }
     const db = await mongo()
-    await db.collection('citizenApplications').updateOne({ _id: appId, citizenId }, { $set: { ...body, updatedAt: new Date() } })
+    await db.collection('citizenApplications').updateOne({ id: appId, citizenId }, { $set: { ...body, updatedAt: new Date() } })
     return json(200, null, 'Application updated')
   }
   if (method === 'DELETE' && p?.startsWith('/citizens/applications/') && citizen) {
@@ -231,7 +233,7 @@ async function handleRoute(method, p, body, req) {
       return json(200, null, 'Application deleted')
     }
     const db = await mongo()
-    await db.collection('citizenApplications').deleteOne({ _id: appId, citizenId })
+    await db.collection('citizenApplications').deleteOne({ id: appId, citizenId })
     return json(200, null, 'Application deleted')
   }
 
