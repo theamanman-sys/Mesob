@@ -1,10 +1,8 @@
-require('dotenv').config()
-
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 
-const MOCK_DB_PATH = path.resolve(process.cwd(), 'mock', 'db.json')
+const MOCK_DB_PATH = path.resolve(__dirname, '..', 'mock', 'db.json')
 const MONGODB_URI = process.env.MONGODB_URI
 const USE_MOCK = !MONGODB_URI || String(process.env.USE_MOCK_DB) === 'true'
 
@@ -402,6 +400,9 @@ module.exports = async function handler(request, response) {
   const body = parseBody(request)
 
   try {
+    if (request.method === 'GET' && p === '/health')
+      return sendRes(response, json(200, { ok: true, cwd: process.cwd(), dir: __dirname, mockPath: MOCK_DB_PATH, useMock: USE_MOCK, node: process.version }))
+
     if (request.method === 'POST' && p === '/citizens/register')
       return sendRes(response, await doRegister(body))
 
