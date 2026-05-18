@@ -58,7 +58,7 @@ export default function AdminSidebar({ open, setOpen, userRole }) {
         ${open ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 overflow-y-auto`}>
         <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
           <Link to="/admin" className="flex items-center space-x-2">
-            <img src="/files/logo.png" alt="MESOB" className="h-8 w-8" />
+            <img src="/files/logo.webp" alt="MESOB" className="h-8 w-8" />
             <span className="font-bold text-blue-900 dark:text-white">MESOB Admin</span>
           </Link>
           <button onClick={() => setOpen(false)} className="lg:hidden text-gray-500 hover:text-gray-700">

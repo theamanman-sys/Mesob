@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <img src="/files/logo.png" alt="MESOB" className="h-10 w-10 brightness-0 invert" />
+              <img src="/files/logo.webp" alt="MESOB" className="h-10 w-10 brightness-0 invert" />
               <span className="font-bold text-xl">{t('MESOB Center')}</span>
             </div>
             <p className="text-blue-200 text-sm leading-relaxed">

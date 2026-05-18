@@ -36,7 +36,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/files/logo.png" alt="MESOB" className="h-10 w-10" />
+            <img src="/files/logo.webp" alt="MESOB" className="h-10 w-10" />
             <span className="font-bold text-xl text-blue-900">MESOB</span>
           </Link>
           <div className="hidden md:flex items-center space-x-6">

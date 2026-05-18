@@ -73,7 +73,7 @@ export default function CitizenLogin() {
         </div>
 
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="relative z-10 max-w-lg text-white">
-          <motion.img src="/files/logo.png" alt="MESOB" className="w-20 h-20 object-contain mb-6"
+          <motion.img src="/files/logo.webp" alt="MESOB" className="w-20 h-20 object-contain mb-6"
             initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200 }} />
           <h1 className="text-4xl font-black mb-4 leading-tight">Welcome to<br />MESOB Citizen Portal</h1>
           <p className="text-blue-200 text-lg mb-8 leading-relaxed">

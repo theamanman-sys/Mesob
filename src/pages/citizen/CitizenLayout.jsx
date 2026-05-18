@@ -57,7 +57,7 @@ export default function CitizenLayout() {
         <div className="h-full flex flex-col">
           <div className="p-5 border-b border-gray-100">
             <Link to="/citizen/dashboard" className="flex items-center gap-3">
-              <img src="/files/logo.png" alt="MESOB" className="w-9 h-9 object-contain" />
+              <img src="/files/logo.webp" alt="MESOB" className="w-9 h-9 object-contain" />
               <div>
                 <p className="font-bold text-blue-900 text-sm">MESOB</p>
                 <p className="text-xs text-gray-500">{t('Citizen Portal')}</p>

@@ -89,7 +89,7 @@ export default function Login() {
         <Box sx={{ flex: '0 0 45%', background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 50%, #1565c0 100%)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 4, color: 'white',
           position: 'relative', overflow: 'hidden' }}>
-          <Box component="img" src="/files/logo.png" alt="Logo"
+          <Box component="img" src="/files/logo.webp" alt="Logo"
             sx={{ width: 120, height: 120, objectFit: 'contain', animation: 'spin 10s linear infinite',
               '@keyframes spin': { '0%': { transform: 'rotate(0deg)' }, '100%': { transform: 'rotate(360deg)' } } }} />
           <Typography variant="h4" sx={{ fontWeight: 'bold', mt: 2, textTransform: 'uppercase', letterSpacing: '2px', color: '#FFD700' }}>

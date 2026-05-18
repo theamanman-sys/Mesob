@@ -87,7 +87,7 @@ export default function CitizenRegister() {
       <div className="flex-1 flex items-center justify-center p-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-lg">
           <div className="text-center mb-8">
-            <img src="/files/logo.png" alt="MESOB" className="w-16 h-16 object-contain mx-auto mb-4" />
+            <img src="/files/logo.webp" alt="MESOB" className="w-16 h-16 object-contain mx-auto mb-4" />
             <h1 className="text-3xl font-black text-gray-900">{t('Create Account')}</h1>
             <p className="text-gray-500 mt-1">{t('Join the MESOB citizen portal')}</p>
           </div>

@@ -341,14 +341,6 @@ body::-webkit-scrollbar {
   transform: translateY(var(--float-c-y)) rotate(-4deg);
 }
 
-.mesob-splat {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  overflow: hidden;
-  border-radius: 50%;
-}
-
 .mesob-scroll-hint {
   position: absolute;
   bottom: clamp(1.5rem, 3vh, 2.5rem);
