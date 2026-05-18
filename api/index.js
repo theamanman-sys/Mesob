@@ -4,7 +4,7 @@ const crypto = require('crypto')
 
 const MOCK_DB_PATH = path.resolve(__dirname, '..', 'mock', 'db.json')
 const MONGODB_URI = process.env.MONGODB_URI
-const USE_MOCK = !MONGODB_URI || String(process.env.USE_MOCK_DB) === 'true'
+const USE_MOCK = !MONGODB_URI || String(process.env.USE_MOCK_DB) !== 'false'
 
 function b64Decode(str) {
   const raw = str.replace(/-/g, '+').replace(/_/g, '/')
