@@ -54,6 +54,49 @@ function parseBody(req) {
 
 function unauth() { return json(401, null, 'Unauthorized') }
 
+/* ─── Fayda OIDC Config ─── */
+const FAYDA_OIDC = {
+  authEndpoint: process.env.FAYDA_AUTH_ENDPOINT || 'https://fayda.et/oauth/authorize',
+  tokenEndpoint: process.env.FAYDA_TOKEN_ENDPOINT || 'https://fayda.et/oauth/token',
+  userinfoEndpoint: process.env.FAYDA_USERINFO_ENDPOINT || 'https://fayda.et/oauth/userinfo',
+  clientId: process.env.FAYDA_CLIENT_ID || 'mock-client-id',
+  redirectUri: (process.env.BASE_URL || 'http://localhost:3000') + '/api/fayda/callback',
+}
+
+function signClientAssertion() {
+  const h = b64Encode({ alg: 'RS256', typ: 'JWT' })
+  const now = Math.floor(Date.now() / 1000)
+  const p = b64Encode({
+    iss: FAYDA_OIDC.clientId, sub: FAYDA_OIDC.clientId,
+    aud: FAYDA_OIDC.tokenEndpoint, iat: now, exp: now + 300,
+    jti: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36),
+  })
+  const s = crypto.createHmac('sha256', 'mock-key').update(h + '.' + p).digest('base64')
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+  return h + '.' + p + '.' + s
+}
+
+function generateMockOidcIdentity(citizen) {
+  const now = Math.floor(Date.now() / 1000)
+  return {
+    sub: 'fayda-oidc-' + (citizen.id || citizen.userId),
+    name: `${citizen.firstName || ''} ${citizen.lastName || ''}`.trim() || 'Abebe Kebede',
+    given_name: citizen.firstName || 'Abebe',
+    family_name: citizen.lastName || 'Kebede',
+    email: citizen.email || 'user@fayda.et',
+    phone_number: citizen.phone || '+251911223344',
+    birthdate: '1990-01-15',
+    gender: 'male',
+    fan: 'FAN-' + new Date().getFullYear() + '-' + String(citizen.id || 1).padStart(6, '0'),
+    fin: 'FIN-ET-' + String(citizen.id || 1).padStart(9, '0'),
+    id_verified: true,
+    verification_level: 'substantial',
+    verified_at: new Date().toISOString(),
+    updated_at: now,
+    idp: 'fayda-oidc',
+  }
+}
+
 function getCitizenId(token) {
   if (token.startsWith('mock-citizen-token-')) {
     const id = parseInt(token.replace(/^mock-citizen-token-/, ''), 10)
@@ -390,6 +433,27 @@ async function handleRoute(method, p, body, req) {
     return json(200, [])
   }
 
+  /* ─── Fayda OIDC identity CRUD ─── */
+  if (method === 'GET' && p === '/citizens/fayda-oidc' && citizen) {
+    if (USE_MOCK) {
+      const oidc = (data.faydaOidcIdentities || []).find(f => f.citizenId === citizenId)
+      return json(200, oidc || null)
+    }
+    const db = await mongo()
+    const oidc = await db.collection('faydaOidcIdentities').findOne({ citizenId })
+    return json(200, oidc || null)
+  }
+  if (method === 'DELETE' && p === '/citizens/fayda-oidc' && citizen) {
+    if (USE_MOCK) {
+      data.faydaOidcIdentities = (data.faydaOidcIdentities || []).filter(f => f.citizenId !== citizenId)
+      saveMockDB(data)
+      return json(200, null, 'Fayda OIDC identity unlinked')
+    }
+    const db = await mongo()
+    await db.collection('faydaOidcIdentities').deleteOne({ citizenId })
+    return json(200, null, 'Fayda OIDC identity unlinked')
+  }
+
   if (method === 'GET' && citizen && p?.startsWith('/citizens/')) {
     const key = p.slice(10).replace(/-/g, '')
     const possibleKeys = [key, key + 's', key.replace(/s$/, '')]
@@ -430,6 +494,17 @@ module.exports = async function handler(request, response) {
 
     if (request.method === 'GET' && p === '/citizens/session')
       return sendRes(response, await doSession(request))
+
+    /* ─── Fayda OIDC routes ─── */
+
+    if (request.method === 'POST' && p === '/fayda/oidc/link')
+      return sendRes(response, await doMockOidcLink(body, request))
+
+    if (request.method === 'GET' && p === '/fayda/auth')
+      return sendRes(response, await doFaydaAuth(request))
+
+    if (request.method === 'GET' && p === '/fayda/callback')
+      return sendRes(response, await doFaydaCallback(request))
 
     const result = await handleRoute(request.method, p, body, request)
     return sendRes(response, result)
@@ -542,4 +617,132 @@ async function doSession(req) {
   const citizen = await db.collection('citizens').findOne({ id: cid })
   if (!citizen) return unauth()
   return json(200, safeCitizen(citizen))
+}
+
+/* ─── Fayda OIDC Handlers ─── */
+
+async function doMockOidcLink(body, req) {
+  const citizen = await requireAuth(req)
+  if (!citizen) return unauth()
+  const citizenId = citizen.id || citizen.userId
+
+  const oidcIdentity = generateMockOidcIdentity(citizen)
+
+  if (USE_MOCK) {
+    const data = loadMockDB()
+    if (!data.faydaOidcIdentities) data.faydaOidcIdentities = []
+    const idx = data.faydaOidcIdentities.findIndex(f => f.citizenId === citizenId)
+    if (idx !== -1) {
+      data.faydaOidcIdentities[idx] = { ...data.faydaOidcIdentities[idx], ...oidcIdentity }
+    } else {
+      data.faydaOidcIdentities.push({ citizenId, ...oidcIdentity })
+    }
+    saveMockDB(data)
+  } else {
+    const db = await mongo()
+    const existing = await db.collection('faydaOidcIdentities').findOne({ citizenId })
+    if (existing) {
+      await db.collection('faydaOidcIdentities').updateOne({ citizenId }, { $set: oidcIdentity })
+    } else {
+      await db.collection('faydaOidcIdentities').insertOne({ citizenId, ...oidcIdentity })
+    }
+  }
+
+  return json(200, oidcIdentity, 'Fayda OIDC identity linked successfully')
+}
+
+async function doFaydaAuth(req) {
+  const state = crypto.randomBytes ? crypto.randomBytes(16).toString('hex') : Math.random().toString(36).slice(2)
+  const citizen = await requireAuth(req)
+
+  // Mock mode: redirect straight to mock callback
+  if (!process.env.FAYDA_PRIVATE_KEY || USE_MOCK) {
+    const mockCode = 'mock-code-' + Date.now()
+    const mockAuthUrl = '/api/fayda/callback?code=' + mockCode + '&state=' + state
+    return json(200, {
+      authUrl: mockAuthUrl,
+      state,
+      mock: true,
+      message: 'Mock Fayda auth - redirect to callback',
+    })
+  }
+
+  // Production: build real Fayda authorization URL
+  const clientAssertion = signClientAssertion()
+  const authUrl = FAYDA_OIDC.authEndpoint + '?' +
+    'client_id=' + encodeURIComponent(FAYDA_OIDC.clientId) +
+    '&redirect_uri=' + encodeURIComponent(FAYDA_OIDC.redirectUri) +
+    '&response_type=code' +
+    '&scope=openid+profile+email+phone' +
+    '&state=' + state +
+    '&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer' +
+    '&client_assertion=' + clientAssertion
+
+  return json(200, { authUrl, state, mock: false, message: 'Redirect to Fayda authorization' })
+}
+
+async function doFaydaCallback(req) {
+  const query = req.query || {}
+  const code = query.code || ''
+  const state = query.state || ''
+
+  if (!code) return json(400, null, 'Missing authorization code')
+
+  // Mock mode: return mock userinfo
+  if (!process.env.FAYDA_PRIVATE_KEY || USE_MOCK) {
+    const mockIdentity = {
+      sub: 'fayda-oidc-mock-' + Date.now(),
+      name: 'Abebe Kebede',
+      given_name: 'Abebe',
+      family_name: 'Kebede',
+      email: 'abebe.kebede@fayda.et',
+      phone_number: '+251911223344',
+      birthdate: '1990-01-15',
+      gender: 'male',
+      fan: 'FAN-' + new Date().getFullYear() + '-MOCK001',
+      fin: 'FIN-ET-MOCK000001',
+      id_verified: true,
+      verification_level: 'substantial',
+      verified_at: new Date().toISOString(),
+      updated_at: Math.floor(Date.now() / 1000),
+      idp: 'fayda-oidc',
+    }
+    return json(200, {
+      oidcUser: mockIdentity,
+      message: 'Fayda OIDC verification successful (mock)',
+    })
+  }
+
+  // Production token exchange:
+  // POST to token endpoint with client_assertion JWT
+  try {
+    const assertion = signClientAssertion()
+    const tokenResponse = await fetch(FAYDA_OIDC.tokenEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: FAYDA_OIDC.redirectUri,
+        client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+        client_assertion: assertion,
+      }),
+    })
+    const tokenData = await tokenResponse.json()
+    if (!tokenData.access_token) return json(401, null, 'Failed to exchange authorization code')
+
+    // Fetch userinfo
+    const userinfoResponse = await fetch(FAYDA_OIDC.userinfoEndpoint, {
+      headers: { Authorization: 'Bearer ' + tokenData.access_token },
+    })
+    const userinfo = await userinfoResponse.json()
+    if (!userinfo.sub) return json(401, null, 'Failed to fetch userinfo')
+
+    return json(200, {
+      oidcUser: userinfo,
+      message: 'Fayda OIDC verification successful',
+    })
+  } catch (err) {
+    return json(502, null, 'Fayda OIDC token exchange failed: ' + (err.message || err))
+  }
 }

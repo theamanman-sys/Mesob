@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { FileText, ClipboardList, Upload, Clock, CheckCircle, XCircle, AlertCircle, ArrowRight, TrendingUp, FileCheck2, Building2, User, Scan, Camera, X, Image, RefreshCw, BadgeCheck, Hash, Globe, Wallet, Trophy, HeartHandshake, BarChart3, DollarSign, PiggyBank, Plus, Minus, Landmark, Target, Users, Ticket, Calendar } from 'lucide-react'
+import { FileText, ClipboardList, Upload, Clock, CheckCircle, XCircle, AlertCircle, ArrowRight, TrendingUp, FileCheck2, Building2, User, Scan, Camera, X, Image, RefreshCw, BadgeCheck, Hash, Globe, Wallet, Trophy, HeartHandshake, BarChart3, DollarSign, PiggyBank, Plus, Minus, Landmark, Target, Users, Ticket, Calendar, Shield, ExternalLink, Trash2, Fingerprint } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
 import { createWorker } from 'tesseract.js'
 import { useLanguage } from '../../context/LanguageContext'
@@ -284,6 +284,85 @@ function NetWorthModal({ open, onClose, current, onSave }) {
   )
 }
 
+function FaydaOidcModal({ open, onClose, oidcIdentity, onLink, onUnlink, linking }) {
+  const { t } = useLanguage()
+
+  if (!open) return null
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+        {oidcIdentity ? (
+          <>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <Shield className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">{t('Fayda OIDC Verified')}</h2>
+                <p className="text-xs text-gray-500 flex items-center gap-1">
+                  <BadgeCheck className="w-3.5 h-3.5 text-green-500" />
+                  {t('Identity verified via Fayda')}
+                </p>
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3 mb-5">
+              <InfoRow label={t('Full Name')} value={oidcIdentity.name} />
+              <InfoRow label={t('Email')} value={oidcIdentity.email} />
+              <InfoRow label={t('Phone')} value={oidcIdentity.phone_number} />
+              <InfoRow label={t('FAN')} value={oidcIdentity.fan} />
+              <InfoRow label={t('FIN')} value={oidcIdentity.fin} />
+              <InfoRow label={t('Verification Level')} value={oidcIdentity.verification_level} />
+              <InfoRow label={t('Verified At')} value={new Date(oidcIdentity.verified_at).toLocaleString()} />
+            </div>
+            <button onClick={onUnlink}
+              className="flex items-center justify-center gap-2 w-full border-2 border-red-200 text-red-600 px-6 py-3 rounded-xl font-bold text-sm hover:bg-red-50 transition">
+              <Trash2 className="w-4 h-4" /> {t('Remove Fayda Link')}
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Shield className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">{t('Verify with Fayda')}</h2>
+                <p className="text-xs text-gray-500">{t('Link your National Digital ID via Fayda OIDC')}</p>
+              </div>
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-5">
+              <p className="text-sm text-blue-800 font-medium mb-2">{t('Why verify with Fayda?')}</p>
+              <ul className="text-xs text-blue-700 space-y-1.5">
+                <li className="flex items-start gap-2"><CheckCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" /> {t('Get verified identity from the national ID system')}</li>
+                <li className="flex items-start gap-2"><CheckCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" /> {t('Auto-populate your FAN and FIN numbers')}</li>
+                <li className="flex items-start gap-2"><CheckCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" /> {t('Higher trust level for government services')}</li>
+              </ul>
+            </div>
+            <button onClick={onLink} disabled={linking}
+              className="flex items-center justify-center gap-2 w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-blue-700 disabled:opacity-50 transition">
+              {linking ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : <><Fingerprint className="w-4 h-4" /> {t('Sign in with Fayda')}</>}
+            </button>
+            <p className="text-xs text-gray-400 text-center mt-3">{t('You will be redirected to Fayda to authenticate')}</p>
+          </>
+        )}
+        <button onClick={() => onClose()}
+          className="w-full mt-3 px-6 py-2.5 rounded-xl font-semibold text-sm text-gray-600 hover:bg-gray-50 transition">{t('Close')}</button>
+      </motion.div>
+    </div>
+  )
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <div className="flex justify-between items-center">
+      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-xs font-semibold text-gray-800">{value || '-'}</span>
+    </div>
+  )
+}
+
 function StatCard({ icon: Icon, label, value, color, bg, delay = 0 }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }}
@@ -317,6 +396,9 @@ export default function CitizenDashboard() {
   const [netWorthModal, setNetWorthModal] = useState(false)
   const [contribModal, setContribModal] = useState(false)
   const [contribSuccess, setContribSuccess] = useState(false)
+  const [oidcIdentity, setOidcIdentity] = useState(null)
+  const [oidcModal, setOidcModal] = useState(false)
+  const [oidcLinking, setOidcLinking] = useState(false)
 
   useEffect(() => {
     const session = citizenService.getSession()
@@ -330,6 +412,7 @@ export default function CitizenDashboard() {
       citizenService.getContributionStats().then(setContribStats).catch(() => {})
       citizenService.getContributions().then(setUserContribs).catch(() => {})
       citizenService.getMyTickets().then(setTickets).catch(() => {})
+      citizenService.getFaydaOidcStatus().then(setOidcIdentity).catch(() => {})
     }
   }, [])
 
@@ -351,6 +434,22 @@ export default function CitizenDashboard() {
       citizenService.getContributions().then(setUserContribs).catch(() => {})
       setTimeout(() => setContribSuccess(false), 3000)
     }
+  }
+
+  const handleOidcLink = async () => {
+    setOidcLinking(true)
+    try {
+      const res = await citizenService.mockLinkFaydaOidc()
+      setOidcIdentity(res)
+    } catch { alert(t('Failed to link Fayda identity')) }
+    setOidcLinking(false)
+  }
+
+  const handleOidcUnlink = async () => {
+    try {
+      await citizenService.unlinkFaydaOidc()
+      setOidcIdentity(null)
+    } catch { alert(t('Failed to unlink Fayda identity')) }
   }
 
   if (!citizen) return null
@@ -380,10 +479,21 @@ export default function CitizenDashboard() {
       <IdScannerModal open={scannerOpen} onClose={(doc) => { setScannerOpen(false); if (doc) setDocuments(prev => [doc, ...prev]) }} />
       <NetWorthModal open={netWorthModal} onClose={() => setNetWorthModal(false)} current={netWorthData} onSave={handleNetWorthSave} />
       <ContributionModal open={contribModal} onClose={handleContribClose} departments={DEPARTMENTS} />
+      <FaydaOidcModal open={oidcModal} onClose={() => setOidcModal(false)}
+        oidcIdentity={oidcIdentity} onLink={handleOidcLink} onUnlink={handleOidcUnlink} linking={oidcLinking} />
 
-      <div className="mb-8">
-        <h1 className="text-2xl font-black text-gray-900">{t('Welcome back, {name}', { name: citizen.firstName })}</h1>
-        <p className="text-gray-500 mt-1">{t('Your personal citizen portal overview')}</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-black text-gray-900">{t('Welcome back, {name}', { name: citizen.firstName })}</h1>
+          <p className="text-gray-500 mt-1">{t('Your personal citizen portal overview')}</p>
+        </div>
+        {oidcIdentity && (
+          <button onClick={() => setOidcModal(true)}
+            className="flex items-center gap-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-green-100 transition shrink-0">
+            <BadgeCheck className="w-3.5 h-3.5" />
+            {t('Fayda Verified')}
+          </button>
+        )}
       </div>
 
       {contribSuccess && (
@@ -595,7 +705,7 @@ export default function CitizenDashboard() {
               { icon: HeartHandshake, label: t('Contribute'), desc: t('Support a department'), action: () => setContribModal(true), color: 'text-red-600', bg: 'bg-red-50' },
               { icon: ClipboardList, label: t('Browse Services'), desc: t('Explore government services'), to: '/citizen/services', color: 'text-blue-600', bg: 'bg-blue-50' },
               { icon: FileText, label: t('My Applications'), desc: t('Track submissions'), to: '/citizen/applications', color: 'text-green-600', bg: 'bg-green-50' },
-              { icon: User, label: t('Update Profile'), desc: t('Manage personal info'), to: '/citizen/profile', color: 'text-orange-600', bg: 'bg-orange-50' },
+              { icon: Shield, label: t('Verify National ID'), desc: t('Link your Fayda digital ID'), action: () => setOidcModal(true), color: 'text-blue-600', bg: 'bg-blue-50' },
             ].map((item, i) => (
               item.action ? (
                 <button key={i} onClick={item.action}

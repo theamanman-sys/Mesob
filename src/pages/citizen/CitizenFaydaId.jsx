@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Fingerprint, CreditCard, Camera, Upload, CheckCircle, AlertCircle, Save, Scan, Image as ImageIcon, RefreshCw, Shield, Globe } from 'lucide-react'
+import { Fingerprint, CreditCard, Camera, Upload, CheckCircle, AlertCircle, Save, Scan, Image as ImageIcon, RefreshCw, Shield, Globe, BadgeCheck, ExternalLink, Trash2, Info } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -14,12 +14,16 @@ export default function CitizenFaydaId() {
   const [form, setForm] = useState({ fanNumber: '', finNumber: '' })
   const [previewUrl, setPreviewUrl] = useState(null)
   const fileRef = useRef(null)
+  const [oidcIdentity, setOidcIdentity] = useState(null)
+  const [oidcLoading, setOidcLoading] = useState(true)
+  const [oidcLinking, setOidcLinking] = useState(false)
 
   useEffect(() => {
     citizenService.getFaydaId().then(f => {
       setFayda(f || {})
       setForm({ fanNumber: f?.fanNumber || '', finNumber: f?.finNumber || '' })
     }).catch(console.error).finally(() => setLoading(false))
+    citizenService.getFaydaOidcStatus().then(setOidcIdentity).catch(() => {}).finally(() => setOidcLoading(false))
   }, [])
 
   const handleSubmit = async () => {
@@ -135,8 +139,76 @@ export default function CitizenFaydaId() {
         </motion.div>
       </div>
 
-      {/* id.et iframe section */}
+      {/* OIDC Verification Section */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2"><Shield className="w-4 h-4 text-blue-600" /> {t('Fayda OIDC Identity Verification')}</h3>
+
+        {oidcLoading ? (
+          <div className="flex justify-center py-8"><div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>
+        ) : oidcIdentity ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <BadgeCheck className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-green-800">{t('Identity Verified via Fayda OIDC')}</p>
+                <p className="text-xs text-green-600">{t('Your identity has been verified through the national digital ID system.')}</p>
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { label: t('Full Name'), value: oidcIdentity.name },
+                { label: t('Email'), value: oidcIdentity.email },
+                { label: t('Phone'), value: oidcIdentity.phone_number },
+                { label: t('FAN'), value: oidcIdentity.fan },
+                { label: t('FIN'), value: oidcIdentity.fin },
+                { label: t('Verification Level'), value: oidcIdentity.verification_level },
+                { label: t('Birthdate'), value: oidcIdentity.birthdate },
+                { label: t('Gender'), value: oidcIdentity.gender },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex flex-col">
+                  <span className="text-xs text-gray-500">{label}</span>
+                  <span className="text-sm font-semibold text-gray-800">{value || '-'}</span>
+                </div>
+              ))}
+            </div>
+            <button onClick={async () => { try { await citizenService.unlinkFaydaOidc(); setOidcIdentity(null) } catch {} }}
+              className="flex items-center justify-center gap-2 w-full border-2 border-red-200 text-red-600 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-red-50 transition">
+              <Trash2 className="w-4 h-4" /> {t('Remove Fayda OIDC Link')}
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+              <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-blue-800 mb-1">{t('Verify your identity via Fayda')}</p>
+                <p className="text-xs text-blue-700 leading-relaxed">
+                  {t('Link your Fayda digital ID through the national OIDC system. Your name, FAN, and FIN will be automatically populated from the verified identity provider.')}
+                </p>
+              </div>
+            </div>
+            <button onClick={async () => {
+              setOidcLinking(true)
+              try {
+                const res = await citizenService.mockLinkFaydaOidc()
+                setOidcIdentity(res)
+              } catch {}
+              setOidcLinking(false)
+            }} disabled={oidcLinking}
+              className="flex items-center justify-center gap-2 w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-blue-700 disabled:opacity-50 transition">
+              {oidcLinking ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : <><ExternalLink className="w-4 h-4" /> {t('Sign in with Fayda (OIDC)')}</>}
+            </button>
+            <p className="text-xs text-gray-400 text-center">{t('You will be redirected to Fayda to authenticate. In demo mode, this links a mock identity.')}</p>
+          </div>
+        )}
+      </motion.div>
+
+      {/* id.et iframe section */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
         className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2"><Globe className="w-4 h-4 text-blue-600" /> {t('Ethiopian Digital ID Portal (id.et)')}</h3>
         <div className="w-full rounded-xl overflow-hidden border border-gray-200 min-h-[250px] md:min-h-[400px] lg:min-h-[500px]">

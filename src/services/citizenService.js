@@ -562,5 +562,25 @@ export const citizenService = {
   async getBusinessNews() {
     const { data: response } = await api.get('/business-news')
     return response.data || []
+  },
+
+  // ─── Fayda OIDC ───
+  async getFaydaOidcStatus() {
+    const { data: response } = await api.get(`${CITIZEN_BASE}/fayda-oidc`)
+    return response.data || null
+  },
+
+  async mockLinkFaydaOidc() {
+    const { data: response } = await api.post('/fayda/oidc/link')
+    return response.data || response
+  },
+
+  async unlinkFaydaOidc() {
+    await api.delete(`${CITIZEN_BASE}/fayda-oidc`)
+  },
+
+  async initiateFaydaOidcAuth() {
+    const { data: response } = await api.get('/fayda/auth')
+    return response.data || response
   }
 }
