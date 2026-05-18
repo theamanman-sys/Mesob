@@ -77,11 +77,16 @@ function MesobHero({ t }) {
     if (!el || !canvas) return
     const ctx = canvas.getContext('2d')
     const resize = () => {
-      canvas.width = canvas.clientWidth * (window.devicePixelRatio || 1)
-      canvas.height = canvas.clientHeight * (window.devicePixelRatio || 1)
+      const ar = el.videoWidth && el.videoHeight ? `${el.videoWidth} / ${el.videoHeight}` : '16 / 9'
+      canvas.style.aspectRatio = ar
+      const w = canvas.clientWidth
+      const h = canvas.clientHeight
+      canvas.width = w * (window.devicePixelRatio || 1)
+      canvas.height = h * (window.devicePixelRatio || 1)
     }
-    resize()
+    el.addEventListener('loadedmetadata', resize)
     window.addEventListener('resize', resize)
+    resize()
 
     const draw = () => {
       if (!el.paused && !el.ended) {
@@ -98,6 +103,7 @@ function MesobHero({ t }) {
     tryPlay()
 
     return () => {
+      el.removeEventListener('loadedmetadata', resize)
       window.removeEventListener('resize', resize)
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
