@@ -34,6 +34,7 @@ export function renderGoogleButton(containerId, onSuccess) {
     shape: 'pill',
     theme: 'outline',
     size: 'large',
+    text: 'signin_with',
   })
 }
 
