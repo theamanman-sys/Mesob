@@ -104,7 +104,6 @@ async function handleRoute(method, p, body, req) {
   const citizen = await requireAuth(req)
   const citizenId = citizen?.id || null
 
-  // --- PROFILE ---
   if (method === 'PUT' && p === '/citizens/profile' && citizen && USE_MOCK) {
     const idx = data.citizens.findIndex(c => c.id === citizenId)
     if (idx === -1) return json(404, null, 'Not found')
@@ -119,7 +118,6 @@ async function handleRoute(method, p, body, req) {
     return json(200, safeCitizen(updated), 'Profile updated')
   }
 
-  // --- APPLICATIONS ---
   if (method === 'GET' && p === '/citizens/applications' && citizen) {
     if (USE_MOCK) return json(200, (data.citizenApplications || []).filter(a => a.citizenId === citizenId))
     const db = await mongo()
@@ -181,7 +179,6 @@ async function handleRoute(method, p, body, req) {
     return json(200, null, 'Application deleted')
   }
 
-  // --- DOCUMENTS ---
   if (method === 'GET' && p === '/citizens/documents' && citizen) {
     if (USE_MOCK) return json(200, (data.citizenDocuments || []).filter(d => d.citizenId === citizenId))
     const db = await mongo()
@@ -222,7 +219,6 @@ async function handleRoute(method, p, body, req) {
     return json(200, null, 'Document deleted')
   }
 
-  // --- TICKETS ---
   if (method === 'GET' && p === '/citizens/tickets' && citizen) {
     if (USE_MOCK) return json(200, (data.tickets || []).filter(t => t.citizenId === citizenId))
     const db = await mongo()
@@ -252,7 +248,6 @@ async function handleRoute(method, p, body, req) {
     return json(200, { total: count })
   }
 
-  // --- NET WORTH ---
   if (method === 'GET' && p === '/citizens/net-worth' && citizen) {
     if (USE_MOCK) {
       let entry = (data.netWorth || []).find(n => n.citizenId === citizenId)
@@ -310,7 +305,6 @@ async function handleRoute(method, p, body, req) {
     return json(200, anonymized)
   }
 
-  // --- CONTRIBUTIONS ---
   if (method === 'GET' && p === '/contributions') {
     if (USE_MOCK) return json(200, (data.contributions || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)))
     const db = await mongo()
@@ -352,19 +346,16 @@ async function handleRoute(method, p, body, req) {
     return json(200, [])
   }
 
-  // --- DASHBOARD ---
   if (method === 'GET' && p === '/citizens/dashboard' && citizen) {
     if (USE_MOCK) return json(200, { citizen: safeCitizen(citizen), applicationsCount: (data.citizenApplications || []).filter(a => a.citizenId === citizenId).length, ticketsCount: (data.tickets || []).filter(t => t.citizenId === citizenId).length, servicesCount: (data.services || []).length })
     return json(200, { citizen: safeCitizen(citizen) })
   }
 
-  // --- BANK PORTFOLIO ---
   if (method === 'GET' && p === '/citizens/bank-portfolio' && citizen) {
     if (USE_MOCK) return json(200, (data.citizenBankPortfolio || []).filter(b => b.citizenId === citizenId))
     return json(200, [])
   }
 
-  // --- SERVICES / PUBLIC ---
   if (method === 'GET' && p === '/services') {
     if (USE_MOCK) return json(200, data.services || [])
     return json(200, [])
@@ -386,7 +377,6 @@ async function handleRoute(method, p, body, req) {
     return json(200, [])
   }
 
-  // --- OTHER CITIZEN COLLECTIONS (catch-all) ---
   if (method === 'GET' && citizen && p?.startsWith('/citizens/')) {
     const key = p.slice(10).replace(/-/g, '')
     const possibleKeys = [key, key + 's', key.replace(/s$/, '')]
