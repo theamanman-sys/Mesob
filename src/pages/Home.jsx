@@ -109,6 +109,49 @@ function MesobHero({ t }) {
     }
   }, [])
 
+  const setCssVar = useCallback((el, name, val) => {
+    if (el && el.style.getPropertyValue(name) !== String(val)) {
+      el.style.setProperty(name, val)
+    }
+  }, [])
+
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    let ticking = false
+    let lastPhase = -1
+
+    const update = () => {
+      const rect = el.getBoundingClientRect()
+      const h = rect.height - window.innerHeight
+      const raw = h > 0 ? Math.max(0, Math.min(1, -rect.top / h)) : 0
+
+      const eased = shouldReduceMotion ? raw : easeInOutCubic(raw)
+      const scrollAmt = shouldReduceMotion ? Math.min(raw * 1.4, 0.5) : eased
+      const openAmt = shouldReduceMotion ? Math.min(raw * 1.4, 0.82) : easeOutBack(Math.min(1, Math.max(0, (raw - 0.12) / 0.78)))
+
+      const phase = openAmt > 0.85 ? 3 : openAmt > 0.55 ? 2 : openAmt > 0.25 ? 1 : 0
+      if (phase !== lastPhase) { lastPhase = phase; setActivePhase(phase) }
+
+      setCssVar(el, '--open', openAmt)
+      setCssVar(el, '--progress-width', `${scrollAmt * 100}%`)
+      setCssVar(el, '--hero-copy-y', `${Math.round((1 - scrollAmt) * 56)}px`)
+      setCssVar(el, '--stage-y', `${Math.round((1 - scrollAmt) * 32)}px`)
+      setCssVar(el, '--float-a-y', `${scrollAmt * -72}px`)
+      setCssVar(el, '--float-b-y', `${scrollAmt * 56}px`)
+      setCssVar(el, '--float-c-y', `${scrollAmt * -48}px`)
+      setCssVar(el, '--copy-opacity', Math.min(1, Math.max(0, (raw - 0.08) / 0.18)))
+      setCssVar(el, '--video-opacity', scrollAmt > 0 ? 0 : 1)
+
+      ticking = false
+    }
+
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update) } }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    update()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [shouldReduceMotion, setCssVar])
+
   return (
     <section
       ref={sectionRef}
