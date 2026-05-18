@@ -147,12 +147,12 @@ function MesobHero({ t }) {
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             controlsList="nofullscreen noremoteplayback"
             disablePictureInPicture
           >
-            <source src="/files/hero-video.mkv" type="video/x-matroska" />
             <source src="/files/hero-video.mp4" type="video/mp4" />
+            <source src="/files/hero-video.mkv" type="video/x-matroska" />
           </video>
           <div className="mesob-hero-video-overlay" />
         </div>
