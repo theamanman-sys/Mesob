@@ -53,8 +53,9 @@ export function renderGoogleButton(containerId, onSuccess) {
       client_id: CLIENT_ID,
       redirect_uri: REDIRECT_URI,
       response_type: 'id_token',
-      scope: 'openid email profile',
+      scope: 'openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
       nonce,
+      access_type: 'online',
     })
     window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString()
   })

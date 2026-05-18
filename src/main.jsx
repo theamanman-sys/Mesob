@@ -14,7 +14,7 @@ const theme = createTheme({
     secondary: { main: '#1565c0' }
   },
   typography: {
-    fontFamily: "'Inter', sans-serif"
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
   }
 })
 
