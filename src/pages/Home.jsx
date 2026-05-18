@@ -141,8 +141,8 @@ function MesobHero({ t }) {
     >
       <div className="mesob-hero-sticky">
         <video
+          ref={videoRef}
           className="mesob-hero-video"
-          autoPlay
           muted
           loop
           playsInline
@@ -206,11 +206,27 @@ export default function Home() {
   const { t, currentLanguage } = useLanguage()
 
   const [allServices, setAllServices] = useState([])
+  const videoRef = useRef(null)
 
   useEffect(() => {
     serviceService.getAll().then(({ data }) => {
       setAllServices(data.data || data || [])
     }).catch(() => setAllServices([]))
+  }, [])
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    const tryPlay = () => {
+      el.play().catch(() => {
+        const onInteraction = () => { el.play(); document.removeEventListener('touchstart', onInteraction) }
+        document.addEventListener('touchstart', onInteraction, { once: true })
+      })
+    }
+    if (el.readyState >= 2) { tryPlay(); return }
+    el.addEventListener('canplay', tryPlay, { once: true })
+    el.addEventListener('loadedmetadata', tryPlay, { once: true })
+    setTimeout(tryPlay, 3000)
   }, [])
 
   const features = [
