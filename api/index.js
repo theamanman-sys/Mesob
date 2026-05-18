@@ -261,6 +261,8 @@ async function handleRoute(method, p, body, req) {
       saveMockDB(data)
       return json(200, data.citizenDocuments[idx], 'Document updated')
     }
+    const db = await mongo()
+    await db.collection('citizenDocuments').updateOne({ id: docId, citizenId }, { $set: body })
     return json(200, null, 'Document updated')
   }
   if (method === 'DELETE' && p?.startsWith('/citizens/documents/') && citizen) {
@@ -272,6 +274,8 @@ async function handleRoute(method, p, body, req) {
       saveMockDB(data)
       return json(200, null, 'Document deleted')
     }
+    const db = await mongo()
+    await db.collection('citizenDocuments').deleteOne({ id: docId, citizenId })
     return json(200, null, 'Document deleted')
   }
 
@@ -290,6 +294,11 @@ async function handleRoute(method, p, body, req) {
       saveMockDB(data)
       return json(200, data.tickets[idx], 'Ticket updated')
     }
+    const db = await mongo()
+    const $set = {}
+    if (body.appointmentDate) $set.appointmentDate = body.appointmentDate
+    if (body.appointmentTime) $set.appointmentTime = body.appointmentTime
+    await db.collection('tickets').updateOne({ id: ticketId, citizenId }, { $set })
     return json(200, null, 'Ticket updated')
   }
   if (method === 'GET' && p === '/tickets') {
@@ -404,7 +413,11 @@ async function handleRoute(method, p, body, req) {
 
   if (method === 'GET' && p === '/citizens/dashboard' && citizen) {
     if (USE_MOCK) return json(200, { citizen: safeCitizen(citizen), applicationsCount: (data.citizenApplications || []).filter(a => a.citizenId === citizenId).length, ticketsCount: (data.tickets || []).filter(t => t.citizenId === citizenId).length, servicesCount: (data.services || []).length })
-    return json(200, { citizen: safeCitizen(citizen) })
+    const db = await mongo()
+    const applicationsCount = await db.collection('citizenApplications').countDocuments({ citizenId })
+    const ticketsCount = await db.collection('tickets').countDocuments({ citizenId })
+    const servicesCount = await db.collection('services').countDocuments()
+    return json(200, { citizen: safeCitizen(citizen), applicationsCount, ticketsCount, servicesCount })
   }
 
   if (method === 'GET' && p === '/citizens/bank-portfolio' && citizen) {
