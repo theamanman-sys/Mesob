@@ -66,7 +66,23 @@ const serviceGroups = [
 function MesobHero({ t }) {
   const shouldReduceMotion = useReducedMotion()
   const sectionRef = useRef(null)
+  const videoRef = useRef(null)
   const [activePhase, setActivePhase] = useState(-1)
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    const tryPlay = () => {
+      el.play().catch(() => {
+        const onInteraction = () => { el.play(); document.removeEventListener('touchstart', onInteraction) }
+        document.addEventListener('touchstart', onInteraction, { once: true })
+      })
+    }
+    if (el.readyState >= 2) { tryPlay(); return }
+    el.addEventListener('canplay', tryPlay, { once: true })
+    el.addEventListener('loadedmetadata', tryPlay, { once: true })
+    setTimeout(tryPlay, 3000)
+  }, [])
 
   const setCssVar = useCallback((el, name, val) => {
     if (el && el.style.getPropertyValue(name) !== String(val)) {
@@ -206,27 +222,11 @@ export default function Home() {
   const { t, currentLanguage } = useLanguage()
 
   const [allServices, setAllServices] = useState([])
-  const videoRef = useRef(null)
 
   useEffect(() => {
     serviceService.getAll().then(({ data }) => {
       setAllServices(data.data || data || [])
     }).catch(() => setAllServices([]))
-  }, [])
-
-  useEffect(() => {
-    const el = videoRef.current
-    if (!el) return
-    const tryPlay = () => {
-      el.play().catch(() => {
-        const onInteraction = () => { el.play(); document.removeEventListener('touchstart', onInteraction) }
-        document.addEventListener('touchstart', onInteraction, { once: true })
-      })
-    }
-    if (el.readyState >= 2) { tryPlay(); return }
-    el.addEventListener('canplay', tryPlay, { once: true })
-    el.addEventListener('loadedmetadata', tryPlay, { once: true })
-    setTimeout(tryPlay, 3000)
   }, [])
 
   const features = [
