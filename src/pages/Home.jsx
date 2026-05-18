@@ -6,7 +6,7 @@ import Hero3DSequence from '../components/Hero3DSequence'
 import { Building2, Clock, FileCheck2, HeadphonesIcon, MapPin, ShieldCheck, Zap, ArrowRight, Sparkles, Globe, Users, Briefcase, ScrollText, Stamp, Plane, CreditCard } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { getTranslatedService } from '../i18n/serviceTranslations'
-import { services, organizations } from '../data/seedData'
+import { serviceService } from '../services/serviceService'
 
 const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 
@@ -162,7 +162,7 @@ function MesobHero({ t }) {
         <div className="mesob-hero-shell">
           <div className="mesob-hero-copy">
             <span className="mesob-hero-badge">{t('One-stop service center')}</span>
-            <img src="/files/logo.png" alt="" className="mesob-hero-mark" />
+            <img src="/files/logo.webp" alt="" className="mesob-hero-mark" />
 
             <div style={{ height: 'clamp(14rem, 22vw, 20rem)' }} />
 
@@ -205,6 +205,14 @@ function MesobHero({ t }) {
 export default function Home() {
   const { t, currentLanguage } = useLanguage()
 
+  const [allServices, setAllServices] = useState([])
+
+  useEffect(() => {
+    serviceService.getAll().then(({ data }) => {
+      setAllServices(data.data || data || [])
+    }).catch(() => setAllServices([]))
+  }, [])
+
   const features = [
     { icon: Building2, title: t('Digital Services'), desc: t('Apply for permits online') },
     { icon: HeadphonesIcon, title: t('Citizen Support'), desc: '24/7' },
@@ -221,11 +229,11 @@ export default function Home() {
     const translate = (arr) => arr.map(s => getTranslatedService(s, currentLanguage))
 
     return {
-      local: translate(services.filter(s => categories.local.includes(s.id))),
-      international: translate(services.filter(s => categories.international.includes(s.id))),
-      business: translate(services.filter(s => categories.business.includes(s.id)))
+      local: translate(allServices.filter(s => categories.local.includes(s.id))),
+      international: translate(allServices.filter(s => categories.international.includes(s.id))),
+      business: translate(allServices.filter(s => categories.business.includes(s.id)))
     }
-  }, [currentLanguage])
+  }, [currentLanguage, allServices])
 
   return (
     <div>

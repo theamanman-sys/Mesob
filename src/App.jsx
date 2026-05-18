@@ -1,6 +1,5 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import { useAuth } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -134,8 +133,7 @@ function PublicLayout({ children }) {
 
 export default function App() {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
-      className="min-h-screen dark:bg-gray-900 dark:text-white">
+    <div className="min-h-screen dark:bg-gray-900 dark:text-white">
       <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -299,6 +297,6 @@ export default function App() {
         <Route path="*" element={<PublicLayout><Home /></PublicLayout>} />
       </Routes>
       </Suspense>
-    </motion.div>
+    </div>
   )
 }

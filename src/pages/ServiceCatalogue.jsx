@@ -1,10 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, Building2, Loader, CheckCircle2, ExternalLink } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { getTranslatedService } from '../i18n/serviceTranslations'
-import { services as seedServices } from '../data/seedData'
+import { serviceService } from '../services/serviceService'
 import { citizenService } from '../services/citizenService'
 
 export default function ServiceCatalogue() {
@@ -12,14 +12,21 @@ export default function ServiceCatalogue() {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [applying, setApplying] = useState(null)
+  const [services, setServices] = useState([])
+
+  useEffect(() => {
+    serviceService.getAll().then(({ data }) => {
+      setServices(data.data || data || [])
+    }).catch(() => setServices([]))
+  }, [])
 
   const filtered = useMemo(() => {
-    const translated = seedServices.map(s => getTranslatedService(s, currentLanguage))
+    const translated = services.map(s => getTranslatedService(s, currentLanguage))
     return translated.filter((s) =>
       (s.name || '').toLowerCase().includes(search.toLowerCase()) ||
       (s.title || '').toLowerCase().includes(search.toLowerCase())
     )
-  }, [currentLanguage, search])
+  }, [currentLanguage, search, services])
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Building2, Clock, DollarSign, FileText, CheckCircle2, Info, ExternalLink, Zap, Globe, Loader } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { getTranslatedService } from '../i18n/serviceTranslations'
-import { services as allServices, organizations } from '../data/seedData'
+import { serviceService } from '../services/serviceService'
+import { organizationService } from '../services/organizationService'
 import { citizenService } from '../services/citizenService'
 
 export default function ServiceDetail() {
@@ -13,13 +14,37 @@ export default function ServiceDetail() {
   const navigate = useNavigate()
   const [applying, setApplying] = useState(false)
   const [applied, setApplied] = useState(false)
-  
-  const rawService = useMemo(() => allServices.find((s) => s.id === Number(id)), [id])
-  const service = useMemo(() => getTranslatedService(rawService, currentLanguage), [rawService, currentLanguage])
-  const organization = useMemo(() => 
-    rawService ? organizations.find(o => o.id === rawService.organizationId) : null, 
-    [rawService]
-  )
+  const [service, setService] = useState(null)
+  const [organization, setOrganization] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data: svcData } = await serviceService.getById(id)
+        const svc = svcData.data || svcData
+        if (svc) {
+          setService(getTranslatedService(svc, currentLanguage))
+          if (svc.organizationId) {
+            const { data: orgData } = await organizationService.getById(svc.organizationId)
+            setOrganization(orgData.data || orgData)
+          }
+        }
+      } catch {
+        setService(null)
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [id, currentLanguage])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      </div>
+    )
+  }
 
   if (!service) {
     return (

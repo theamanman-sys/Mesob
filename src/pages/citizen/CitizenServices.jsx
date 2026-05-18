@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Building2, Clock, DollarSign, FileText, CheckCircle, X, ArrowRight, Upload, Loader, AlertCircle, ChevronDown, Filter, Ticket, Calendar, Download } from 'lucide-react'
-import { services, organizations } from '../../data/seedData'
+import { serviceService } from '../../services/serviceService'
+import { organizationService } from '../../services/organizationService'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
 import { getTranslatedService } from '../../i18n/serviceTranslations'
@@ -24,14 +25,27 @@ export default function CitizenServices() {
   const [apptTime, setApptTime] = useState('10:00')
   const [expandedOrg, setExpandedOrg] = useState(null)
 
+  const [services, setServices] = useState([])
+  const [organizations, setOrganizations] = useState([])
+
   useEffect(() => {
     const session = citizenService.getSession()
     if (session) setCitizen(session)
+    Promise.all([
+      serviceService.getAll(),
+      organizationService.getAll(1, 100)
+    ]).then(([svcRes, orgRes]) => {
+      setServices(svcRes.data.data || svcRes.data || [])
+      setOrganizations(orgRes.data.data || orgRes.data || [])
+    }).catch(() => {
+      setServices([])
+      setOrganizations([])
+    })
   }, [])
 
   const translatedServices = useMemo(() => {
     return services.map(s => getTranslatedService(s, currentLanguage))
-  }, [currentLanguage])
+  }, [currentLanguage, services])
 
   const filteredServices = useMemo(() => {
     let result = translatedServices

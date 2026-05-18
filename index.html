@@ -44,9 +44,14 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://mesob-center.vercel.app/" />
 
-    <!-- JSON-LD: GovernmentOrganization -->
+    <!-- Resource Hints -->
+    <link rel="preconnect" href="https://www.youtube.com" />
+    <link rel="preconnect" href="https://i.ytimg.com" />
+    <link rel="preload" href="/files/logo.webp" as="image" />
+
+    <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
-    {
+    [{
       "@context": "https://schema.org",
       "@type": "GovernmentOrganization",
       "name": "MESOB Center Services",
@@ -55,55 +60,20 @@
       "url": "https://mesob-center.vercel.app/",
       "logo": "https://mesob-center.vercel.app/files/logo.webp",
       "address": { "@type": "PostalAddress", "addressCountry": "ET" },
-      "sameAs": [
-        "https://www.facebook.com/mesobgov",
-        "https://twitter.com/mesobgov"
-      ],
-      "serviceType": [
-        "Citizen Services",
-        "Business Registration",
-        "Trade Licensing",
-        "Tax Services",
-        "Passport Services",
-        "Document Services",
-        "Visa Services",
-        "Marriage Registration",
-        "Property Registration",
-        "Driving License Services"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer service",
-        "availableLanguage": ["English", "Amharic"]
-      }
-    }
-    </script>
-
-    <!-- JSON-LD: WebSite -->
-    <script type="application/ld+json">
+      "sameAs": [ "https://www.facebook.com/mesobgov", "https://twitter.com/mesobgov" ],
+      "serviceType": [ "Citizen Services", "Business Registration", "Trade Licensing", "Tax Services", "Passport Services", "Document Services", "Visa Services", "Marriage Registration", "Property Registration", "Driving License Services" ],
+      "contactPoint": { "@type": "ContactPoint", "contactType": "customer service", "availableLanguage": ["English", "Amharic"] }
+    },
     {
-      "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "MESOB - Ethiopian Government Services",
       "alternateName": "መሶብ - የኢትዮጵያ መንግሥት አገልግሎቶች",
       "url": "https://mesob-center.vercel.app/",
       "description": "Access Ethiopian government services online – citizen portal, business services, and more. የኢትዮጵያ መንግሥት አገልግሎቶችን በመስመር ያግኙ።",
       "inLanguage": ["en", "am"],
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://mesob-center.vercel.app/search?q={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-
-    <!-- JSON-LD: BreadcrumbList -->
-    <script type="application/ld+json">
+      "potentialAction": { "@type": "SearchAction", "target": { "@type": "EntryPoint", "urlTemplate": "https://mesob-center.vercel.app/search?q={search_term_string}" }, "query-input": "required name=search_term_string" }
+    },
     {
-      "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://mesob-center.vercel.app/" },
@@ -112,57 +82,17 @@
         { "@type": "ListItem", "position": 4, "name": "Organizations", "item": "https://mesob-center.vercel.app/organizations" },
         { "@type": "ListItem", "position": 5, "name": "About", "item": "https://mesob-center.vercel.app/about" }
       ]
-    }
-    </script>
-
-    <!-- JSON-LD: FAQPage -->
-    <script type="application/ld+json">
+    },
     {
-      "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is MESOB?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "MESOB is Ethiopia's unified government services portal that provides citizens and businesses with online access to government services including business registration, trade licensing, passport applications, TIN registration, and more."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How do I register a business in Ethiopia?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "You can register a business in Ethiopia through MESOB by selecting the Ministry of Trade service, filling out the application form, uploading required documents, and submitting your application online."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I apply for a passport online?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, you can start your passport application process through MESOB. Submit your application, upload required documents, and book an appointment at the Immigration and Citizenship Service office."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How do I get a TIN in Ethiopia?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "You can register for a Tax Identification Number (TIN) through the Ministry of Revenues service on MESOB. Submit your application with the required identification documents to receive your TIN certificate."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What documents are needed for trade license renewal?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "For trade license renewal in Ethiopia, you typically need your previous trade license, TIN certificate, business registration certificate, and tax clearance certificate. Specific requirements vary by business type."
-          }
-        }
+        { "@type": "Question", "name": "What is MESOB?", "acceptedAnswer": { "@type": "Answer", "text": "MESOB is Ethiopia's unified government services portal that provides citizens and businesses with online access to government services including business registration, trade licensing, passport applications, TIN registration, and more." } },
+        { "@type": "Question", "name": "How do I register a business in Ethiopia?", "acceptedAnswer": { "@type": "Answer", "text": "You can register a business in Ethiopia through MESOB by selecting the Ministry of Trade service, filling out the application form, uploading required documents, and submitting your application online." } },
+        { "@type": "Question", "name": "Can I apply for a passport online?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, you can start your passport application process through MESOB. Submit your application, upload required documents, and book an appointment at the Immigration and Citizenship Service office." } },
+        { "@type": "Question", "name": "How do I get a TIN in Ethiopia?", "acceptedAnswer": { "@type": "Answer", "text": "You can register for a Tax Identification Number (TIN) through the Ministry of Revenues service on MESOB. Submit your application with the required identification documents to receive your TIN certificate." } },
+        { "@type": "Question", "name": "What documents are needed for trade license renewal?", "acceptedAnswer": { "@type": "Answer", "text": "For trade license renewal in Ethiopia, you typically need your previous trade license, TIN certificate, business registration certificate, and tax clearance certificate. Specific requirements vary by business type." } }
       ]
-    }
+    }]
     </script>
 
   </head>
