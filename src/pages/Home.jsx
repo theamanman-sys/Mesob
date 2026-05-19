@@ -244,7 +244,7 @@ export default function Home() {
 
   useEffect(() => {
     serviceService.getAll().then(({ data }) => {
-      setAllServices(data.data || data || [])
+      setAllServices(Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [])
     }).catch(() => setAllServices([]))
   }, [])
 
@@ -261,12 +261,14 @@ export default function Home() {
       business: [110, 272, 373]
     }
 
+    const safeServices = Array.isArray(allServices) ? allServices : []
+
     const translate = (arr) => arr.map(s => getTranslatedService(s, currentLanguage))
 
     return {
-      local: translate(allServices.filter(s => categories.local.includes(s.id))),
-      international: translate(allServices.filter(s => categories.international.includes(s.id))),
-      business: translate(allServices.filter(s => categories.business.includes(s.id)))
+      local: translate(safeServices.filter(s => categories.local.includes(s.id))),
+      international: translate(safeServices.filter(s => categories.international.includes(s.id))),
+      business: translate(safeServices.filter(s => categories.business.includes(s.id)))
     }
   }, [currentLanguage, allServices])
 
