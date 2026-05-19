@@ -193,7 +193,7 @@ export default function CitizenFaydaId() {
             <button onClick={async () => {
               setOidcLinking(true)
               try {
-                const res = await citizenService.mockLinkFaydaOidc()
+                const res = await citizenService.linkFaydaOidc()
                 setOidcIdentity(res)
               } catch {}
               setOidcLinking(false)
@@ -202,7 +202,7 @@ export default function CitizenFaydaId() {
               {oidcLinking ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 : <><ExternalLink className="w-4 h-4" /> {t('Sign in with Fayda (OIDC)')}</>}
             </button>
-            <p className="text-xs text-gray-400 text-center">{t('You will be redirected to Fayda to authenticate. In demo mode, this links a mock identity.')}</p>
+            <p className="text-xs text-gray-400 text-center">{t('Link your identity with Fayda for enhanced verification.')}</p>
           </div>
         )}
       </motion.div>

@@ -576,7 +576,7 @@ export const citizenService = {
     return response.data || null
   },
 
-  async mockLinkFaydaOidc() {
+  async linkFaydaOidc() {
     const { data: response } = await api.post('/fayda/oidc/link')
     return response.data || response
   },

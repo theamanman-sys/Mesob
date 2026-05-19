@@ -23,6 +23,17 @@ app.use(express.urlencoded({ extended: true }))
 const _apiModule = await import(pathToFileURL(path.join(__dirname, '..', 'api', 'index.js')))
 const apiHandler = _apiModule.default
 
+// Strip /with-language and /with-language-and-organization suffixes so existing routes handle them
+app.use((req, _res, next) => {
+  const p = req.path
+  if (p.endsWith('/with-language-and-organization')) {
+    req.url = p.replace(/\/with-language-and-organization$/, '')
+  } else if (p.endsWith('/with-language')) {
+    req.url = p.replace(/\/with-language$/, '')
+  }
+  next()
+})
+
 // Import MongoDB models
 import Organization from './models/Organization.js'
 import Service from './models/Service.js'

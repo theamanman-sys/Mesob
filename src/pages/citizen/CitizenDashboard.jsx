@@ -439,7 +439,7 @@ export default function CitizenDashboard() {
   const handleOidcLink = async () => {
     setOidcLinking(true)
     try {
-      const res = await citizenService.mockLinkFaydaOidc()
+      const res = await citizenService.linkFaydaOidc()
       setOidcIdentity(res)
     } catch { alert(t('Failed to link Fayda identity')) }
     setOidcLinking(false)

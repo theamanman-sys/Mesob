@@ -79,14 +79,6 @@ export default function CitizenFinance() {
       const bank = banks.find(b => b.id === parseInt(selectedBankId))
       if (!bank) return
       await citizenService.addBankToPortfolio(bank.id, 'checking', 'Connected via Connect to Bank')
-      const mockBalance = {
-        balance: Math.floor(Math.random() * 500000) + 10000,
-        credit: Math.floor(Math.random() * 200000) + 5000,
-        debt: Math.floor(Math.random() * 100000) + 1000,
-        currency: 'ETB',
-        lastUpdated: new Date().toISOString()
-      }
-      setBankBalances(prev => ({ ...prev, [bank.id]: mockBalance }))
       const { data } = await citizenService.getBankPortfolio()
       setBankPortfolio(data || [])
       setShowConnectBank(false)
@@ -100,16 +92,7 @@ export default function CitizenFinance() {
     try {
       const res = await citizenService.getBankBalance(bankId)
       setBankBalances(prev => ({ ...prev, [bankId]: res }))
-    } catch {
-      const mockBalance = {
-        balance: Math.floor(Math.random() * 500000) + 10000,
-        credit: Math.floor(Math.random() * 200000) + 5000,
-        debt: Math.floor(Math.random() * 100000) + 1000,
-        currency: 'ETB',
-        lastUpdated: new Date().toISOString()
-      }
-      setBankBalances(prev => ({ ...prev, [bankId]: mockBalance }))
-    }
+    } catch {}
     setRefreshingBalance(null)
   }
 
