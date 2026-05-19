@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { createRequire } from 'module'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -18,6 +19,10 @@ app.use(cors({
 }))
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
+
+// Load the Vercel serverless handler as catch-all for citizen/ticket/other routes
+const require = createRequire(import.meta.url)
+const apiHandler = require(path.join(__dirname, '..', 'api', 'index.js'))
 
 // Import MongoDB models
 import Organization from './models/Organization.js'
@@ -176,6 +181,12 @@ app.post('/users/login', async (req, res) => {
 })
 
 app.post('/users/logout', (_req, res) => res.json({ data: null, message: 'Logged out', success: true }))
+
+// Catch-all: forward unhandled routes to the Vercel API handler (citizens, tickets, applications, etc.)
+app.use((req, res, next) => {
+  if (req.path === '/health' || req.path.startsWith('/Organizations') || req.path.startsWith('/Services') || req.path.startsWith('/Languages') || req.path.startsWith('/users/')) return next()
+  apiHandler(req, res)
+})
 
 // Start server
 const startServer = async () => {

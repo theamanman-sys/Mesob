@@ -3,8 +3,9 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 const mongoose = require('mongoose')
+try { require('dotenv').config({ path: path.join(__dirname, '..', '.env') }) } catch (_) {}
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 const DB_PATH = path.join(path.dirname(__filename), 'db.json')
 const USE_MONGODB = process.env.MONGODB_URI && !process.env.USE_MOCK_DB
 
