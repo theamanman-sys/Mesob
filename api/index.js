@@ -304,15 +304,50 @@ async function handleRoute(method, p, body, req) {
     return json(200, null, 'Ticket updated')
   }
   if (method === 'GET' && p === '/tickets') {
-    if (USE_MOCK) return json(200, (data.tickets || []).filter(t => t.citizenId === citizenId))
+    if (USE_MOCK) return json(200, (data.tickets || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)))
     const db = await mongo()
-    return json(200, await db.collection('tickets').find().toArray())
+    return json(200, await db.collection('tickets').find().sort({ createdAt: -1 }).toArray())
   }
   if (method === 'GET' && p === '/tickets/stats') {
-    if (USE_MOCK) return json(200, { total: (data.tickets || []).length })
+    if (USE_MOCK) {
+      const tickets = data.tickets || []
+      let totalRevenue = 0
+      const serviceCounts = {}
+      tickets.forEach(t => {
+        serviceCounts[t.serviceTitle] = (serviceCounts[t.serviceTitle] || 0) + 1
+        totalRevenue += t.fee || 0
+      })
+      const deptSet = new Set(tickets.map(t => t.department || '').filter(Boolean))
+      return json(200, {
+        totalTickets: tickets.length,
+        totalDepartments: deptSet.size,
+        totalRevenue,
+        serviceCounts,
+        topServices: Object.entries(serviceCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, count]) => ({ name, count })),
+      })
+    }
     const db = await mongo()
-    const count = await db.collection('tickets').countDocuments()
-    return json(200, { total: count })
+    const tickets = await db.collection('tickets').find().toArray()
+    let totalRevenue = 0
+    const serviceCounts = {}
+    tickets.forEach(t => {
+      serviceCounts[t.serviceTitle] = (serviceCounts[t.serviceTitle] || 0) + 1
+      totalRevenue += t.fee || 0
+    })
+    const deptSet = new Set(tickets.map(t => t.department || '').filter(Boolean))
+    return json(200, {
+      totalTickets: tickets.length,
+      totalDepartments: deptSet.size,
+      totalRevenue,
+      serviceCounts,
+      topServices: Object.entries(serviceCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, count]) => ({ name, count })),
+    })
+  }
+
+  if (method === 'GET' && p === '/applications') {
+    if (USE_MOCK) return json(200, (data.citizenApplications || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)))
+    const db = await mongo()
+    return json(200, await db.collection('citizenApplications').find().sort({ createdAt: -1 }).toArray())
   }
 
   if (method === 'GET' && p === '/citizens/net-worth' && citizen) {

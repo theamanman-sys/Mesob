@@ -160,6 +160,12 @@ export const citizenService = {
     return response.data || response
   },
 
+  // Applications (admin - all)
+  async getAllApplications() {
+    const { data: response } = await api.get('/applications')
+    return response.data || []
+  },
+
   // Tickets
   async getTickets() {
     const { data: response } = await api.get('/tickets')

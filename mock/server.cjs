@@ -1029,6 +1029,12 @@ app.delete('/admin/users/:id', requireAuth, (req, res) => {
   res.json(wrap(null, 'Citizen deleted'))
 })
 
+// ─── Applications (admin - all) ──────────────────────────────────────
+app.get('/applications', requireAuth, (_req, res) => {
+  if (!db.citizenApplications) db.citizenApplications = []
+  res.json(wrap(db.citizenApplications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))))
+})
+
 // ─── Tickets ────────────────────────────────────────────────────────
 app.get('/tickets', requireAuth, (req, res) => {
   if (!db.tickets) db.tickets = []
