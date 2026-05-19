@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -n server,vite -c yellow,cyan \"node server/index.js\" \"vite\"",
+    "server": "node server/index.js",
     "mock-server": "node mock/server.cjs",
     "kill-mock": "node -e \"try{require('fs').readFileSync('mock/server.pid','utf8').trim().split('\\n').forEach(p=>{try{process.kill(parseInt(p))}catch(e){}})}catch(e){}\"",
     "dev:mock": "concurrently -n mock,vite -c yellow,cyan \"node mock/server.cjs\" \"vite\"",
