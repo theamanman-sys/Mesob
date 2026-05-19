@@ -112,10 +112,15 @@ async function initDb() {
   if (_mongoInit) return _mongoInit
   _mongoInit = (async () => {
     const { MongoClient } = require('mongodb')
-    const client = new MongoClient(MONGODB_URI, { maxPoolSize: 5, serverSelectionTimeoutMS: 5000 })
-    await client.connect()
-    _mongoConn = client
-    _mongoDb = client.db()
+    const client = new MongoClient(MONGODB_URI, { maxPoolSize: 5, serverSelectionTimeoutMS: 30000 })
+    try {
+      await client.connect()
+      _mongoConn = client
+      _mongoDb = client.db()
+    } catch (e) {
+      _mongoInit = null
+      throw e
+    }
   })()
   return _mongoInit
 }
