@@ -3,8 +3,7 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import path from 'path'
-import { fileURLToPath } from 'url'
-import { createRequire } from 'module'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -21,8 +20,8 @@ app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
 
 // Load the Vercel serverless handler as catch-all for citizen/ticket/other routes
-const require = createRequire(import.meta.url)
-const apiHandler = require(path.join(__dirname, '..', 'api', 'index.js'))
+const _apiModule = await import(pathToFileURL(path.join(__dirname, '..', 'api', 'index.js')))
+const apiHandler = _apiModule.default
 
 // Import MongoDB models
 import Organization from './models/Organization.js'
