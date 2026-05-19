@@ -20,7 +20,7 @@ app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
 
 // Load the Vercel serverless handler as catch-all for citizen/ticket/other routes
-const _apiModule = await import(pathToFileURL(path.join(__dirname, '..', 'api', 'index.js')))
+const _apiModule = await import(pathToFileURL(path.join(__dirname, '..', 'api', 'index.cjs')))
 const apiHandler = _apiModule.default
 
 // Strip /with-language and /with-language-and-organization suffixes so existing routes handle them
