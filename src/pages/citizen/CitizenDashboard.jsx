@@ -47,11 +47,21 @@ function IdScannerModal({ open, onClose }) {
   const [extracted, setExtracted] = useState(null)
   const [editedData, setEditedData] = useState({})
   const [showPreview, setShowPreview] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState(null)
+
+  useEffect(() => {
+    return () => { if (previewUrl) URL.revokeObjectURL(previewUrl) }
+  }, [previewUrl])
+
+  useEffect(() => {
+    if (cameraActive && stream && videoRef.current) {
+      videoRef.current.srcObject = stream
+    }
+  }, [cameraActive, stream])
 
   const startCamera = async (facing = facingMode) => {
     try {
       const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing } })
-      if (videoRef.current) videoRef.current.srcObject = s
       setStream(s); setCameraActive(true)
     } catch { alert(t('Camera access denied')) }
   }
@@ -71,7 +81,7 @@ function IdScannerModal({ open, onClose }) {
     setScanning(true)
     try {
       const dataUrl = await blobToDataUrl(blob)
-      const worker = await createWorker('eng')
+      const worker = await createWorker('eng+amh')
       const { data } = await worker.recognize(dataUrl)
       await worker.terminate()
       const parsed = parseIdText(data.text)
@@ -84,11 +94,11 @@ function IdScannerModal({ open, onClose }) {
     if (!video || !canvas) return
     canvas.width = video.videoWidth; canvas.height = video.videoHeight
     canvas.getContext('2d').drawImage(video, 0, 0)
-    canvas.toBlob((blob) => { setCaptured(blob); setShowPreview(true); stopCamera(); runOcr(blob) }, 'image/png')
+    canvas.toBlob((blob) => { setCaptured(blob); setPreviewUrl(URL.createObjectURL(blob)); setShowPreview(true); stopCamera(); runOcr(blob) }, 'image/png')
   }
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0]
-    if (file) { setCaptured(file); setShowPreview(true); runOcr(file) }
+    if (file) { setCaptured(file); setPreviewUrl(URL.createObjectURL(file)); setShowPreview(true); runOcr(file) }
     e.target.value = ''
   }
   const handleUpload = async () => {
@@ -97,14 +107,19 @@ function IdScannerModal({ open, onClose }) {
     try {
       const file = new File([captured], `id-scan-${Date.now()}.png`, { type: 'image/png' })
       const doc = await citizenService.uploadDocument(file, 'id', { extractedData: editedData })
-      setCaptured(null); setExtracted(null); setEditedData({}); setShowPreview(false); onClose(doc)
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+      setCaptured(null); setPreviewUrl(null); setExtracted(null); setEditedData({}); setShowPreview(false); onClose(doc)
     } catch (err) { alert(err.response?.data?.message || err.message) }
     setUploading(false)
   }
   const handleClose = () => {
-    stopCamera(); setCaptured(null); setExtracted(null); setEditedData({}); setShowPreview(false); onClose()
+    stopCamera(); if (previewUrl) URL.revokeObjectURL(previewUrl)
+    setCaptured(null); setPreviewUrl(null); setExtracted(null); setEditedData({}); setShowPreview(false); onClose()
   }
-  const handleRetake = () => { setCaptured(null); setExtracted(null); setEditedData({}); setShowPreview(false) }
+  const handleRetake = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+    setCaptured(null); setPreviewUrl(null); setExtracted(null); setEditedData({}); setShowPreview(false)
+  }
   if (!open) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -144,7 +159,7 @@ function IdScannerModal({ open, onClose }) {
           )}
           {showPreview && (
             <div className="space-y-4">
-              <div className="rounded-xl overflow-hidden bg-gray-100"><img src={captured ? URL.createObjectURL(captured) : ''} alt={t('Captured ID')} className="w-full h-48 object-contain" /></div>
+              <div className="rounded-xl overflow-hidden bg-gray-100"><img src={previewUrl} alt={t('Captured ID')} className="w-full h-48 object-contain" /></div>
               {scanning && (
                 <div className="flex items-center justify-center gap-3 py-6 text-gray-500">
                   <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />

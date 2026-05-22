@@ -71,12 +71,17 @@ export default function AdminDocumentScanner() {
     }
   }, [stream])
 
+  useEffect(() => {
+    if (cameraMode && stream && videoRef.current) {
+      videoRef.current.srcObject = stream
+    }
+  }, [cameraMode, stream])
+
   const startCamera = async () => {
     try {
       const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } } })
       setStream(s)
       setCameraMode(true)
-      if (videoRef.current) videoRef.current.srcObject = s
     } catch (err) {
       alert('Camera access denied or unavailable: ' + err.message)
     }
@@ -217,7 +222,7 @@ export default function AdminDocumentScanner() {
 
       <div className="flex gap-2 mb-6 flex-wrap">
         {['scan', 'camera', 'upload', 'history'].map((tab) => (
-          <button key={tab} onClick={() => { if (tab === 'camera') { startCamera(); return }; setActiveTab(tab) }}
+          <button key={tab} onClick={() => { if (tab === 'camera') { startCamera(); setActiveTab('camera'); return }; setActiveTab(tab) }}
             className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition ${tab === 'camera' ? 'bg-rose-600 text-white hover:bg-rose-700' : activeTab === tab ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}>
             {tab === 'camera' ? <Camera className="w-4 h-4 inline mr-1" /> : tab === 'scan' ? <Scan className="w-4 h-4 inline mr-1" /> : <Upload className="w-4 h-4 inline mr-1" />}
             {tab}
