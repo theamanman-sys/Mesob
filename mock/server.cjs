@@ -2094,8 +2094,8 @@ app.get('/proxy/eservices', async (_req, res) => {
 // Error handler
 app.use((_req, res) => res.status(404).json(err('Not found', 404)))
 
-// Connect to MongoDB if URI is set
-if (process.env.MONGODB_URI) {
+// Connect to MongoDB if URI is set and not in mock mode
+if (USE_MONGODB) {
   mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err))
@@ -2107,7 +2107,7 @@ if (process.env.NETLIFY) {
   app.listen(PORT, () => {
     console.log(`Mock API server running at http://localhost:${PORT}`)
     console.log(`Demo admin: admin / admin123`)
-    if (process.env.MONGODB_URI) {
+    if (USE_MONGODB) {
       console.log('MongoDB mode enabled')
     }
   })

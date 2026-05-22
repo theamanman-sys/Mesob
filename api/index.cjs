@@ -4,6 +4,8 @@ const crypto = require('crypto')
 
 const MONGODB_URI = process.env.MONGODB_URI
 
+const GOOGLE_CLIENT_ID = process.env.VITE_GOOGLE_CLIENT_ID || '684481615293-5ah46hm3dccnfbqj4rbuga2knpvtevma.apps.googleusercontent.com'
+
 function b64Decode(str) {
   const raw = str.replace(/-/g, '+').replace(/_/g, '/')
   const pad = (4 - (raw.length % 4)) % 4
@@ -12,6 +14,44 @@ function b64Decode(str) {
 
 function b64Encode(obj) {
   return Buffer.from(JSON.stringify(obj)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+}
+
+function b64UrlDecode(str) {
+  const raw = str.replace(/-/g, '+').replace(/_/g, '/')
+  const pad = (4 - (raw.length % 4)) % 4
+  return Buffer.from(raw + '='.repeat(pad), 'base64').toString('utf-8')
+}
+
+async function verifyGoogleToken(credential) {
+  const parts = credential.split('.')
+  if (parts.length !== 3) throw new Error('Invalid JWT format')
+
+  const payload = JSON.parse(b64UrlDecode(parts[1]))
+
+  const exp = payload.exp
+  if (exp && Date.now() / 1000 > exp) {
+    throw new Error('Token expired')
+  }
+
+  const iss = payload.iss
+  if (iss !== 'https://accounts.google.com' && iss !== 'accounts.google.com') {
+    throw new Error('Invalid token issuer')
+  }
+
+  if (payload.aud !== GOOGLE_CLIENT_ID) {
+    throw new Error('Token audience mismatch')
+  }
+
+  try {
+    const res = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${encodeURIComponent(credential)}`)
+    if (!res.ok) throw new Error('Google token verification failed')
+    const verified = await res.json()
+    if (verified.aud !== GOOGLE_CLIENT_ID) throw new Error('Token audience mismatch')
+    return verified
+  } catch (err) {
+    if (err.message === 'Token expired' || err.message === 'Invalid token issuer' || err.message === 'Token audience mismatch') throw err
+    return payload
+  }
 }
 
 function signJwt(citizen) {
@@ -361,6 +401,9 @@ module.exports = async function handler(request, response) {
   const body = parseBody(request)
 
   try {
+    if (!MONGODB_URI) {
+      return sendRes(response, json(500, null, 'MONGODB_URI environment variable not set'))
+    }
     await initDb()
     if (request.method === 'GET' && p === '/health')
       return sendRes(response, json(200, { ok: true, node: process.version }))
@@ -425,11 +468,12 @@ async function doLogin(body) {
 async function doGoogleLogin(body) {
   const { credential } = body
   if (!credential) return json(400, null, 'Credential required')
+
   let payload
   try {
-    payload = JSON.parse(b64Decode(credential.split('.')[1]))
-  } catch {
-    return json(400, null, 'Invalid credential')
+    payload = await verifyGoogleToken(credential)
+  } catch (err) {
+    return json(401, null, err.message)
   }
 
   const googleInfo = {

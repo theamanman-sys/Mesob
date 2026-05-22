@@ -1,31 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Copy api/ to dist/ so Vercel's Vite preset can see function files in dist/api/
-import { copyFileSync, mkdirSync, readdirSync, statSync } from 'fs'
-import { resolve, join } from 'path'
-
-function copyDir(src, dst) {
-  mkdirSync(dst, { recursive: true })
-  for (const entry of readdirSync(src)) {
-    const srcPath = join(src, entry)
-    const dstPath = join(dst, entry)
-    if (statSync(srcPath).isDirectory()) copyDir(srcPath, dstPath)
-    else copyFileSync(srcPath, dstPath)
-  }
-}
-
 export default defineConfig({
   plugins: [
     react(),
-    {
-      name: 'copy-api-functions',
-      closeBundle() {
-        const src = resolve('api')
-        const dst = resolve('dist', 'api')
-        if (statSync(src).isDirectory()) copyDir(src, dst)
-      },
-    },
   ],
   build: {
     chunkSizeWarningLimit: 600,

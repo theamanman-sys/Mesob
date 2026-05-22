@@ -1,7 +1,13 @@
 {
   "version": 2,
+  "functions": {
+    "api/index.cjs": {
+      "memory": 256,
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
-    { "source": "/api/:path+", "destination": "/api" },
+    { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

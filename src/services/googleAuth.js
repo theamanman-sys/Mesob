@@ -1,5 +1,4 @@
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '684481615293-5ah46hm3dccnfbqj4rbuga2knpvtevma.apps.googleusercontent.com'
-const REDIRECT_URI = window.location.origin + '/citizen-login'
 const NONCE_KEY = 'google_oauth_nonce'
 
 function parseJwt(token) {
@@ -23,12 +22,12 @@ export function getGoogleCredential() {
 
   const savedNonce = sessionStorage.getItem(NONCE_KEY)
   sessionStorage.removeItem(NONCE_KEY)
-  window.location.hash = ''
+
+  history.replaceState(null, '', window.location.pathname + window.location.search)
 
   try {
     const payload = parseJwt(token)
     if (savedNonce && payload.nonce !== savedNonce) return null
-    sessionStorage.setItem('google_credential', JSON.stringify(payload))
     return token
   } catch {
     return null
@@ -49,11 +48,12 @@ export function renderGoogleButton(containerId, onSuccess) {
     e.preventDefault()
     const nonce = generateNonce()
     sessionStorage.setItem(NONCE_KEY, nonce)
+    const redirectUri = window.location.origin + window.location.pathname
     const params = new URLSearchParams({
       client_id: CLIENT_ID,
-      redirect_uri: REDIRECT_URI,
+      redirect_uri: redirectUri,
       response_type: 'id_token',
-      scope: 'openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+      scope: 'openid email profile',
       nonce,
       access_type: 'online',
     })
