@@ -147,13 +147,27 @@ function IdScannerModal({ open, onClose }) {
             <div className="space-y-3">
               <div className="relative rounded-xl overflow-hidden bg-black">
                 <video ref={videoRef} autoPlay playsInline muted className="w-full h-72 object-cover" />
-                <div className="absolute inset-0 border-2 border-blue-400 rounded-xl pointer-events-none" />
-                <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 border-2 border-dashed border-yellow-400/70 h-40 rounded-lg" />
+                <div className="absolute inset-0 bg-black/10" />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="relative w-64 h-40">
+                    <div className="absolute inset-0 border border-white/30 rounded-xl" />
+                    <div className="absolute -top-0.5 -left-0.5 w-6 h-6 border-t-[3px] border-l-[3px] border-blue-400 rounded-tl-lg" />
+                    <div className="absolute -top-0.5 -right-0.5 w-6 h-6 border-t-[3px] border-r-[3px] border-blue-400 rounded-tr-lg" />
+                    <div className="absolute -bottom-0.5 -left-0.5 w-6 h-6 border-b-[3px] border-l-[3px] border-blue-400 rounded-bl-lg" />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 border-b-[3px] border-r-[3px] border-blue-400 rounded-br-lg" />
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-3">
-                <button onClick={capture} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">{t('Capture')}</button>
-                <button onClick={flipCamera} className="px-4 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition"><RefreshCw className="w-4 h-4" /></button>
-                <button onClick={stopCamera} className="px-4 border-2 border-gray-200 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-50 transition"><X className="w-4 h-4" /></button>
+              <div className="flex items-center gap-4">
+                <button onClick={stopCamera} className="text-gray-500 hover:text-gray-700 transition p-2"><X className="w-5 h-5" /></button>
+                <div className="flex-1 flex justify-center">
+                  <button onClick={capture} className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-blue-600/40">
+                    <div className="w-[52px] h-[52px] rounded-full border-[3px] border-white flex items-center justify-center">
+                      <Camera className="w-6 h-6 text-white" />
+                    </div>
+                  </button>
+                </div>
+                <button onClick={flipCamera} className="text-gray-500 hover:text-gray-700 transition p-2"><RefreshCw className="w-5 h-5" /></button>
               </div>
             </div>
           )}

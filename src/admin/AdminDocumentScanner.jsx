@@ -194,22 +194,36 @@ export default function AdminDocumentScanner() {
 
       {cameraMode && (
         <div className="fixed inset-0 z-50 bg-black flex flex-col">
-          <div className="flex items-center justify-between p-4 bg-black/80">
-            <h2 className="text-white font-semibold">Camera Scanner</h2>
-            <button onClick={stopCamera} className="text-white/70 hover:text-white p-2"><X className="w-5 h-5" /></button>
+          <div className="flex items-center justify-between px-6 py-4 bg-black/90">
+            <h2 className="text-white font-semibold text-lg">{t('Document Scanner')}</h2>
+            <button onClick={stopCamera} className="text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition"><X className="w-5 h-5" /></button>
           </div>
-          <div className="flex-1 flex items-center justify-center relative">
-            <video ref={videoRef} autoPlay playsInline className="max-w-full max-h-full object-contain" />
+          <div className="flex-1 relative overflow-hidden flex items-center justify-center bg-black">
+            <video ref={videoRef} autoPlay playsInline className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/20" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative w-72 h-48">
+                <div className="absolute inset-0 border-2 border-white/40 rounded-2xl" />
+                <div className="absolute -top-0.5 -left-0.5 w-8 h-8 border-t-4 border-l-4 border-blue-400 rounded-tl-2xl" />
+                <div className="absolute -top-0.5 -right-0.5 w-8 h-8 border-t-4 border-r-4 border-blue-400 rounded-tr-2xl" />
+                <div className="absolute -bottom-0.5 -left-0.5 w-8 h-8 border-b-4 border-l-4 border-blue-400 rounded-bl-2xl" />
+                <div className="absolute -bottom-0.5 -right-0.5 w-8 h-8 border-b-4 border-r-4 border-blue-400 rounded-br-2xl" />
+              </div>
+            </div>
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white/80 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">
+              {t('Position ID card inside the frame')}
+            </div>
           </div>
-          <div className="p-6 flex justify-center gap-6 bg-black/80">
-            <button onClick={captureFromCamera} className="w-16 h-16 rounded-full bg-white flex items-center justify-center hover:scale-105 transition">
-              <div className="w-14 h-14 rounded-full border-4 border-blue-600 flex items-center justify-center">
-                <Camera className="w-6 h-6 text-blue-600" />
+          <div className="px-6 py-8 flex justify-center items-center gap-8 bg-black/90">
+            <button onClick={stopCamera} className="text-white/60 hover:text-white text-sm font-medium transition">
+              {t('Cancel')}
+            </button>
+            <button onClick={captureFromCamera} className="w-20 h-20 rounded-full bg-white flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-white/20">
+              <div className="w-16 h-16 rounded-full border-[3px] border-blue-600 flex items-center justify-center">
+                <Camera className="w-7 h-7 text-blue-600" />
               </div>
             </button>
-            <button onClick={stopCamera} className="px-6 py-3 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition">
-              Cancel
-            </button>
+            <div className="w-14" />
           </div>
         </div>
       )}
