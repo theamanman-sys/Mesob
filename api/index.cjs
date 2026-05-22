@@ -173,6 +173,21 @@ async function mongo() {
 
 function safeCitizen(c) { const { password, _id, ...r } = c; return r }
 
+function adminToken(user) {
+  return Buffer.from(JSON.stringify({ sub: user._id, username: user.username, role: user.role })).toString('base64url')
+}
+
+function safeUser(u) { const { password, _id, ...r } = u; return r }
+
+async function doAdminLogin(body) {
+  const { username, password } = body
+  if (!username || !password) return json(400, null, 'Username and password required')
+  const db = await mongo()
+  const user = await db.collection('users').findOne({ username, password })
+  if (!user) return json(401, null, 'Invalid credentials')
+  return json(200, { user: safeUser(user), accessToken: adminToken(user) }, 'Login successful')
+}
+
 async function requireAuth(req) {
   const token = bearerToken(req)
   const cid = getCitizenId(token)
@@ -419,6 +434,27 @@ module.exports = async function handler(request, response) {
 
     if (request.method === 'GET' && p === '/citizens/session')
       return sendRes(response, await doSession(request))
+
+    /* ─── Admin / User routes ─── */
+
+    if (request.method === 'POST' && p === '/users/login')
+      return sendRes(response, await doAdminLogin(body))
+
+    if (request.method === 'POST' && p === '/users/logout')
+      return sendRes(response, json(200, null, 'Logged out'))
+
+    if (request.method === 'POST' && p === '/users/accessToken') {
+      const db = await mongo()
+      const user = await db.collection('users').findOne()
+      if (!user) return sendRes(response, json(401, null, 'No admin user found'))
+      return sendRes(response, json(200, { accessToken: adminToken(user) }))
+    }
+
+    if (request.method === 'GET' && p === '/users/profile') {
+      const db = await mongo()
+      const user = await db.collection('users').findOne()
+      return sendRes(response, json(200, user ? safeUser(user) : null))
+    }
 
     /* ─── Fayda OIDC routes ─── */
 
