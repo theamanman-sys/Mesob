@@ -75,6 +75,7 @@ function setSecurityHeaders(res) {
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://accounts.google.com https://www.googleapis.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://i.ytimg.com; frame-src https://accounts.google.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self'; manifest-src 'self'")
 }
 
 function sendRes(res, result) {
@@ -432,10 +433,10 @@ module.exports = async function handler(request, response) {
     : (process.env.CORS_ORIGINS || '').split(',').filter(Boolean)
   if (allowedOrigins.includes(origin) || isDev) {
     response.setHeader('Access-Control-Allow-Origin', origin || '*')
+    response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+    response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.setHeader('Access-Control-Allow-Credentials', 'true')
   }
-  response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-  response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  response.setHeader('Access-Control-Allow-Credentials', 'true')
 
   if (request.method === 'OPTIONS') return response.status(204).end()
 

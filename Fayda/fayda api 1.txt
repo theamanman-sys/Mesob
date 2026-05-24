@@ -1,0 +1,403 @@
+VeriFayda 2.0 (eSignet) Relying Party Integration Documentation
+
+
+
+By Cherinet Hailu
+
+9 min
+
+Add a reaction
+Introduction
+VeriFayda 2.0 using eSignet integration enables relying parties to authenticate users and securely share user information using OpenID Connect (OIDC). This documentation covers the detailed steps for developers to implement eSignet integration, including initiating authorization, handling callbacks, decoding JWTs, and rendering user information in applications.
+
+Prerequisites
+Knowledge of OAuth 2.0 and OpenID Connect.
+
+Access to eSignet credentials: Client ID, eSignet Endpoints, and Private Key.
+
+A web application framework (e.g., React, Django, Flask).
+
+1. Overview of eSignet OIDC Flow
+Core OIDC Concepts
+Authorization Code Flow with PKCE: An enhanced flow for securing the authorization code exchange using a code_verifier and code_challenge.
+
+Tokens:
+
+ID Token: Contains claims about the user's authentication.
+
+Access Token: Grants access to user info and protected resources.
+
+PKCE: Ensures that the authorization code is used by the client that requested it, using a code_verifier and code_challenge.
+
+acr_values: Allows the client to specify authentication requirements, such as OTP or biometrics authentication. 
+
+Client Assertion: A JWT signed with the client’s private key, used for client authentication instead of a client_secret.
+
+The integration process follows a typical OIDC flow:
+
+Flow and How to Pass code_verifier and code_challenge
+Generate the Code Verifier: At the start of the authorization flow, the client generates a random code_verifier. This string is unique to each authorization session.
+
+Generate the Code Challenge: The client then uses this code_verifier to create a code_challenge using SHA-256 hashing and URL-safe Base64 encoding. This code_challenge will be included in the initial authorization request, while the code_verifier is stored securely on the client for later use.
+
+Authorization Request:
+
+The client redirects the user to the Identity Provider (IdP - i.e. VeriFayda 2) authorization endpoint.
+
+The request includes parameters such as client_id, redirect_uri, scope, and the code_challenge, as well as the code_challenge_method, which should be set to S256 to indicate the use of SHA-256.
+
+Optionally, if your integration requires specific authentication levels (such as multi-factor authentication), you can include acr_values to specify those requirements.
+
+The IdP verifies the request and then prompts the user to authenticate.
+
+Callback Handling: After authorization, eSignet redirects the user to your application’s callback URL with an authorization code.
+
+Token Request:
+
+The client exchanges the authorization code for tokens (ID token, access token) by sending a token request to the VeriFayda 2’s token endpoint.
+
+In this request, the client includes the original code_verifier along with the authorization code.
+
+The IdP(VeriFayda 2) will now verify the code_verifier by comparing it to the code_challenge provided earlier. If the code_verifier matches the code_challenge correctly, the token request is authenticated.
+
+User Info Retrieval: Use the access token to retrieve user information from the UserInfo endpoint.
+
+Decode JWT: Parse and decode the returned JWT token to extract user information.
+
+Rendering User Info: Display user information on the UI.
+
+2. Steps for Integration
+2.1. Authorization Request
+To initiate the authentication, you need to redirect the user to the eSignet authorization URL. Ensure the following query parameters are present:
+
+client_id: Your eSignet Client ID.
+
+response_type: Must be set to code.
+
+redirect_uri: The URL to which eSignet will redirect after authentication (your callback URL).
+
+scope: Set to openid profile email and for Yes/No auth, set the scope to just openid only.
+
+state: A unique string to mitigate CSRF attacks.
+
+code_challenge: The Base64 URL-encoded SHA-256 hash of the code verifier (or just the code verifier if using "plain" as the method).
+
+acr_values: Requests specific authentication contexts(if nothing is passed through this parameter, the default authentication context will be used).
+
+Example:
+"acr_values=mosip:idp:acr:generated-code" If you want to authenticate with OTP only.
+"acr_values=mosip:idp:acr:generated-code:biometrics"If you want to authenticate with either OTP or biometrics
+
+claims_locales: The languages you prefer to get the payload(KYC) with that are supported by Fayda for supported KYC fields. 
+
+Example usage:  claims_locales:'en am' For English and Amharic languages - if two or more languages are chosen, the payload structure for userinfo will be a bit different in terms of the JSON keys and this is explained in detail Section (2.5) below.
+
+claims: List of claims/user data requests along with whether it’s essential(mandatory) or not. This is helpful when you don’t want your clients(Fayda ID holders) to select every claim one by one and when you want to make fields mandatory.
+
+Example for claims(Python JSON/Dictionary):
+
+
+
+claims = {
+    "userinfo": {
+        "name": {"essential": True},
+        "phone_number": {"essential": True}, 
+        "email": {"essential": True},
+        "picture": {"essential": True},
+        "gender": {"essential": True},
+        "birthdate": {"essential": True},
+        "address": {"essential": True}
+    },
+    "id_token": {}
+}
+encoded_claims = urllib.parse.quote(json.dumps(claims))
+For Yes/No auth, make the claims empty list or don’t initialize the claims field at all.
+
+Example URL:
+
+https://esignet.authorization.endpoint/authorize?client_id=<client_id>&response_type=code&redirect_uri=<callback_url>&scope=openid%20profile%20email&state=<state>...
+
+2.2. Handling the Callback
+When the user is redirected back to your application, you'll receive an authorization code and a state value. Validate the state for CSRF protection, then use the code to request tokens from the token endpoint.
+
+Callback URL Example:
+
+https://yourapp.com/callback?code=<authorization_code>&state=<state>
+
+2.3. Token Exchange
+2.3.1. Decoding Private Key and Generating Client Assertion JWT
+In the eSignet OIDC integration, client authentication during the token exchange often requires a client assertion in the form of a JWT (JSON Web Token) signed with the client's private key, instead of using a client_secret. The private key is typically provided as a Base64-encoded JWK (JSON Web Key) set by the Fayda(eSignet) system administrator. This section explains how to decode the private key from its Base64-encoded format and use it to sign a JWT for client authentication.
+
+Understanding the Private Key Format
+The private key is provided as a Base64-encoded string representing a JWK set.
+
+A JWK set contains key details such as the key type (kty), modulus (n), exponent (e), private exponent (d), and other parameters required for RSA operations.
+
+To use this key for signing a JWT, you must first decode the Base64 string into a JSON object and then import or convert it into a format suitable for cryptographic operations in your programming environment.
+
+Steps to Decode the Private Key and Generate Client Assertion
+Decode the Base64 String: The Base64-encoded private key string must be decoded to obtain the JSON representation of the JWK.
+
+Parse the JSON: Convert the decoded string into a JSON object to access the key parameters.
+
+Import the Key: Use a cryptographic library (e.g., jose in Node.js, cryptography in Python) to import the JWK as a usable private key for signing.
+
+Create the Client Assertion JWT:
+
+Construct the JWT header (e.g., { "alg": "RS256", "typ": "JWT" }).
+
+Construct the payload with required claims such as:
+
+iss (issuer): Set to your client_id.
+
+sub (subject): Set to your client_id.
+
+aud (audience): Set to the token endpoint URL.
+
+iat (issued at): Current timestamp.
+
+exp (expiration): A future timestamp (e.g., 2 hours from now).
+
+Sign the JWT using the imported private key with the RS256 algorithm (RSA with SHA-256).
+
+Include in Token Request: Pass the signed JWT as the value of the client_assertion parameter in the token request, along with client_assertion_type set to urn:ietf:params:oauth:client-assertion-type:jwt-bearer.
+
+Example Implementation in Node.js
+Below is an example of decoding a Base64-encoded JWK private key and generating a signed JWT for client assertion using the jose library in Node.js.
+
+import { SignJWT, importJWK } from 'jose';
+
+export const generateSignedJwt = async () => {
+  const {
+    CLIENT_ID,          // Your eSignet Client ID
+    TOKEN_ENDPOINT,     // Token endpoint URL (audience for JWT)
+    PRIVATE_KEY_BASE64  // Base64-encoded JWK private key
+  } = process.env;
+
+  // Step 1: Decode the Base64-encoded JWK string to JSON
+  const jwkJson = Buffer.from(PRIVATE_KEY_BASE64, 'base64').toString('utf8');
+
+  // Step 2: Parse the JSON string to get the JWK object
+  const jwk = JSON.parse(jwkJson);
+
+  // Step 3: Import the JWK as a usable private key for signing
+  const privateKey = await importJWK(jwk, 'RS256');
+
+  // Step 4: Define the JWT header and payload
+  const header = { alg: 'RS256', typ: 'JWT' };
+  const payload = {
+    iss: CLIENT_ID,       // Issuer is the client ID
+    sub: CLIENT_ID,       // Subject is the client ID
+    aud: TOKEN_ENDPOINT   // Audience is the token endpoint URL
+  };
+
+  // Step 5: Create and sign the JWT
+  const signedJwt = await new SignJWT(payload)
+    .setProtectedHeader(header)
+    .setIssuedAt()                    // Automatically sets 'iat' to current time
+    .setExpirationTime('2h')          // Set expiration to 2 hours
+    .sign(privateKey);                // Sign with the private key
+
+  return signedJwt;
+};
+
+ 
+
+Example Implementation in Python
+Below is an example of decoding a Base64-encoded JWK private key and generating a signed JWT for client assertion using the PyJWT and cryptography libraries in Python.
+
+
+
+import base64
+import json
+import jwt
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.serialization import load_der_private_key
+from datetime import datetime, timedelta
+def generate_signed_jwt(client_id, token_endpoint, private_key_base64):
+    # Step 1: Decode the Base64-encoded JWK string to JSON
+    jwk_json = base64.b64decode(private_key_base64).decode('utf-8')
+    # Step 2: Parse the JSON string to get the JWK object
+    jwk = json.loads(jwk_json)
+    # Step 3: Extract necessary components for RSA private key (n, e, d, etc.)
+    # Convert Base64 URL-encoded components to DER format if needed
+    # This step might vary depending on how you need to construct the key.
+    # For simplicity, assume we are reconstructing an RSA key manually or using a library.
+    # Alternatively, use 'cryptography' library to build the key from components.
+    # Example of constructing RSA key (simplified; adjust based on your JWK structure)
+    n = int.from_bytes(base64url_decode(jwk['n']), byteorder='big')  # Modulus
+    e = int.from_bytes(base64url_decode(jwk['e']), byteorder='big')  # Public exponent
+    d = int.from_bytes(base64url_decode(jwk['d']), byteorder='big')  # Private exponent
+    p = int.from_bytes(base64url_decode(jwk['p']), byteorder='big')  # First prime factor
+    q = int.from_bytes(base64url_decode(jwk['q']), byteorder='big')  # Second prime factor
+    dp = int.from_bytes(base64url_decode(jwk['dp']), byteorder='big')  # First factor CRT exponent
+    dq = int.from_bytes(base64url_decode(jwk['dq']), byteorder='big')  # Second factor CRT exponent
+    qi = int.from_bytes(base64url_decode(jwk['qi']), byteorder='big')  # First CRT coefficient
+    # Build RSA private key (simplified; real implementation may need full parameters)
+    private_key = rsa.RSAPrivateNumbers(
+        p=0, q=0, d=d, dmp1=0, dmq1=0, iqmp=0,
+        public_numbers=rsa.RSAPublicNumbers(e=e, n=n)
+    ).private_key()
+    # Step 4: Define JWT header and payload
+    header = {"alg": "RS256", "typ": "JWT"}
+    current_time = datetime.utcnow()
+    payload = {
+        "iss": client_id,
+        "sub": client_id,
+        "aud": token_endpoint,
+        "iat": current_time,
+        "exp": current_time + timedelta(hours=2)
+    }
+    # Step 5: Sign the JWT using the private key
+    signed_jwt = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+    return signed_jwt
+# Usage
+client_id = "your-client-id"
+token_endpoint = "https://esignet.token.endpoint/token"
+private_key_base64 = "your-base64-encoded-jwk"  # Replace with actual value
+signed_jwt = generate_signed_jwt(client_id, token_endpoint, private_key_base64)
+print("Client Assertion JWT:", signed_jwt)
+Note: The Python example above is simplified for illustrative purposes. Constructing an RSA key from JWK components (n, e, d, etc.) requires careful handling of all parameters (p, q, dp, dq, qi) for correctness. Libraries like jwks-rsa or pre-built tools may simplify this process. Ensure you test thoroughly with your specific JWK.
+
+Including Client Assertion in Token Request
+Once the signed JWT is generated, include it in the token request as follows:
+
+Parameter: client_assertion
+
+Value: The generated signed JWT.
+
+Parameter: client_assertion_type
+
+Value: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+
+Example token request body:
+
+
+
+grant_type=authorization_code
+&code=<authorization_code>
+&redirect_uri=<callback_url>
+&client_id=<client_id>
+&client_assertion=<signed_jwt>
+&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+&code_verifier=<code_verifier>
+Security Considerations
+Protect the Private Key: Store the Base64-encoded private key securely (e.g., as an environment variable) and avoid hardcoding it in source code.
+
+Validate Expiry: Ensure the JWT's expiration time (exp) is set to a reasonable duration (e.g., 2 hours) to prevent reuse of expired assertions.
+
+Use Secure Libraries: Always use well-maintained cryptographic libraries for signing operations to avoid vulnerabilities.
+
+Troubleshooting Common Issues
+Invalid Assertion Error: If you receive an invalid_assertion error during token exchange, verify the following:
+
+The JWT claims (iss, sub, aud) match the expected values.
+
+The JWT signature is valid (use tools like JWT.IO  to debug).
+
+The expiration time (exp) is not in the past.
+
+The correct private key is used for signing.
+
+Once you receive the authorization code, exchange it for tokens (ID token and access token) by sending a POST request to the token endpoint.
+
+Method: POST
+
+Endpoint: https://esignet.token.endpoint/token
+
+Headers: Content-Type: application/x-www-form-urlencoded
+
+Body:
+
+grant_type: authorization_code
+
+code: The authorization code received from eSignet.
+
+redirect_uri: Your callback URL.
+
+client_id: Your Fayda eSignet Client ID.
+
+client_assertion: The signed JWT for client authentication.
+
+client_assertion_type: Must be bearer urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+
+code_verifier: Original code verifier string
+
+Example Request:
+
+POST https://esignet.token.endpoint/token Content-Type: application/x-www-form-urlencoded grant_type=authorization_code&code=<authorization_code>&redirect_uri=<callback_url>&client_id=<client_id>&client_secret=<client_secret>
+
+Example Response:
+
+{ "access_token": "<access_token>", "id_token": "<id_token>", "token_type": "Bearer", "expires_in": 3600 }
+
+2.4. Retrieving User Info
+With the access token obtained, you can query the UserInfo endpoint to retrieve the user's profile.
+
+Method: GET
+
+Endpoint: https://esignet.userinfo.endpoint/userinfo
+
+Headers:
+
+Authorization: Bearer <access_token>
+
+Example Request:
+
+GET https://esignet.userinfo.endpoint/userinfo Authorization: Bearer <access_token>
+
+Example Response:
+
+
+
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsInBpY3R1cmUiOiJodHRwczovL2V4YW1wbGUuY29tL3Byb2ZpbGUuanBnIiwicGhvbmUiOiIrMjUxOTExMDAwMDAwIiwiYmlydGhkYXRlIjoiMTk5MC0wMS0wMSIsImdlbmRlciI6Im1hbGUiLCJpc3MiOiJodHRwczovL2VzaWduZXQuZXhhbXBsZS5jb20iLCJhdWQiOiJjbGllbnQtaWQiLCJleHAiOjE3MDAwMDAwMDAsImlhdCI6MTY5OTk5OTAwMH0.mFAk5k5XBzJlLNk9j-...
+2.5. Decoding the JWT
+To decode the id_token or the JWT returned from the user info endpoint, you can use JWT libraries such as jsonwebtoken in Node.js or pyjwt in Python.
+
+Example Decoding in Python:
+
+import jwt # Decode the JWT without signature verification 
+decoded_user_info = jwt.decode(id_token, options={"verify_signature": False}, algorithms=["RS256"]) 
+name = decoded_user_info.get('name', 'N/A') 
+email = decoded_user_info.get('email', 'N/A') 
+sub = decoded_user_info.get('sub', 'N/A') 
+picture = decoded_user_info.get('picture', '')
+
+If two or more languages are chosen, the key values for userinfo will have the language code along with the KYC field name. 
+
+Example for ‘name’ KYC field: nameAmh = decoded_user_info.get('name#am', 'N/A') 
+                                                 nameEng = decoded_user_info.get('name#en', 'N/A')    
+
+3. Error Handling
+3.1. Authorization Errors
+Authorization errors will be returned as query parameters to your callback URL:
+
+https://yourapp.com/callback?error=<error_code>&error_description=<description>
+
+3.2. Token Errors
+Token endpoint errors will be returned in the response body as JSON:
+
+{ "error": "invalid_request", "error_description": "The authorization code is invalid." } - Check if the authorization code passed is valid
+
+{ "error": "invalid_transaction", "error_description": "invalid_transaction" } - Check if the transaction is being interrupted 
+
+{ "error": "invalid_assertion", "error_description": "invalid_assertion" } - Issue with private key and signing client assertion JWT: check if the signed JWT is valid(check if all the fields are present such as sub,iss,aud,iat and exp and make sure the expiry date is before the current time and date) and the signature is verified(you can use jwt.io)
+
+4. Rendering User Info
+Once the user info is decoded, you can pass the data to the front-end or render it on a callback page. For example:
+
+<h2>User Information</h2> 
+
+    <p>Name: {{ name }}</p> 
+
+    <p>Email: {{ email }}</p> 
+
+    <img src="{{ picture }}" alt="User Picture" />
+
+ 
+
+Reference mock implementations for React and Django+HTML can be found on our GitHub page.
+
+GitHub - National-ID-Program-Ethiopia/oidc-test-app     
+
+GitHub - National-ID-Program-Ethiopia/oidc-project: Fayda eSignet proof of concept repo. 

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /citizen/
 Disallow: /api/
 
-Sitemap: https://mesobcenter.netlify.app/sitemap.xml
+Sitemap: https://mesob-center.vercel.app/sitemap.xml
