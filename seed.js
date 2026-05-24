@@ -1,5 +1,6 @@
 import fs from 'fs';
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -24,21 +25,29 @@ async function seed() {
 
     const db = mongoose.connection.db;
 
-    // Iterate through all collections in the db.json file
     for (const [collectionName, documents] of Object.entries(dbData)) {
       if (!Array.isArray(documents) || documents.length === 0) {
         console.log(`Skipping empty or non-array collection: ${collectionName}`);
         continue;
       }
       
-      console.log(`Seeding ${collectionName} with ${documents.length} records...`);
+      // Hash passwords in users and citizens collections
+      let processed = documents;
+      if (collectionName === 'users' || collectionName === 'citizens') {
+        processed = await Promise.all(documents.map(async (doc) => {
+          if (doc.password && !doc.password.startsWith('$2a$') && !doc.password.startsWith('$2b$')) {
+            doc.password = await bcrypt.hash(doc.password, 12);
+          }
+          return doc;
+        }));
+      }
+      
+      console.log(`Seeding ${collectionName} with ${processed.length} records...`);
       const collection = db.collection(collectionName);
       
-      // Clear existing data to prevent duplicates
       await collection.deleteMany({});
       
-      // Insert mock data
-      await collection.insertMany(documents);
+      await collection.insertMany(processed);
       console.log(`Successfully seeded ${collectionName}`);
     }
 

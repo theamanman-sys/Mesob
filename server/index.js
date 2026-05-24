@@ -4,6 +4,9 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath, pathToFileURL } from 'url'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import rateLimit from 'express-rate-limit'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -11,13 +14,58 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') })
 
 const app = express()
 const PORT = process.env.PORT || 3001
+const JWT_SECRET = process.env.JWT_SECRET
+const isDev = process.env.NODE_ENV !== 'production'
+
+if (!JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is not set')
+  process.exit(1)
+}
+
+const corsOrigins = isDev
+  ? ['http://localhost:3000', 'http://localhost:5173']
+  : (process.env.CORS_ORIGINS || '').split(',').filter(Boolean)
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: corsOrigins.length > 0 ? corsOrigins : true,
   credentials: true
 }))
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
+
+// Security headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('X-XSS-Protection', '0')
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin')
+  if (!isDev) {
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; form-action 'self'")
+  }
+  next()
+})
+
+// Rate limiting
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: 'Too many login attempts. Try again in 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+app.use('/users/login', loginLimiter)
+app.use(apiLimiter)
 
 // Load the Vercel serverless handler as catch-all for citizen/ticket/other routes
 const _apiModule = await import(pathToFileURL(path.join(__dirname, '..', 'api', 'index.cjs')))
@@ -180,11 +228,39 @@ app.get('/Languages/code/:code', async (req, res) => {
 app.post('/users/login', async (req, res) => {
   try {
     const { username, password } = req.body
-    const user = await User.findOne({ username, password })
+    if (!username || !password) return res.status(400).json({ message: 'Username and password required', success: false })
+
+    const user = await User.findOne({ username }).collation({ locale: 'en', strength: 2 })
     if (!user) return res.status(401).json({ message: 'Invalid credentials', success: false })
-    const token = Buffer.from(JSON.stringify({ sub: user._id, username: user.username, role: user.role })).toString('base64url')
+
+    const isMatch = await bcrypt.compare(password, user.password)
+    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials', success: false })
+
+    const token = jwt.sign(
+      { sub: user._id.toString(), username: user.username, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '24h', algorithm: 'HS256' }
+    )
     const { password: _, ...safe } = user.toObject()
     res.json({ data: { user: safe, accessToken: token }, success: true })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+app.post('/users/seed', async (req, res) => {
+  try {
+    const { secret, username, password, role } = req.body
+    if (secret !== process.env.SEED_SECRET) return res.status(403).json({ message: 'Invalid seed secret', success: false })
+    const hashed = await bcrypt.hash(password, 12)
+    const existing = await User.findOne({ username })
+    if (existing) {
+      existing.password = hashed
+      if (role) existing.role = role
+      await existing.save()
+      return res.json({ message: 'User updated with hashed password', success: true })
+    }
+    await User.create({ username, password: hashed, role: role || 'admin', isActive: true })
+    res.json({ message: 'User created with hashed password', success: true })
   } catch (err) {
     res.status(500).json({ message: err.message, success: false })
   }

@@ -1,10 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
+const bcrypt = require('bcryptjs')
+const jwtLib = require('jsonwebtoken')
 
 const MONGODB_URI = process.env.MONGODB_URI
-
-const GOOGLE_CLIENT_ID = process.env.VITE_GOOGLE_CLIENT_ID || '684481615293-5ah46hm3dccnfbqj4rbuga2knpvtevma.apps.googleusercontent.com'
+const JWT_SECRET = process.env.JWT_SECRET
+const isDev = process.env.NODE_ENV !== 'production'
+const GOOGLE_CLIENT_ID = process.env.VITE_GOOGLE_CLIENT_ID
 
 function b64Decode(str) {
   const raw = str.replace(/-/g, '+').replace(/_/g, '/')
@@ -55,18 +58,28 @@ async function verifyGoogleToken(credential) {
 }
 
 function signJwt(citizen) {
-  const h = b64Encode({ alg: 'HS256', typ: 'JWT' })
-  const p = b64Encode({ sub: citizen.id || citizen._id, email: citizen.email, iat: Date.now() })
-  const s = crypto.createHmac('sha256', 'citizen-secret').update(h + '.' + p).digest('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-  return h + '.' + p + '.' + s
+  return jwtLib.sign(
+    { sub: String(citizen.id || citizen._id), email: citizen.email },
+    JWT_SECRET,
+    { expiresIn: '24h', algorithm: 'HS256' }
+  )
 }
 
 function json(code, data, msg) {
   return { statusCode: code, body: JSON.stringify({ data, message: msg || 'Success', success: code < 400 }) }
 }
 
+function setSecurityHeaders(res) {
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+}
+
 function sendRes(res, result) {
-  res.status(result.statusCode).setHeader('Content-Type', 'application/json').setHeader('Cross-Origin-Opener-Policy', 'unsafe-none').send(result.body)
+  setSecurityHeaders(res)
+  res.status(result.statusCode).setHeader('Content-Type', 'application/json').send(result.body)
 }
 
 function getPath(req) {
@@ -134,16 +147,12 @@ function generateMockOidcIdentity(citizen) {
   }
 }
 
-function getCitizenId(token) {
+function verifyCitizenToken(token) {
   try {
-    const parts = token.split('.')
-    if (parts.length === 3) {
-      const payload = JSON.parse(b64Decode(parts[1]))
-      const id = parseInt(payload.sub, 10)
-      return isNaN(id) ? null : id
-    }
-  } catch {}
-  return null
+    const payload = jwtLib.verify(token, JWT_SECRET, { algorithms: ['HS256'] })
+    const id = parseInt(payload.sub, 10)
+    return isNaN(id) ? null : id
+  } catch { return null }
 }
 
 let _mongoConn = null, _mongoDb = null, _mongoInit = null
@@ -174,7 +183,11 @@ async function mongo() {
 function safeCitizen(c) { const { password, _id, ...r } = c; return r }
 
 function adminToken(user) {
-  return Buffer.from(JSON.stringify({ sub: user._id, username: user.username, role: user.role })).toString('base64url')
+  return jwtLib.sign(
+    { sub: String(user._id), username: user.username, role: user.role },
+    JWT_SECRET,
+    { expiresIn: '24h', algorithm: 'HS256' }
+  )
 }
 
 function safeUser(u) { const { password, _id, ...r } = u; return r }
@@ -183,14 +196,16 @@ async function doAdminLogin(body) {
   const { username, password } = body
   if (!username || !password) return json(400, null, 'Username and password required')
   const db = await mongo()
-  const user = await db.collection('users').findOne({ username, password })
+  const user = await db.collection('users').findOne({ username })
   if (!user) return json(401, null, 'Invalid credentials')
+  const isMatch = await bcrypt.compare(password, user.password || '')
+  if (!isMatch) return json(401, null, 'Invalid credentials')
   return json(200, { user: safeUser(user), accessToken: adminToken(user) }, 'Login successful')
 }
 
 async function requireAuth(req) {
   const token = bearerToken(req)
-  const cid = getCitizenId(token)
+  const cid = verifyCitizenToken(token)
   if (!cid) return null
   const db = await mongo()
   return db.collection('citizens').findOne({ id: cid })
@@ -405,10 +420,16 @@ async function handleRoute(method, p, body, req) {
 }
 
 module.exports = async function handler(request, response) {
-  response.setHeader('Access-Control-Allow-Origin', '*')
+  const origin = request.headers['origin'] || ''
+  const allowedOrigins = isDev
+    ? ['http://localhost:3000', 'http://localhost:5173']
+    : (process.env.CORS_ORIGINS || '').split(',').filter(Boolean)
+  if (allowedOrigins.includes(origin) || isDev) {
+    response.setHeader('Access-Control-Allow-Origin', origin || '*')
+  }
   response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  response.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none')
+  response.setHeader('Access-Control-Allow-Credentials', 'true')
 
   if (request.method === 'OPTIONS') return response.status(204).end()
 
@@ -444,8 +465,12 @@ module.exports = async function handler(request, response) {
       return sendRes(response, json(200, null, 'Logged out'))
 
     if (request.method === 'POST' && p === '/users/accessToken') {
+      const auth = bearerToken(request)
+      if (!auth) return sendRes(response, json(401, null, 'No token provided'))
+      let payload
+      try { payload = jwtLib.verify(auth, JWT_SECRET) } catch { return sendRes(response, json(401, null, 'Invalid or expired token')) }
       const db = await mongo()
-      const user = await db.collection('users').findOne()
+      const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(payload.sub) })
       if (!user) return sendRes(response, json(401, null, 'No admin user found'))
       return sendRes(response, json(200, { accessToken: adminToken(user) }))
     }
@@ -485,8 +510,9 @@ async function doRegister(body) {
   const coll = db.collection('citizens')
   if (await coll.findOne({ email })) return json(400, null, 'Email already registered')
   if (idNumber && await coll.findOne({ idNumber })) return json(400, null, 'ID already registered')
+  const hashedPassword = password ? await bcrypt.hash(password, 12) : ''
   const newId = (await coll.countDocuments()) + 1
-  const doc = { _id: String(newId), id: newId, userId: newId, firstName, lastName, email, phone: phone || '', idNumber: idNumber || '', password: password || '', picture: '', googleId: null, googleData: null, createdAt: new Date(), updatedAt: new Date(), status: 'active' }
+  const doc = { _id: String(newId), id: newId, userId: newId, firstName, lastName, email, phone: phone || '', idNumber: idNumber || '', password: hashedPassword, picture: '', googleId: null, googleData: null, createdAt: new Date(), updatedAt: new Date(), status: 'active' }
   await coll.insertOne(doc)
   return json(200, { citizen: safeCitizen(doc), accessToken: signJwt(doc) }, 'Registration successful')
 }
@@ -497,7 +523,9 @@ async function doLogin(body) {
 
   const db = await mongo()
   const citizen = await db.collection('citizens').findOne({ $or: [{ email: identifier }, { idNumber: identifier }] })
-  if (!citizen || citizen.password !== pwd) return json(401, null, 'Invalid credentials')
+  if (!citizen) return json(401, null, 'Invalid credentials')
+  const isMatch = await bcrypt.compare(pwd, citizen.password || '')
+  if (!isMatch) return json(401, null, 'Invalid credentials')
   return json(200, { citizen: safeCitizen(citizen), accessToken: signJwt(citizen) }, 'Login successful')
 }
 
@@ -533,7 +561,7 @@ async function doGoogleLogin(body) {
 
 async function doSession(req) {
   const token = bearerToken(req)
-  const cid = getCitizenId(token)
+  const cid = verifyCitizenToken(token)
   if (!cid) return unauth()
   const db = await mongo()
   const citizen = await db.collection('citizens').findOne({ id: cid })
