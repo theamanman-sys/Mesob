@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Ticket, Calendar, Clock, FileText, Search, ExternalLink, X, ChevronDown, Download, Image, FileDown, Check } from 'lucide-react'
+import { Calendar, Clock, MapPin, ExternalLink, CheckCircle, XCircle, AlertCircle, ChevronRight, Ticket, ArrowRight, X, ListFilter, RefreshCw, Globe } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
 import { Barcode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
@@ -244,9 +244,12 @@ export default function CitizenTickets() {
           <Calendar className="w-5 h-5 text-blue-600" /><h2 className="font-semibold text-gray-800">{t('Book New Appointment')}</h2>
         </div>
         <div className="bg-gray-50 p-2">
-          <iframe src="https://qetero.com" title="Qetero Appointment Booking" className="w-full min-h-[300px] md:min-h-[450px] lg:min-h-[600px] rounded-xl border-0" loading="lazy" referrerPolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
+          <iframe src={`/api/proxy/bank?url=${encodeURIComponent('https://qetero.com')}`} title="Qetero Appointment Booking" className="w-full min-h-[300px] md:min-h-[450px] lg:min-h-[600px] rounded-xl border-0" loading="lazy" referrerPolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
         </div>
-        <div className="p-3 bg-blue-50 text-xs text-blue-700 flex items-center gap-2"><ExternalLink className="w-3.5 h-3.5" /> {t('Qetero is a third-party appointment booking platform integrated for your convenience.')}</div>
+        <div className="p-3 bg-blue-50 text-xs text-blue-700 flex items-center gap-2">
+          <ExternalLink className="w-3.5 h-3.5" />
+          <span>{t('If the booking form does not load,')} <a href="https://qetero.com" target="_blank" rel="noopener noreferrer" className="font-semibold underline">{t('open Qetero directly')}</a></span>
+        </div>
       </motion.div>
     </div>
   )
