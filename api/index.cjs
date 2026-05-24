@@ -75,7 +75,7 @@ function setSecurityHeaders(res) {
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://accounts.google.com https://www.googleapis.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://i.ytimg.com; frame-src https://accounts.google.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self'; manifest-src 'self'")
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://accounts.google.com https://www.googleapis.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://i.ytimg.com; frame-src https://accounts.google.com https://id.et https://justice.gov.et https://qetero.com https://www.ethiojobs.net https://www.ecx.com.et https://www.properties.et https://betoch.com https://www.youtube.com https://www.youtube-nocookie.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self'; manifest-src 'self'")
 }
 
 function sendRes(res, result) {
