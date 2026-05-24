@@ -48,6 +48,8 @@ export default function AdminGovernmentServices() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <input type="text" placeholder="Title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2 border rounded-md" />
               <textarea placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full px-3 py-2 border rounded-md" rows={3} />
+              <input type="text" placeholder="Icon URL (e.g. /files/logos/motri-logo.svg)" value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="w-full px-3 py-2 border rounded-md" />
+              <input type="text" placeholder="Color (e.g. #2563eb)" value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} className="w-full px-3 py-2 border rounded-md" />
               <div className="flex space-x-3">
                 <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-md">{edit ? 'Update' : 'Create'}</button>
                 <button type="button" onClick={() => setModal(false)} className="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>

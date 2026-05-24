@@ -74,6 +74,7 @@ const AdminTax = lazy(() => import('./admin/AdminTax'))
 const AdminApiSix = lazy(() => import('./admin/AdminApiSix'))
 const AdminVerifications = lazy(() => import('./admin/AdminVerifications'))
 const AdminLegal = lazy(() => import('./admin/AdminLegal'))
+const AdminDocuments = lazy(() => import('./admin/AdminDocuments'))
 
 function PageLoader() {
   return (
@@ -280,10 +281,13 @@ export default function App() {
           <Route path="apisix" element={
             <RoleGuard allowedRoles={['admin']}><AdminApiSix /></RoleGuard>
           } />
-          <Route path="verifications" element={
-            <RoleGuard allowedRoles={['admin']}><AdminVerifications /></RoleGuard>
-          } />
-          <Route path="legal" element={
+  <Route path="verifications" element={
+    <RoleGuard allowedRoles={['admin']}><AdminVerifications /></RoleGuard>
+  } />
+  <Route path="documents" element={
+    <RoleGuard allowedRoles={['admin']}><AdminDocuments /></RoleGuard>
+  } />
+  <Route path="legal" element={
             <RoleGuard allowedRoles={['admin']}><AdminLegal /></RoleGuard>
           } />
           <Route path="*" element={<div className="text-center py-12 text-gray-500">Page not found</div>} />

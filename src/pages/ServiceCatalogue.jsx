@@ -5,6 +5,7 @@ import { Search, Building2, Loader, CheckCircle2, ExternalLink } from 'lucide-re
 import { useLanguage } from '../context/LanguageContext'
 import { getTranslatedService } from '../i18n/serviceTranslations'
 import { serviceService } from '../services/serviceService'
+import { organizationService } from '../services/organizationService'
 import { citizenService } from '../services/citizenService'
 
 export default function ServiceCatalogue() {
@@ -13,12 +14,20 @@ export default function ServiceCatalogue() {
   const [search, setSearch] = useState('')
   const [applying, setApplying] = useState(null)
   const [services, setServices] = useState([])
+  const [organizations, setOrganizations] = useState([])
 
   useEffect(() => {
-    serviceService.getAll().then(({ data }) => {
-      setServices(data.data || data || [])
-    }).catch(() => setServices([]))
+    Promise.all([
+      serviceService.getAll(),
+      organizationService.getAll()
+    ]).then(([svcRes, orgRes]) => {
+      setServices(svcRes.data?.data || svcRes.data || svcRes || [])
+      setOrganizations(orgRes.data?.data || orgRes.data || orgRes || [])
+    }).catch(() => { setServices([]); setOrganizations([]) })
   }, [])
+
+  const orgMap = {}
+  organizations.forEach(o => { orgMap[o.id] = o })
 
   const filtered = useMemo(() => {
     const translated = services.map(s => getTranslatedService(s, currentLanguage))
@@ -64,7 +73,7 @@ export default function ServiceCatalogue() {
                 className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition h-full flex flex-col">
                 <Link to={`/services/${service.id}`} className="flex-1 group">
                   <div className="flex items-start space-x-3">
-                    <Building2 className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    {(() => { const org = orgMap[service.organizationId]; return org?.icon ? <img src={org.icon} alt="" className="w-7 h-7 mt-0.5 object-contain flex-shrink-0" onError={e => { e.target.style.display = 'none' }} /> : <Building2 className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" /> })()}
                     <div>
                       <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition">{service.name || service.title}</h3>
                       <p className="text-sm text-gray-600 mt-2 line-clamp-2">{service.description || ''}</p>

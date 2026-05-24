@@ -49,6 +49,7 @@ export default function AdminPopularServices() {
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-lg">
             <form onSubmit={handleSubmit} className="space-y-4">
               <input type="text" placeholder="Name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 border rounded-md" />
+              <input type="text" placeholder="Icon URL (e.g. /files/logos/motri-logo.svg)" value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="w-full px-3 py-2 border rounded-md" />
               <input type="text" placeholder="Color (e.g. rgb(59, 130, 246))" value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} className="w-full px-3 py-2 border rounded-md" />
               <div className="flex space-x-3">
                 <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-md">{edit ? 'Update' : 'Create'}</button>

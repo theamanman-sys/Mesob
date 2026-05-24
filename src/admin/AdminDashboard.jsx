@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
+import { useLanguage } from '../context/LanguageContext'
 import { Link } from 'react-router-dom'
 import {
   Building2, DollarSign, TrendingUp, Users, Ticket, Wallet,
@@ -47,6 +48,7 @@ function timeAgo(dateStr) {
 
 export default function AdminDashboard() {
   const { user } = useAuth()
+  const { t } = useLanguage()
   const [data, setData] = useState(null)
   const [news, setNews] = useState([])
   const [videos, setVideos] = useState([])
@@ -120,24 +122,24 @@ export default function AdminDashboard() {
   const ageGroups = population?.ageGroups || []
 
   const sections = [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'economy', label: 'Economy', icon: TrendingUp },
-    { id: 'budgets', label: 'Budgets', icon: PiggyBank },
-    { id: 'tax', label: 'Tax Revenue', icon: DollarSign },
-    { id: 'population', label: 'Population', icon: Users },
-    { id: 'services', label: 'Services', icon: Briefcase },
-    { id: 'users', label: 'Citizens', icon: Users },
-    { id: 'jobs', label: 'Jobs', icon: Award },
-    { id: 'news', label: 'News Feed', icon: Newspaper },
+    { id: 'overview', label: t('Overview'), icon: BarChart3 },
+    { id: 'economy', label: t('Economy'), icon: TrendingUp },
+    { id: 'budgets', label: t('Budgets'), icon: PiggyBank },
+    { id: 'tax', label: t('Tax Revenue'), icon: DollarSign },
+    { id: 'population', label: t('Population'), icon: Users },
+    { id: 'services', label: t('Services'), icon: Briefcase },
+    { id: 'users', label: t('Citizens'), icon: Users },
+    { id: 'jobs', label: t('Jobs'), icon: Award },
+    { id: 'news', label: t('News Feed'), icon: Newspaper },
   ]
 
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">🇪🇹 Ethiopia National Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('Ethiopia National Dashboard')}</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            Welcome back, {user?.username || 'Admin'} • {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            {t('Welcome back, {name}', { name: user?.username || 'Admin' })} • {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -157,10 +159,10 @@ export default function AdminDashboard() {
       <AnimatePresence mode="wait">
         {(activeSection === 'overview' || activeSection === 'economy') && (
           <motion.div key="summary" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <SummaryCard icon={Landmark} label="National Budget" value={`${formatBirr(overview?.totalNationalBudget)} ETB`} sub={`${overview?.fiscalYear || '2025/26'} • ${formatBirr(overview?.totalAllocated)} allocated`} change={`${overview?.budgetUtilizationRate || 0}% utilized`} changeType={parseFloat(overview?.budgetUtilizationRate || 0) > 80 ? 'up' : 'neutral'} color="blue" />
-            <SummaryCard icon={DollarSign} label="Revenue Collected" value={`${formatBirr(overview?.totalRevenueCollected)} ETB`} sub={`${formatBirr(taxStats?.totalCollected)} tax • ${formatBirr(ticketStats?.totalRevenue || 0)} tickets`} change={`${taxStats?.collectionRate || 0}% of target`} changeType={parseFloat(taxStats?.collectionRate || 0) > 85 ? 'up' : parseFloat(taxStats?.collectionRate || 0) > 60 ? 'neutral' : 'down'} color="green" />
-            <SummaryCard icon={Globe} label="Economy" value={`$${economy?.gdp || '155.8'}B GDP`} sub={`$${economy?.gdpPerCapita || 1123}/capita`} change={`${economy?.gdpGrowth || 6.4}% growth`} changeType="up" color="purple" />
-            <SummaryCard icon={Users} label="Population" value={formatNum(population?.total)} sub={`${population?.growthRate || 2.6}% growth • ${economy?.unemployment || 19.1}% unemployment`} change={`${economy?.inflation || 23.5}% inflation`} changeType="down" color="amber" />
+            <SummaryCard icon={Landmark} label={t('National Budget')} value={`${formatBirr(overview?.totalNationalBudget)} ETB`} sub={`${overview?.fiscalYear || '2025/26'} • ${formatBirr(overview?.totalAllocated)} ${t('allocated')}`} change={`${overview?.budgetUtilizationRate || 0}% ${t('utilized')}`} changeType={parseFloat(overview?.budgetUtilizationRate || 0) > 80 ? 'up' : 'neutral'} color="blue" />
+            <SummaryCard icon={DollarSign} label={t('Revenue Collected')} value={`${formatBirr(overview?.totalRevenueCollected)} ETB`} sub={`${formatBirr(taxStats?.totalCollected)} ${t('tax')} • ${formatBirr(ticketStats?.totalRevenue || 0)} ${t('tickets')}`} change={`${taxStats?.collectionRate || 0}% ${t('of target')}`} changeType={parseFloat(taxStats?.collectionRate || 0) > 85 ? 'up' : parseFloat(taxStats?.collectionRate || 0) > 60 ? 'neutral' : 'down'} color="green" />
+            <SummaryCard icon={Globe} label={t('Economy')} value={`$${economy?.gdp || '155.8'}B ${t('GDP')}`} sub={`$${economy?.gdpPerCapita || 1123}/${t('capita')}`} change={`${economy?.gdpGrowth || 6.4}% ${t('growth')}`} changeType="up" color="purple" />
+            <SummaryCard icon={Users} label={t('Population')} value={formatNum(population?.total)} sub={`${population?.growthRate || 2.6}% ${t('growth')} • ${economy?.unemployment || 19.1}% ${t('unemployment')}`} change={`${economy?.inflation || 23.5}% ${t('inflation')}`} changeType="down" color="amber" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -169,7 +171,7 @@ export default function AdminDashboard() {
         {activeSection === 'overview' && (
           <motion.div key="overview-grid" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              <ChartCard title="Economy by Sector" icon={PieChart}>
+              <ChartCard title={t('Economy by Sector')} icon={PieChart}>
                 <div className="flex flex-col items-center">
                   <ResponsiveContainer width="100%" height={200}>
                     <RePieChart>
@@ -190,7 +192,7 @@ export default function AdminDashboard() {
                 </div>
               </ChartCard>
 
-              <ChartCard title="Top Department Budgets" icon={Building2}>
+              <ChartCard title={t('Top Department Budgets')} icon={Building2}>
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={topDepts} layout="vertical" margin={{ left: 10, right: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -204,7 +206,7 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               </ChartCard>
 
-              <ChartCard title="Tax Collection by Type" icon={DollarSign}>
+              <ChartCard title={t('Tax Collection by Type')} icon={DollarSign}>
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={taxByType} margin={{ left: 10, right: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -218,7 +220,7 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               </ChartCard>
 
-              <ChartCard title="Monthly Tax Revenue Trend" icon={TrendingUp} span={2}>
+              <ChartCard title={t('Monthly Tax Revenue Trend')} icon={TrendingUp} span={2}>
                 <ResponsiveContainer width="100%" height={220}>
                   <AreaChart data={taxByMonth}>
                     <defs>
@@ -233,15 +235,15 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               </ChartCard>
 
-              <ChartCard title="Key Indicators" icon={Activity}>
+              <ChartCard title={t('Key Indicators')} icon={Activity}>
                 <div className="space-y-3">
                   {[
-                    { label: 'GDP Growth', value: `${economy?.gdpGrowth || 6.4}%`, color: 'text-green-600', icon: TrendingUp },
-                    { label: 'Inflation Rate', value: `${economy?.inflation || 23.5}%`, color: 'text-red-600', icon: ArrowDownRight },
-                    { label: 'Unemployment', value: `${economy?.unemployment || 19.1}%`, color: 'text-orange-600', icon: AlertCircle },
-                    { label: 'GDP Per Capita', value: `$${economy?.gdpPerCapita || 1123}`, color: 'text-blue-600', icon: DollarSign },
-                    { label: 'Population Growth', value: `${population?.growthRate || 2.6}%`, color: 'text-purple-600', icon: TrendingUp },
-                    { label: 'Literacy Rate', value: `${population?.literacyRate || 51.8}%`, color: 'text-green-600', icon: Activity },
+                    { label: t('GDP Growth'), value: `${economy?.gdpGrowth || 6.4}%`, color: 'text-green-600', icon: TrendingUp },
+                    { label: t('Inflation Rate'), value: `${economy?.inflation || 23.5}%`, color: 'text-red-600', icon: ArrowDownRight },
+                    { label: t('Unemployment'), value: `${economy?.unemployment || 19.1}%`, color: 'text-orange-600', icon: AlertCircle },
+                    { label: t('GDP Per Capita'), value: `$${economy?.gdpPerCapita || 1123}`, color: 'text-blue-600', icon: DollarSign },
+                    { label: t('Population Growth'), value: `${population?.growthRate || 2.6}%`, color: 'text-purple-600', icon: TrendingUp },
+                    { label: t('Literacy Rate'), value: `${population?.literacyRate || 51.8}%`, color: 'text-green-600', icon: Activity },
                   ].map((item, i) => (
                     <div key={i} className="flex items-center justify-between py-1.5 border-b dark:border-gray-700 last:border-0">
                       <div className="flex items-center gap-2">
@@ -256,7 +258,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-              <ChartCard title="Population by Region (Top 10)" icon={Users}>
+              <ChartCard title={t('Population by Region (Top 10)')} icon={Users}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={populationRegions} layout="vertical" margin={{ left: 5, right: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -270,7 +272,7 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               </ChartCard>
 
-              <ChartCard title="Age Distribution" icon={Activity}>
+              <ChartCard title={t('Age Distribution')} icon={Activity}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={ageGroups} margin={{ left: 10, right: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -310,16 +312,17 @@ export default function AdminDashboard() {
 }
 
 function EconomySection({ economy, sectorData, overview }) {
+  const { t } = useLanguage()
   return (
     <motion.div key="economy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="GDP & Economic Indicators" icon={TrendingUp}>
+        <ChartCard title={t('GDP & Economic Indicators')} icon={TrendingUp}>
           <div className="grid grid-cols-2 gap-4 mb-4">
             {[
-              { label: 'GDP', value: `$${economy?.gdp || 155.8}B`, sub: 'Nominal GDP' },
-              { label: 'Growth', value: `${economy?.gdpGrowth || 6.4}%`, sub: 'Annual Growth Rate' },
-              { label: 'Per Capita', value: `$${economy?.gdpPerCapita || 1123}`, sub: 'GDP per Capita' },
-              { label: 'Inflation', value: `${economy?.inflation || 23.5}%`, sub: 'CPI Inflation' },
+              { label: t('GDP'), value: `$${economy?.gdp || 155.8}B`, sub: t('Nominal GDP') },
+              { label: t('Growth'), value: `${economy?.gdpGrowth || 6.4}%`, sub: t('Annual Growth Rate') },
+              { label: t('Per Capita'), value: `$${economy?.gdpPerCapita || 1123}`, sub: t('GDP per Capita') },
+              { label: t('Inflation'), value: `${economy?.inflation || 23.5}%`, sub: t('CPI Inflation') },
             ].map((item, i) => (
               <div key={i} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="text-lg font-bold text-gray-800 dark:text-white">{item.value}</div>
@@ -339,14 +342,14 @@ function EconomySection({ economy, sectorData, overview }) {
             </ResponsiveContainer>
           </div>
         </ChartCard>
-        <ChartCard title="National Budget Breakdown" icon={PiggyBank}>
+        <ChartCard title={t('National Budget Breakdown')} icon={PiggyBank}>
           <div className="space-y-4">
             {[
-              { label: 'Total Budget', value: formatBirr(overview?.totalNationalBudget), pct: 100 },
-              { label: 'Allocated', value: formatBirr(overview?.totalAllocated), pct: overview?.totalNationalBudget ? (overview.totalAllocated / overview.totalNationalBudget * 100).toFixed(1) : 0 },
-              { label: 'Spent', value: formatBirr(overview?.totalSpent), pct: overview?.totalNationalBudget ? (overview.totalSpent / overview.totalNationalBudget * 100).toFixed(1) : 0 },
-              { label: 'Remaining', value: formatBirr(overview?.totalRemaining), pct: overview?.totalNationalBudget ? (overview.totalRemaining / overview.totalNationalBudget * 100).toFixed(1) : 0 },
-              { label: 'Revenue Collected', value: formatBirr(overview?.totalRevenueCollected), pct: overview?.totalNationalBudget ? (overview.totalRevenueCollected / overview.totalNationalBudget * 100).toFixed(1) : 0 },
+              { label: t('Total Budget'), value: formatBirr(overview?.totalNationalBudget), pct: 100 },
+              { label: t('Allocated'), value: formatBirr(overview?.totalAllocated), pct: overview?.totalNationalBudget ? (overview.totalAllocated / overview.totalNationalBudget * 100).toFixed(1) : 0 },
+              { label: t('Spent'), value: formatBirr(overview?.totalSpent), pct: overview?.totalNationalBudget ? (overview.totalSpent / overview.totalNationalBudget * 100).toFixed(1) : 0 },
+              { label: t('Remaining'), value: formatBirr(overview?.totalRemaining), pct: overview?.totalNationalBudget ? (overview.totalRemaining / overview.totalNationalBudget * 100).toFixed(1) : 0 },
+              { label: t('Revenue Collected'), value: formatBirr(overview?.totalRevenueCollected), pct: overview?.totalNationalBudget ? (overview.totalRevenueCollected / overview.totalNationalBudget * 100).toFixed(1) : 0 },
             ].map((item, i) => (
               <div key={i}>
                 <div className="flex justify-between text-sm mb-1">
@@ -366,26 +369,27 @@ function EconomySection({ economy, sectorData, overview }) {
 }
 
 function BudgetsSection({ budgets, overview }) {
+  const { t } = useLanguage()
   const sorted = [...(budgets || [])].sort((a, b) => b.annualBudget - a.annualBudget)
   return (
     <motion.div key="budgets" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Total Budget</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{formatBirr(overview?.totalNationalBudget)} ETB</div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Total Net Worth</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{formatBirr(overview?.totalNetWorth)} ETB</div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Budget Utilization</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{overview?.budgetUtilizationRate || 0}%</div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Total Budget')}</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{formatBirr(overview?.totalNationalBudget)} ETB</div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Total Net Worth')}</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{formatBirr(overview?.totalNetWorth)} ETB</div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Budget Utilization')}</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{overview?.budgetUtilizationRate || 0}%</div></div>
       </div>
-      <ChartCard title="All Department Budgets & Net Worth" icon={Building2} full>
+      <ChartCard title={t('All Department Budgets & Net Worth')} icon={Building2} full>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b dark:border-gray-700 text-gray-500 dark:text-gray-400">
-                <th className="text-left py-2">Department</th>
-                <th className="text-right py-2">Annual Budget</th>
-                <th className="text-right py-2">Allocated</th>
-                <th className="text-right py-2">Spent</th>
-                <th className="text-right py-2">Remaining</th>
-                <th className="text-right py-2">Net Worth</th>
-                <th className="text-right py-2">Utilization</th>
+                <th className="text-left py-2">{t('Department')}</th>
+                <th className="text-right py-2">{t('Annual Budget')}</th>
+                <th className="text-right py-2">{t('Allocated')}</th>
+                <th className="text-right py-2">{t('Spent')}</th>
+                <th className="text-right py-2">{t('Remaining')}</th>
+                <th className="text-right py-2">{t('Net Worth')}</th>
+                <th className="text-right py-2">{t('Utilization')}</th>
               </tr>
             </thead>
             <tbody>
@@ -414,18 +418,19 @@ function BudgetsSection({ budgets, overview }) {
 }
 
 function TaxSection({ taxStats, taxByType, taxByMonth }) {
+  const { t } = useLanguage()
   return (
     <motion.div key="tax" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Total Tax Collected</div><div className="text-2xl font-bold text-green-600">{formatBirr(taxStats?.totalCollected)} ETB</div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Total Target</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{formatBirr(taxStats?.totalTarget)} ETB</div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Total Tax Collected')}</div><div className="text-2xl font-bold text-green-600">{formatBirr(taxStats?.totalCollected)} ETB</div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Total Target')}</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{formatBirr(taxStats?.totalTarget)} ETB</div></div>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5">
-          <div className="text-sm text-gray-500">Collection Rate</div>
+          <div className="text-sm text-gray-500">{t('Collection Rate')}</div>
           <div className={`text-2xl font-bold ${parseFloat(taxStats?.collectionRate || 0) >= 85 ? 'text-green-600' : parseFloat(taxStats?.collectionRate || 0) >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>{taxStats?.collectionRate || 0}%</div>
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="Tax Collection by Type" icon={PieChart}>
+        <ChartCard title={t('Tax Collection by Type')} icon={PieChart}>
           <ResponsiveContainer width="100%" height={280}>
             <RePieChart>
               <Pie data={taxByType} cx="50%" cy="50%" outerRadius={90} paddingAngle={3} dataKey="amount" label={({ name, amount }) => `${name}: ${formatBirr(amount)}`} labelLine={true}>
@@ -435,7 +440,7 @@ function TaxSection({ taxStats, taxByType, taxByMonth }) {
             </RePieChart>
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="Monthly Tax Revenue Trend" icon={TrendingUp}>
+        <ChartCard title={t('Monthly Tax Revenue Trend')} icon={TrendingUp}>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={taxByMonth}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -453,18 +458,19 @@ function TaxSection({ taxStats, taxByType, taxByMonth }) {
 }
 
 function PopulationSection({ population }) {
+  const { t } = useLanguage()
   const regions = population?.regions || []
   const ageGroups = population?.ageGroups || []
   return (
     <motion.div key="population" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="flex items-center gap-2 text-sm text-gray-500 mb-1"><Users className="w-4 h-4" /> Total Population</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{formatNum(population?.total)}</div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="flex items-center gap-2 text-sm text-gray-500 mb-1"><Activity className="w-4 h-4" /> Growth Rate</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{population?.growthRate || 0}%</div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="flex items-center gap-2 text-sm text-gray-500 mb-1"><Smartphone className="w-4 h-4" /> Literacy Rate</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{population?.literacyRate || 0}%</div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="flex items-center gap-2 text-sm text-gray-500 mb-1"><MapPin className="w-4 h-4" /> Median Age</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{population?.medianAge || 0}</div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="flex items-center gap-2 text-sm text-gray-500 mb-1"><Users className="w-4 h-4" /> {t('Total Population')}</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{formatNum(population?.total)}</div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="flex items-center gap-2 text-sm text-gray-500 mb-1"><Activity className="w-4 h-4" /> {t('Growth Rate')}</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{population?.growthRate || 0}%</div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="flex items-center gap-2 text-sm text-gray-500 mb-1"><Smartphone className="w-4 h-4" /> {t('Literacy Rate')}</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{population?.literacyRate || 0}%</div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5"><div className="flex items-center gap-2 text-sm text-gray-500 mb-1"><MapPin className="w-4 h-4" /> {t('Median Age')}</div><div className="text-2xl font-bold text-gray-800 dark:text-white">{population?.medianAge || 0}</div></div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="Population by Region" icon={BarChart3}>
+        <ChartCard title={t('Population by Region')} icon={BarChart3}>
           <ResponsiveContainer width="100%" height={350}>
             <BarChart data={regions} layout="vertical" margin={{ left: 5, right: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -477,7 +483,7 @@ function PopulationSection({ population }) {
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="Age Distribution & Urban/Rural Split" icon={Activity}>
+        <ChartCard title={t('Age Distribution & Urban/Rural Split')} icon={Activity}>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={ageGroups} margin={{ left: 10, right: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -490,8 +496,8 @@ function PopulationSection({ population }) {
             </BarChart>
           </ResponsiveContainer>
           <div className="grid grid-cols-2 gap-4 mt-4">
-            <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg text-center"><div className="text-lg font-bold text-blue-700 dark:text-blue-300">{population?.urbanRural?.urban || 0}%</div><div className="text-xs text-blue-600 dark:text-blue-400">Urban</div></div>
-            <div className="p-3 bg-green-50 dark:bg-green-900 rounded-lg text-center"><div className="text-lg font-bold text-green-700 dark:text-green-300">{population?.urbanRural?.rural || 0}%</div><div className="text-xs text-green-600 dark:text-green-400">Rural</div></div>
+            <div className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg text-center"><div className="text-lg font-bold text-blue-700 dark:text-blue-300">{population?.urbanRural?.urban || 0}%</div><div className="text-xs text-blue-600 dark:text-blue-400">{t('Urban')}</div></div>
+            <div className="p-3 bg-green-50 dark:bg-green-900 rounded-lg text-center"><div className="text-lg font-bold text-green-700 dark:text-green-300">{population?.urbanRural?.rural || 0}%</div><div className="text-xs text-green-600 dark:text-green-400">{t('Rural')}</div></div>
           </div>
         </ChartCard>
       </div>
@@ -500,6 +506,7 @@ function PopulationSection({ population }) {
 }
 
 function NewsSection({ news, videos, loading, onRefresh }) {
+  const { t } = useLanguage()
   const [localNews, setLocalNews] = useState(news)
   const [localVideos, setLocalVideos] = useState(videos)
   const [selectedArticle, setSelectedArticle] = useState(null)
@@ -511,10 +518,10 @@ function NewsSection({ news, videos, loading, onRefresh }) {
     <motion.div key="news" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-          <Newspaper className="w-5 h-5" /> Ethiopia News & Updates
+          <Newspaper className="w-5 h-5" /> {t('Ethiopia News & Updates')}
         </h2>
         <button onClick={onRefresh} disabled={loading} className="flex items-center gap-1.5 px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 disabled:opacity-50">
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> {t('Refresh')}
         </button>
       </div>
 
@@ -533,7 +540,7 @@ function NewsSection({ news, videos, loading, onRefresh }) {
           ) : localNews.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center text-gray-400">
               <Newspaper className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No news articles available. Click refresh to fetch latest news.</p>
+              <p>{t('No news articles available. Click refresh to fetch latest news.')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -551,7 +558,7 @@ function NewsSection({ news, videos, loading, onRefresh }) {
                       </div>
                     )}
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                      <span className="text-xs text-white/80">{article.source || 'News Source'}</span>
+                      <span className="text-xs text-white/80">{article.source || t('News Source')}</span>
                     </div>
                   </div>
                   <div className="p-4">
@@ -570,14 +577,14 @@ function NewsSection({ news, videos, loading, onRefresh }) {
 
         <div className="space-y-4">
           <h3 className="text-md font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-            <Video className="w-4 h-4" /> Videos
+            <Video className="w-4 h-4" /> {t('Videos')}
           </h3>
           {loading ? (
             <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 animate-pulse"><div className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg mb-2" /><div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4" /></div>)}</div>
           ) : localVideos.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 text-center text-gray-400">
               <Video className="w-10 h-10 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No videos available</p>
+              <p className="text-sm">{t('No videos available')}</p>
             </div>
           ) : (
             localVideos.map((video, i) => (
@@ -620,7 +627,7 @@ function NewsSection({ news, videos, loading, onRefresh }) {
               )}
               <div className="p-6">
                 <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
-                  <span>{selectedArticle.source || 'News Source'}</span>
+                  <span>{selectedArticle.source || t('News Source')}</span>
                   <span>•</span>
                   <span>{selectedArticle.pubDate ? new Date(selectedArticle.pubDate).toLocaleDateString() : ''}</span>
                 </div>
@@ -628,10 +635,10 @@ function NewsSection({ news, videos, loading, onRefresh }) {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{selectedArticle.description}</p>
                 {selectedArticle.link && (
                   <a href={selectedArticle.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
-                    <ExternalLink className="w-4 h-4" /> Read Full Article
+                    <ExternalLink className="w-4 h-4" /> {t('Read Full Article')}
                   </a>
                 )}
-                <button onClick={() => setSelectedArticle(null)} className="ml-3 px-4 py-2 border rounded-lg text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400">Close</button>
+                <button onClick={() => setSelectedArticle(null)} className="ml-3 px-4 py-2 border rounded-lg text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400">{t('Close')}</button>
               </div>
             </motion.div>
           </motion.div>
@@ -642,21 +649,22 @@ function NewsSection({ news, videos, loading, onRefresh }) {
 }
 
 function ServicesSection({ services }) {
+  const { t } = useLanguage()
   const byDept = {}
   services?.forEach(s => { const d = s.department || 'Other'; byDept[d] = (byDept[d] || 0) + 1 })
   const deptData = Object.entries(byDept).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count)
   return (
     <motion.div key="services" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-600"><div className="text-sm text-gray-500">Total Services</div><div className="text-2xl font-bold text-gray-800">{services?.length || 0}</div></div>
-        <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-600"><div className="text-sm text-gray-500">Departments</div><div className="text-2xl font-bold text-gray-800">{deptData.length}</div></div>
-        <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-600"><div className="text-sm text-gray-500">Online Services</div><div className="text-2xl font-bold text-gray-800">{services?.filter(s => s.isOnline !== false).length || 0}</div></div>
-        <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-600"><div className="text-sm text-gray-500">Walk-in Only</div><div className="text-2xl font-bold text-gray-800">{services?.filter(s => s.isOnline === false).length || 0}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-600"><div className="text-sm text-gray-500">{t('Total Services')}</div><div className="text-2xl font-bold text-gray-800">{services?.length || 0}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-600"><div className="text-sm text-gray-500">{t('Departments')}</div><div className="text-2xl font-bold text-gray-800">{deptData.length}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-600"><div className="text-sm text-gray-500">{t('Online Services')}</div><div className="text-2xl font-bold text-gray-800">{services?.filter(s => s.isOnline !== false).length || 0}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-600"><div className="text-sm text-gray-500">{t('Walk-in Only')}</div><div className="text-2xl font-bold text-gray-800">{services?.filter(s => s.isOnline === false).length || 0}</div></div>
       </div>
       <div className="bg-white rounded-xl shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4">Services by Department</h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-4">{t('Services by Department')}</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm"><thead><tr className="border-b text-gray-500"><th className="text-left py-2">Department</th><th className="text-right py-2">Count</th></tr></thead><tbody>
+          <table className="w-full text-sm"><thead><tr className="border-b text-gray-500"><th className="text-left py-2">{t('Department')}</th><th className="text-right py-2">{t('Count')}</th></tr></thead><tbody>
             {deptData.map((d, i) => <tr key={i} className="border-b hover:bg-gray-50"><td className="py-2 font-medium">{d.name}</td><td className="py-2 text-right"><span className="inline-flex px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">{d.count}</span></td></tr>)}
           </tbody></table>
         </div>
@@ -666,53 +674,55 @@ function ServicesSection({ services }) {
 }
 
 function UsersSection({ users, loading }) {
+  const { t } = useLanguage()
   const verified = users?.filter(u => u.isMesobVerified).length || 0
   const withTin = users?.filter(u => u.tinStatus === 'active').length || 0
   const withEdu = users?.filter(u => u.education?.length > 0).length || 0
   return (
     <motion.div key="users" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Total Citizens</div><div className="text-2xl font-bold text-gray-800">{users?.length || 0}</div></div>
-        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">MESOB Verified</div><div className="text-2xl font-bold text-green-600">{verified}</div></div>
-        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">TIN Registered</div><div className="text-2xl font-bold text-purple-600">{withTin}</div></div>
-        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Has Documents</div><div className="text-2xl font-bold text-blue-600">{withEdu}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Total Citizens')}</div><div className="text-2xl font-bold text-gray-800">{users?.length || 0}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('MESOB Verified')}</div><div className="text-2xl font-bold text-green-600">{verified}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('TIN Registered')}</div><div className="text-2xl font-bold text-purple-600">{withTin}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Has Documents')}</div><div className="text-2xl font-bold text-blue-600">{withEdu}</div></div>
       </div>
       <div className="bg-white rounded-xl shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2"><Users className="w-4 h-4" /> Registered Citizens</h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2"><Users className="w-4 h-4" /> {t('Registered Citizens')}</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm"><thead><tr className="border-b text-gray-500"><th className="text-left py-2">Name</th><th className="text-left py-2">Email</th><th className="text-center py-2">Verified</th><th className="text-center py-2">Documents</th><th className="text-center py-2">Education</th><th className="text-center py-2">TIN</th><th className="text-right py-2">Net Worth</th></tr></thead><tbody>
-            {loading ? <tr><td colSpan="7" className="text-center py-8 text-gray-400">Loading...</td></tr> : users?.length === 0 ? <tr><td colSpan="7" className="text-center py-8 text-gray-400">No citizens registered</td></tr> :
+          <table className="w-full text-sm"><thead><tr className="border-b text-gray-500"><th className="text-left py-2">{t('Name')}</th><th className="text-left py-2">{t('Email')}</th><th className="text-center py-2">{t('Verified')}</th><th className="text-center py-2">{t('Documents')}</th><th className="text-center py-2">{t('Education')}</th><th className="text-center py-2">{t('TIN')}</th><th className="text-right py-2">{t('Net Worth')}</th></tr></thead><tbody>
+            {loading ? <tr><td colSpan="7" className="text-center py-8 text-gray-400">{t('Loading...')}</td></tr> : users?.length === 0 ? <tr><td colSpan="7" className="text-center py-8 text-gray-400">{t('No citizens registered')}</td></tr> :
             users?.slice(0, 20).map(u => <tr key={u.id} className="border-b hover:bg-gray-50"><td className="py-2 font-medium">{u.firstName} {u.lastName}</td><td className="py-2 text-gray-500 text-xs">{u.email}</td><td className="py-2 text-center">{u.isMesobVerified ? <BadgeCheck className="w-4 h-4 text-yellow-500 mx-auto" /> : '-'}</td><td className="py-2 text-center">{u.verifiedDocuments}{u.totalDocuments ? `/${u.totalDocuments}` : ''}</td><td className="py-2 text-center">{u.education?.length > 0 ? <GraduationCap className="w-4 h-4 text-blue-500 mx-auto" /> : '-'}</td><td className="py-2 text-center"><span className={`text-xs font-medium px-2 py-0.5 rounded-full ${u.tinStatus === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{u.tinStatus}</span></td><td className="py-2 text-right font-semibold">{formatBirr(u.netWorth)}</td></tr>)}
           </tbody></table>
         </div>
-        {users?.length > 20 && <div className="text-center mt-3"><Link to="/admin/verifications" className="text-sm text-blue-600 hover:underline">View all {users.length} citizens →</Link></div>}
+        {users?.length > 20 && <div className="text-center mt-3"><Link to="/admin/verifications" className="text-sm text-blue-600 hover:underline">{t('View all {count} citizens', { count: users.length })} →</Link></div>}
       </div>
     </motion.div>
   )
 }
 
 function JobsSection({ jobs, applications, loading }) {
+  const { t } = useLanguage()
   const categories = {}
   jobs?.forEach(j => { categories[j.category] = (categories[j.category] || 0) + 1 })
   const catData = Object.entries(categories).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count)
   return (
     <motion.div key="jobs" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Total Jobs</div><div className="text-2xl font-bold text-gray-800">{jobs?.length || 0}</div></div>
-        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Applications</div><div className="text-2xl font-bold text-blue-600">{applications?.length || 0}</div></div>
-        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Categories</div><div className="text-2xl font-bold text-purple-600">{catData.length}</div></div>
-        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">Full-Time</div><div className="text-2xl font-bold text-green-600">{jobs?.filter(j => j.type === 'full-time').length || 0}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Total Jobs')}</div><div className="text-2xl font-bold text-gray-800">{jobs?.length || 0}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Applications')}</div><div className="text-2xl font-bold text-blue-600">{applications?.length || 0}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Categories')}</div><div className="text-2xl font-bold text-purple-600">{catData.length}</div></div>
+        <div className="bg-white rounded-xl shadow-sm p-5"><div className="text-sm text-gray-500">{t('Full-Time')}</div><div className="text-2xl font-bold text-green-600">{jobs?.filter(j => j.type === 'full-time').length || 0}</div></div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm p-5">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Jobs by Category</h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-4">{t('Jobs by Category')}</h3>
           <div className="space-y-3">{catData.slice(0, 8).map((c, i) => <div key={c.name}><div className="flex justify-between text-sm mb-1"><span className="capitalize text-gray-600">{c.name}</span><span className="font-semibold">{c.count}</span></div><div className="w-full bg-gray-200 rounded-full h-2"><div className="h-2 rounded-full bg-blue-600 transition-all" style={{ width: `${(c.count / jobs.length) * 100}%` }} /></div></div>)}</div>
         </div>
         <div className="bg-white rounded-xl shadow-sm p-5">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Recent Applications</h3>
-          {loading ? <p className="text-gray-400 text-sm">Loading...</p> : applications?.length === 0 ? <p className="text-gray-400 text-sm">No applications yet</p> :
+          <h3 className="text-sm font-semibold text-gray-700 mb-4">{t('Recent Applications')}</h3>
+          {loading ? <p className="text-gray-400 text-sm">{t('Loading...')}</p> : applications?.length === 0 ? <p className="text-gray-400 text-sm">{t('No applications yet')}</p> :
           <div className="space-y-3">{applications?.slice(0, 8).map(a => <div key={a.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><div className="text-sm font-medium text-gray-800">{a.fullName}</div><div className="text-xs text-gray-500">{a.job?.title || 'Unknown job'}</div></div><span className={`text-xs font-medium px-2 py-0.5 rounded-full ${a.status === 'submitted' ? 'bg-blue-100 text-blue-700' : a.status === 'reviewing' ? 'bg-yellow-100 text-yellow-700' : a.status === 'accepted' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{a.status}</span></div>)}</div>}
-          {applications?.length > 8 && <div className="text-center mt-3"><Link to="/admin/users" className="text-sm text-blue-600 hover:underline">View all →</Link></div>}
+          {applications?.length > 8 && <div className="text-center mt-3"><Link to="/admin/users" className="text-sm text-blue-600 hover:underline">{t('View all')} →</Link></div>}
         </div>
       </div>
     </motion.div>
@@ -760,11 +770,12 @@ function ChartCard({ title, icon: Icon, children, span, full }) {
 }
 
 function PageLoader() {
+  const { t } = useLanguage()
   return (
     <div className="flex items-center justify-center min-h-[500px]">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
-        <p className="text-gray-500 text-sm">Loading Ethiopia National Dashboard...</p>
+        <p className="text-gray-500 text-sm">{t('Loading Ethiopia National Dashboard...')}</p>
       </div>
     </div>
   )

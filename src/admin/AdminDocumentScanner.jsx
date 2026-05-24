@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Upload, FileText, Scan, CreditCard, BookOpen, Building2, Shield, FileSignature, Loader2, CheckCircle, X, Camera, Fingerprint, Eye, Image, Webcam } from 'lucide-react'
+import { Upload, FileText, Scan, CreditCard, BookOpen, Building2, Shield, FileSignature, Loader2, CheckCircle, X, Camera, Fingerprint, Eye, Image, Webcam, Save } from 'lucide-react'
 import Tesseract from 'tesseract.js'
+import api from '../services/api'
+import { useToast } from '../context/ToastContext'
 
 const docTypes = [
   { id: 'driving', label: 'Driving License', icon: CreditCard, color: 'bg-blue-500' },
@@ -50,6 +52,7 @@ function autoDetectType(text) {
 }
 
 export default function AdminDocumentScanner() {
+  const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState('scan')
   const [files, setFiles] = useState([])
   const [scanned, setScanned] = useState([])
@@ -195,7 +198,7 @@ export default function AdminDocumentScanner() {
       {cameraMode && (
         <div className="fixed inset-0 z-50 bg-black flex flex-col">
           <div className="flex items-center justify-between px-6 py-4 bg-black/90">
-            <h2 className="text-white font-semibold text-lg">{t('Document Scanner')}</h2>
+            <h2 className="text-white font-semibold text-lg">Document Scanner</h2>
             <button onClick={stopCamera} className="text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition"><X className="w-5 h-5" /></button>
           </div>
           <div className="flex-1 relative overflow-hidden flex items-center justify-center bg-black">
@@ -211,12 +214,12 @@ export default function AdminDocumentScanner() {
               </div>
             </div>
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white/80 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">
-              {t('Position ID card inside the frame')}
+              Position ID card inside the frame
             </div>
           </div>
           <div className="px-6 py-8 flex justify-center items-center gap-8 bg-black/90">
             <button onClick={stopCamera} className="text-white/60 hover:text-white text-sm font-medium transition">
-              {t('Cancel')}
+              Cancel
             </button>
             <button onClick={captureFromCamera} className="w-20 h-20 rounded-full bg-white flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-white/20">
               <div className="w-16 h-16 rounded-full border-[3px] border-blue-600 flex items-center justify-center">
@@ -305,6 +308,9 @@ export default function AdminDocumentScanner() {
                         <span className="px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 flex items-center gap-1">
                           <CheckCircle className="w-3 h-3" /> {s.confidence}%
                         </span>
+                        <button onClick={async () => { try { await api.post('/admin/documents', { documentType: s.type, text: s.text, confidence: s.confidence, fields: s.fields, fileName: s.fileName }); showToast('Saved to documents', 'success') } catch { showToast('Failed to save', 'error') } }} className="p-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 hover:text-blue-500 transition">
+                          <Save className="w-4 h-4" />
+                        </button>
                         <button onClick={() => handleRemoveScan(s.id)} className="p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition">
                           <X className="w-4 h-4" />
                         </button>
@@ -351,7 +357,11 @@ export default function AdminDocumentScanner() {
           </label>
           {files.length > 0 && (
             <div className="mt-6 space-y-2">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Uploaded Files</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Uploaded Files</h3>
+                <button onClick={async () => { try { await Promise.all(files.map(f => api.post('/admin/documents', { documentType: 'other', fileName: f.name, text: '' }))); showToast('All files saved', 'success'); setFiles([]) } catch { showToast('Failed to save files', 'error') } }}
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><Save className="w-3.5 h-3.5" /> Save All</button>
+              </div>
               {files.map((f, i) => (
                 <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg group">
                   <div className="flex items-center gap-3">

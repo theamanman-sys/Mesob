@@ -186,7 +186,7 @@ function IdScannerModal({ open, onClose }) {
                   <p className="text-xs text-blue-600">{t('Edit fields if needed')}</p>
                   {Object.entries(editedData).map(([key, value]) => (
                     <div key={key}>
-                      <label className="block text-xs font-semibold text-blue-700 mb-1">{key}</label>
+                      <label className="block text-xs font-semibold text-blue-700 mb-1">{t(key)}</label>
                       <input type="text" value={editedData[key] || ''} onChange={(e) => setEditedData(prev => ({ ...prev, [key]: e.target.value }))}
                         className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-white" />
                     </div>
@@ -252,7 +252,7 @@ function ContributionModal({ open, onClose, departments }) {
             <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Department')}</label>
             <select value={department} onChange={(e) => setDepartment(e.target.value)}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-              {departments.map((d, i) => <option key={i} value={d}>{d}</option>)}
+              {departments.map((d, i) => <option key={i} value={d}>{t(d)}</option>)}
                <option value="General">{t('General')}</option>
             </select>
           </div>
@@ -384,10 +384,11 @@ function FaydaOidcModal({ open, onClose, oidcIdentity, onLink, onUnlink, linking
 }
 
 function InfoRow({ label, value }) {
+  const { t } = useLanguage()
   return (
     <div className="flex justify-between items-center">
       <span className="text-xs text-gray-500">{label}</span>
-      <span className="text-xs font-semibold text-gray-800">{value || '-'}</span>
+      <span className="text-xs font-semibold text-gray-800">{value || t('-')}</span>
     </div>
   )
 }
@@ -548,10 +549,10 @@ export default function CitizenDashboard() {
             <button onClick={() => setNetWorthModal(true)}
               className="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg font-semibold transition">{t('Update')}</button>
           </div>
-          <p className="text-3xl font-black mb-1">{netWorthData?.netWorth?.toLocaleString() || 0} ETB</p>
+          <p className="text-3xl font-black mb-1">{netWorthData?.netWorth?.toLocaleString() || 0} {t('ETB')}</p>
           <div className="flex items-center gap-2 text-green-200 text-sm mb-4">
             <Trophy className="w-4 h-4 text-yellow-300" />
-            <span>{t('Rank')} #{netWorthData?.rank || '-'} {t('of')} {netWorthData?.totalParticipants || 0} {t('participants')}</span>
+            <span>{t('Rank #{rank} of {total} participants', { rank: netWorthData?.rank || t('-'), total: netWorthData?.totalParticipants || 0 })}</span>
           </div>
           <div className="bg-white/10 rounded-xl p-3">
             <p className="text-xs text-green-200 mb-1">{t('Your share of top wealth')}</p>
@@ -620,11 +621,11 @@ export default function CitizenDashboard() {
           <div className="space-y-3 mb-4">
             <div className="bg-red-50 rounded-xl p-3">
               <p className="text-xs text-red-600 font-semibold">{t('Total Contributions')}</p>
-              <p className="text-xl font-black text-gray-900">{contribStats?.totalContributions?.toLocaleString() || 0} ETB</p>
+              <p className="text-xl font-black text-gray-900">{contribStats?.totalContributions?.toLocaleString() || 0} {t('ETB')}</p>
             </div>
             <div className="bg-orange-50 rounded-xl p-3">
               <p className="text-xs text-orange-600 font-semibold">{t('Your Contributions')}</p>
-              <p className="text-xl font-black text-gray-900">{userContribs.reduce((s, c) => s + (c.amount || 0), 0).toLocaleString()} ETB</p>
+              <p className="text-xl font-black text-gray-900">{userContribs.reduce((s, c) => s + (c.amount || 0), 0).toLocaleString()} {t('ETB')}</p>
             </div>
           </div>
           {contribStats?.byDepartment && Object.keys(contribStats.byDepartment).length > 0 && (
@@ -633,7 +634,7 @@ export default function CitizenDashboard() {
               {Object.entries(contribStats.byDepartment).slice(0, 4).map(([dept, amt]) => (
                 <div key={dept} className="flex items-center justify-between py-1.5">
                   <span className="text-xs text-gray-600 truncate max-w-[100px] sm:max-w-[140px]">{dept}</span>
-                  <span className="text-xs font-bold text-gray-900">{amt.toLocaleString()} ETB</span>
+                  <span className="text-xs font-bold text-gray-900">{amt.toLocaleString()} {t('ETB')}</span>
                 </div>
               ))}
             </div>
@@ -698,7 +699,7 @@ export default function CitizenDashboard() {
               <div className="text-center py-8">
                 <FileText className="w-10 h-10 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-500 text-sm">{t('No applications yet')}</p>
-                <Link to="/citizen/services" className="text-blue-600 text-sm font-medium hover:underline mt-2 inline-block">{t('Browse services')} →</Link>
+                <Link to="/citizen/services" className="text-blue-600 text-sm font-medium hover:underline mt-2 inline-block">{t('Browse services →')}</Link>
               </div>
             ) : (
               <div className="space-y-3">
@@ -793,7 +794,7 @@ export default function CitizenDashboard() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-black text-purple-700">{ticket.fee?.toLocaleString()} ETB</p>
+                  <p className="text-lg font-black text-purple-700">{ticket.fee?.toLocaleString()} {t('ETB')}</p>
                   <p className="text-xs text-gray-500">{t('Fee')}</p>
                 </div>
               </div>

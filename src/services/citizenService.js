@@ -323,12 +323,6 @@ export const citizenService = {
     return response.data || response
   },
 
-  // Economy position
-  async getEconomyPosition() {
-    const { data: response } = await api.get(`${CITIZEN_BASE}/badge`)
-    return response.data || response
-  },
-
   // Jobs
   async getJobSuggestions() {
     const { data: response } = await api.get(`${CITIZEN_BASE}/job-suggestions`).catch(() => ({ data: { data: null } }))

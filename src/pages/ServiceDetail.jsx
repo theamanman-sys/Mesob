@@ -96,8 +96,8 @@ export default function ServiceDetail() {
                   {t('Service Details')}
                 </span>
                 {organization && (
-                  <Link to={`/departments/${organization.id}`} className="text-blue-300 hover:text-white transition text-sm flex items-center">
-                    <Building2 className="w-4 h-4 mr-1" />
+                  <Link to={`/departments/${organization.id}`} className="text-blue-300 hover:text-white transition text-sm flex items-center gap-1.5">
+                    {organization.icon ? <img src={organization.icon} alt="" className="w-5 h-5 object-contain" onError={e => { e.target.style.display = 'none' }} /> : <Building2 className="w-4 h-4" />}
                     {t(organization.name)}
                   </Link>
                 )}

@@ -294,6 +294,74 @@ async function handleRoute(method, p, body, req) {
     return json(200, null, 'Document deleted')
   }
 
+  if (method === 'GET' && p === '/citizens/verifications' && citizen) {
+    const db = await mongo()
+    const vers = await db.collection('citizenVerifications').find({ citizenId }).toArray()
+    if (vers.length === 0) {
+      const defaultTypes = ['national_id','passport','drivers_license','tin_certificate','tax_clearance','business_tax','vat_certificate']
+      const now = new Date().toISOString()
+      const seeds = defaultTypes.map(dt => ({ id: Date.now() + Math.floor(Math.random() * 1000000), citizenId, documentType: dt, status: 'not_submitted', documentName: dt.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), submittedAt: null, verifiedAt: null, adminNotes: '', fileName: '', fileUrl: '', createdAt: now }))
+      await db.collection('citizenVerifications').insertMany(seeds)
+      return json(200, seeds)
+    }
+    return json(200, vers)
+  }
+
+  if (method === 'POST' && p?.startsWith('/citizens/verifications/') && p.endsWith('/submit') && citizen) {
+    const documentType = p.split('/')[3]
+    const db = await mongo()
+    const existing = await db.collection('citizenVerifications').findOne({ citizenId, documentType })
+    if (existing && existing.status === 'verified') return json(400, null, 'Document already verified')
+    const now = new Date().toISOString()
+    const data = { citizenId, documentType, status: 'pending', submittedAt: now, fileName: body.fileName || 'document', fileUrl: body.fileUrl || '', adminNotes: '', updatedAt: now, createdAt: existing?.createdAt || now }
+    if (existing) {
+      await db.collection('citizenVerifications').updateOne({ citizenId, documentType }, { $set: data })
+    } else {
+      data.id = Date.now() + Math.floor(Math.random() * 1000000)
+      data.documentName = documentType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+      await db.collection('citizenVerifications').insertOne(data)
+    }
+    return json(200, data, 'Verification submitted')
+  }
+
+  if (method === 'GET' && p === '/citizens/verification-status' && citizen) {
+    const db = await mongo()
+    const vers = await db.collection('citizenVerifications').find({ citizenId }).toArray()
+    if (vers.length === 0) {
+      const defaultTypes = ['national_id','passport','drivers_license','tin_certificate','tax_clearance','business_tax','vat_certificate']
+      const now = new Date().toISOString()
+      const seeds = defaultTypes.map(dt => ({ id: Date.now() + Math.floor(Math.random() * 1000000), citizenId, documentType: dt, status: 'not_submitted', documentName: dt.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), submittedAt: null, verifiedAt: null, adminNotes: '', fileName: '', fileUrl: '', createdAt: now }))
+      await db.collection('citizenVerifications').insertMany(seeds)
+      vers.push(...seeds)
+    }
+    const verifiedDocs = vers.filter(v => v.status === 'verified').length
+    const tin = await db.collection('citizenTins').findOne({ citizenId })
+    const nw = await db.collection('netWorth').findOne({ citizenId })
+    return json(200, {
+      isMesobVerified: verifiedDocs >= 2,
+      verifiedDocuments: verifiedDocs,
+      totalDocuments: vers.length,
+      badges: verifiedDocs,
+      economyRank: '—',
+      netWorth: nw?.netWorth || 0,
+      tinStatus: tin?.status || 'unregistered',
+    })
+  }
+
+  if (method === 'GET' && p === '/citizens/badge' && citizen) {
+    const db = await mongo()
+    const vers = await db.collection('citizenVerifications').find({ citizenId }).toArray()
+    if (vers.length === 0) {
+      const defaultTypes = ['national_id','passport','drivers_license','tin_certificate','tax_clearance','business_tax','vat_certificate']
+      const now = new Date().toISOString()
+      const seeds = defaultTypes.map(dt => ({ id: Date.now() + Math.floor(Math.random() * 1000000), citizenId, documentType: dt, status: 'not_submitted', documentName: dt.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), submittedAt: null, verifiedAt: null, adminNotes: '', fileName: '', fileUrl: '', createdAt: now }))
+      await db.collection('citizenVerifications').insertMany(seeds)
+      vers.push(...seeds)
+    }
+    const verifiedDocs = vers.filter(v => v.status === 'verified').length
+    return json(200, { isMesobVerified: verifiedDocs >= 2, verifiedDocuments: verifiedDocs, totalDocuments: vers.length })
+  }
+
   if (method === 'GET' && p === '/citizens/tickets' && citizen) {
     const db = await mongo()
     return json(200, await db.collection('tickets').find({ citizenId }).sort({ createdAt: -1 }).toArray())
@@ -594,6 +662,17 @@ module.exports = async function handler(request, response) {
 
     /* ─── Admin verification routes ─── */
 
+    if (p?.startsWith('/admin/verified') || p?.startsWith('/admin/verifications') || p?.startsWith('/admin/users') || p?.startsWith('/admin/documents')) {
+      const auth = bearerToken(request)
+      if (!auth) return sendRes(response, json(401, null, 'No token provided'))
+      try {
+        const payload = jwtLib.verify(auth, JWT_SECRET)
+        const db = await mongo()
+        const user = await db.collection('users').findOne({ _id: new (require('mongodb').ObjectId)(payload.sub) })
+        if (!user) return sendRes(response, json(401, null, 'No admin user found'))
+      } catch { return sendRes(response, json(401, null, 'Invalid or expired token')) }
+    }
+
     if (p === '/admin/verified-stats') {
       const db = await mongo()
       const citizens = await db.collection('citizens').find().toArray()
@@ -660,7 +739,7 @@ module.exports = async function handler(request, response) {
           createdAt: c.createdAt, netWorth: nw?.netWorth || 0,
           verifiedDocuments: verifiedDocs, totalDocuments: cv.length,
           tinStatus: tin?.status || 'unregistered', tinNumber: tin?.tinNumber || '',
-          isMesobVerified: verifiedDocs >= 2, hasBadge: verifiedDocs >= 2,
+          isMesobVerified: c.isMesobVerified ?? (verifiedDocs >= 2), hasBadge: c.isMesobVerified ?? (verifiedDocs >= 2),
           education: c.education || [], experience: c.experience || [], skills: c.skills || []
         }
       })
@@ -807,6 +886,36 @@ module.exports = async function handler(request, response) {
 
     if (request.method === 'GET' && p === '/jobs') return sendRes(response, json(200, []))
     if (request.method === 'GET' && p === '/admin/job-applications') return sendRes(response, json(200, []))
+    if (request.method === 'GET' && p === '/admin/documents') {
+      const db = await mongo()
+      return sendRes(response, json(200, await db.collection('citizenDocuments').find().sort({ uploadedAt: -1 }).toArray()))
+    }
+    if (request.method === 'POST' && p === '/admin/documents') {
+      const db = await mongo()
+      const doc = { ...body, id: `doc_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, uploadedAt: new Date().toISOString(), createdAt: new Date().toISOString() }
+      await db.collection('citizenDocuments').insertOne(doc)
+      return sendRes(response, json(201, doc, 'Document saved'))
+    }
+    if (request.method === 'PUT' && p === '/applications/profile') {
+      return sendRes(response, json(200, null))
+    }
+    if (['PUT', 'DELETE'].includes(request.method) && p?.startsWith('/applications/')) {
+      const appId = p.split('/')[2]
+      const db = await mongo()
+      if (request.method === 'PUT') {
+        const { status, adminNotes } = body
+        const $set = { updatedAt: new Date().toISOString() }
+        if (status) { $set.status = status; if (!$set.timeline) $set.timeline = []; $set.timeline = [{ status, date: new Date().toISOString(), note: adminNotes || `Status changed to ${status}` }] }
+        if (adminNotes !== undefined) $set.adminNotes = adminNotes
+        await db.collection('citizenApplications').updateOne({ id: appId }, { $set })
+        const updated = await db.collection('citizenApplications').findOne({ id: appId })
+        return sendRes(response, json(200, updated, `Application ${status || 'updated'}`))
+      }
+      if (request.method === 'DELETE') {
+        await db.collection('citizenApplications').deleteOne({ id: appId })
+        return sendRes(response, json(200, null, 'Application deleted'))
+      }
+    }
 
     /* ─── Fayda OIDC routes ─── */
 
@@ -841,6 +950,9 @@ async function doRegister(body) {
   const newId = (await coll.countDocuments()) + 1
   const doc = { _id: String(newId), id: newId, userId: newId, firstName, lastName, email, phone: phone || '', idNumber: idNumber || '', password: hashedPassword, picture: '', googleId: null, googleData: null, createdAt: new Date(), updatedAt: new Date(), status: 'active' }
   await coll.insertOne(doc)
+  const verTypes = ['national_id','passport','drivers_license','tin_certificate','tax_clearance','business_tax','vat_certificate']
+  const verSeeds = verTypes.map(dt => ({ id: Date.now() + Math.floor(Math.random() * 1000000), citizenId: newId, documentType: dt, status: 'not_submitted', documentName: dt.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), submittedAt: null, verifiedAt: null, adminNotes: '', fileName: '', fileUrl: '', createdAt: new Date() }))
+  await db.collection('citizenVerifications').insertMany(verSeeds)
   return json(200, { citizen: safeCitizen(doc), accessToken: signJwt(doc) }, 'Registration successful')
 }
 
