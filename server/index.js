@@ -88,6 +88,22 @@ import Service from './models/Service.js'
 import User from './models/User.js'
 import Language from './models/Language.js'
 
+function verifyAdmin(req, res, next) {
+  const auth = req.headers.authorization
+  if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ message: 'Unauthorized', success: false })
+  try {
+    const decoded = jwt.verify(auth.split(' ')[1], JWT_SECRET, { algorithms: ['HS256'] })
+    if (decoded.role !== 'admin' && decoded.role !== 'contentManager' && decoded.role !== 'socialMedia') return res.status(403).json({ message: 'Forbidden', success: false })
+    req.user = decoded
+    next()
+  } catch { return res.status(401).json({ message: 'Invalid token', success: false }) }
+}
+
+function getNextId(items) {
+  const maxId = items.reduce((max, item) => Math.max(max, item.id || 0), 0)
+  return maxId + 1
+}
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'MongoDB API Server' })
@@ -127,6 +143,41 @@ app.get('/Organizations/:id', async (req, res) => {
     const item = await Organization.findOne({ id: parseInt(req.params.id) })
     if (!item) return res.status(404).json({ message: 'Not found', success: false })
     res.json({ data: item, success: true })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.post('/Organizations', verifyAdmin, async (req, res) => {
+  try {
+    const all = await Organization.find()
+    const id = getNextId(all)
+    const item = await Organization.create({ id, ...req.body })
+    res.json({ data: item, success: true, message: 'Organization created' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.put('/Organizations/:id', verifyAdmin, async (req, res) => {
+  try {
+    const item = await Organization.findOneAndUpdate(
+      { id: parseInt(req.params.id) },
+      { $set: req.body },
+      { new: true }
+    )
+    if (!item) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: item, success: true, message: 'Organization updated' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.delete('/Organizations/:id', verifyAdmin, async (req, res) => {
+  try {
+    const item = await Organization.findOneAndDelete({ id: parseInt(req.params.id) })
+    if (!item) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: null, success: true, message: 'Organization deleted' })
   } catch (err) {
     res.status(500).json({ message: err.message, success: false })
   }
@@ -186,6 +237,68 @@ app.get('/Services/search/description', async (req, res) => {
   }
 })
 
+app.get('/Services/active', async (req, res) => {
+  try {
+    const items = await Service.find({ isActive: { $ne: false } })
+    res.json({ data: items, success: true })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.get('/Services/language/:langId', async (req, res) => {
+  try {
+    const items = await Service.find({ languageId: parseInt(req.params.langId) })
+    res.json({ data: items, success: true })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.get('/Services/organization/:orgId/language/:langId', async (req, res) => {
+  try {
+    const items = await Service.find({ organizationId: parseInt(req.params.orgId), languageId: parseInt(req.params.langId) })
+    res.json({ data: items, success: true })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.post('/Services', verifyAdmin, async (req, res) => {
+  try {
+    const all = await Service.find()
+    const id = getNextId(all)
+    const item = await Service.create({ id, ...req.body })
+    res.json({ data: item, success: true, message: 'Service created' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.put('/Services/:id', verifyAdmin, async (req, res) => {
+  try {
+    const item = await Service.findOneAndUpdate(
+      { id: parseInt(req.params.id) },
+      { $set: req.body },
+      { new: true }
+    )
+    if (!item) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: item, success: true, message: 'Service updated' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.delete('/Services/:id', verifyAdmin, async (req, res) => {
+  try {
+    const item = await Service.findOneAndDelete({ id: parseInt(req.params.id) })
+    if (!item) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: null, success: true, message: 'Service deleted' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
 app.get('/Services/:id', async (req, res) => {
   try {
     const item = await Service.findOne({ id: parseInt(req.params.id) })
@@ -219,6 +332,51 @@ app.get('/Languages/code/:code', async (req, res) => {
   try {
     const lang = await Language.findOne({ code: req.params.code })
     res.json({ data: lang, success: true })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.get('/Languages/:id', async (req, res) => {
+  try {
+    const lang = await Language.findOne({ id: parseInt(req.params.id) })
+    if (!lang) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: lang, success: true })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.post('/Languages', verifyAdmin, async (req, res) => {
+  try {
+    const all = await Language.find()
+    const id = getNextId(all)
+    const item = await Language.create({ id, ...req.body })
+    res.json({ data: item, success: true, message: 'Language created' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.put('/Languages/:id', verifyAdmin, async (req, res) => {
+  try {
+    const item = await Language.findOneAndUpdate(
+      { id: parseInt(req.params.id) },
+      { $set: req.body },
+      { new: true }
+    )
+    if (!item) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: item, success: true, message: 'Language updated' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.delete('/Languages/:id', verifyAdmin, async (req, res) => {
+  try {
+    const item = await Language.findOneAndDelete({ id: parseInt(req.params.id) })
+    if (!item) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: null, success: true, message: 'Language deleted' })
   } catch (err) {
     res.status(500).json({ message: err.message, success: false })
   }
@@ -274,6 +432,172 @@ app.post('/users/seed', async (req, res) => {
 })
 
 app.post('/users/logout', (_req, res) => res.json({ data: null, message: 'Logged out', success: true }))
+
+app.get('/users/user-count', verifyAdmin, async (_req, res) => {
+  try {
+    const total = await User.countDocuments()
+    const active = await User.countDocuments({ isActive: { $ne: false } })
+    res.json({ data: { total, active }, success: true })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.get('/users/users', verifyAdmin, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+    const [items, total] = await Promise.all([
+      User.find().select('-password').skip(skip).limit(limit).sort({ _id: -1 }),
+      User.countDocuments()
+    ])
+    res.json({
+      data: { data: items, pagination: { page, limit, totalItems: total, totalPages: Math.ceil(total / limit) } },
+      success: true
+    })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.get('/users/users/:id', verifyAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password')
+    if (!user) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: user, success: true })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.put('/users/users/:id/activate', verifyAdmin, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, { $set: { isActive: true } }, { new: true }).select('-password')
+    if (!user) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: user, success: true, message: 'User activated' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.put('/users/users/:id/deactivate', verifyAdmin, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, { $set: { isActive: false } }, { new: true }).select('-password')
+    if (!user) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: user, success: true, message: 'User deactivated' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.put('/users/users/:id/unblock', verifyAdmin, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, { $unset: { blockedUntil: '' } }, { new: true }).select('-password')
+    if (!user) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: user, success: true, message: 'User unblocked' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.put('/users/users/:id/update', verifyAdmin, async (req, res) => {
+  try {
+    const { username, email, role } = req.body
+    const update = {}
+    if (username) update.username = username
+    if (email) update.email = email
+    if (role) update.role = role
+    const user = await User.findByIdAndUpdate(req.params.id, { $set: update }, { new: true }).select('-password')
+    if (!user) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: user, success: true, message: 'User updated' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.post('/users/users/:id/reset-password', verifyAdmin, async (req, res) => {
+  try {
+    const newPassword = 'reset' + Math.random().toString(36).slice(2, 8)
+    const hashed = await bcrypt.hash(newPassword, 12)
+    const user = await User.findByIdAndUpdate(req.params.id, { $set: { password: hashed } }, { new: true }).select('-password')
+    if (!user) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: { newPassword }, success: true, message: 'Password reset' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.delete('/users/users/:id', verifyAdmin, async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id)
+    if (!user) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: null, success: true, message: 'User deleted' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.put('/users/change-email', verifyAdmin, async (req, res) => {
+  try {
+    const auth = req.headers.authorization
+    const decoded = jwt.verify(auth.split(' ')[1], JWT_SECRET, { algorithms: ['HS256'] })
+    const user = await User.findByIdAndUpdate(decoded.sub, { $set: { email: req.body.email } }, { new: true }).select('-password')
+    if (!user) return res.status(404).json({ message: 'Not found', success: false })
+    res.json({ data: user, success: true, message: 'Email changed' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.put('/users/change-password', verifyAdmin, async (req, res) => {
+  try {
+    const auth = req.headers.authorization
+    const decoded = jwt.verify(auth.split(' ')[1], JWT_SECRET, { algorithms: ['HS256'] })
+    const user = await User.findById(decoded.sub)
+    if (!user) return res.status(404).json({ message: 'Not found', success: false })
+    const isOldMatch = user.password.startsWith('$2a$') || user.password.startsWith('$2b$')
+      ? await bcrypt.compare(req.body.currentPassword, user.password)
+      : user.password === req.body.currentPassword
+    if (!isOldMatch) return res.status(400).json({ message: 'Current password incorrect', success: false })
+    user.password = await bcrypt.hash(req.body.newPassword, 12)
+    await user.save()
+    res.json({ data: null, success: true, message: 'Password changed' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.post('/users/register', async (req, res) => {
+  try {
+    const { username, email, password } = req.body
+    if (!username || !password) return res.status(400).json({ message: 'Username and password required', success: false })
+    const existing = await User.findOne({ username }).collation({ locale: 'en', strength: 2 })
+    if (existing) return res.status(400).json({ message: 'Username taken', success: false })
+    const hashed = await bcrypt.hash(password, 12)
+    const all = await User.find()
+    const user = await User.create({ id: getNextId(all), username, email, password: hashed, role: 'admin', isActive: true, mustChangePassword: false })
+    const { password: _, ...safe } = user.toObject()
+    res.json({ data: safe, success: true, message: 'User created' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
+
+app.post('/users/register-first-admin', async (req, res) => {
+  try {
+    const count = await User.countDocuments()
+    if (count > 0) return res.status(400).json({ message: 'Admin already exists', success: false })
+    const { username, email, password } = req.body
+    if (!username || !password) return res.status(400).json({ message: 'Username and password required', success: false })
+    const hashed = await bcrypt.hash(password, 12)
+    const user = await User.create({ id: 1, username, email, password: hashed, role: 'admin', isActive: true, mustChangePassword: false })
+    const { password: _, ...safe } = user.toObject()
+    res.json({ data: safe, success: true, message: 'First admin created' })
+  } catch (err) {
+    res.status(500).json({ message: err.message, success: false })
+  }
+})
 
 // Catch-all: forward unhandled routes to the Vercel API handler (citizens, tickets, applications, etc.)
 app.use((req, res, next) => {

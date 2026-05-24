@@ -423,6 +423,110 @@ async function handleRoute(method, p, body, req) {
     return json(200, null, 'Fayda OIDC identity unlinked')
   }
 
+  /* ─── Generic collection CRUD fallback ─── */
+  const segments = p.split('/').filter(Boolean)
+  if (segments.length >= 1) {
+    const rawName = segments[0]
+    const collName = rawName.charAt(0).toLowerCase() + rawName.slice(1)
+
+    if (method === 'GET' && segments.length === 1) {
+      const db = await mongo()
+      const collections = await db.listCollections({ name: collName }).toArray()
+      if (collections.length > 0) {
+        return json(200, await db.collection(collName).find().toArray())
+      }
+    }
+
+    if (method === 'GET' && segments.length === 2 && segments[1] === 'active') {
+      const db = await mongo()
+      const collections = await db.listCollections({ name: collName }).toArray()
+      if (collections.length > 0) {
+        return json(200, await db.collection(collName).find({ isActive: { $ne: false } }).toArray())
+      }
+    }
+
+    if (method === 'GET' && segments.length === 2 && segments[1] === 'search') {
+      const db = await mongo()
+      const collections = await db.listCollections({ name: collName }).toArray()
+      if (collections.length > 0) {
+        const term = (body.name || body.term || body.title || '').toLowerCase()
+        const all = await db.collection(collName).find().toArray()
+        const filtered = all.filter(item =>
+          (item.name || '').toLowerCase().includes(term) ||
+          (item.title || '').toLowerCase().includes(term)
+        )
+        return json(200, filtered)
+      }
+    }
+
+    if (method === 'GET' && segments.length === 2 && segments[1] === 'latest') {
+      const db = await mongo()
+      const collections = await db.listCollections({ name: collName }).toArray()
+      if (collections.length > 0) {
+        const limit = parseInt(body.limit) || 10
+        return json(200, await db.collection(collName).find().sort({ _id: -1 }).limit(limit).toArray())
+      }
+    }
+
+    if (method === 'GET' && segments.length === 3 && segments[1] === 'language') {
+      const langId = parseInt(segments[2])
+      const db = await mongo()
+      const collections = await db.listCollections({ name: collName }).toArray()
+      if (collections.length > 0) {
+        return json(200, await db.collection(collName).find({ languageId: langId }).toArray())
+      }
+    }
+
+    if (method === 'GET' && segments.length === 2) {
+      const itemId = isNaN(segments[1]) ? segments[1] : parseInt(segments[1])
+      const db = await mongo()
+      const collections = await db.listCollections({ name: collName }).toArray()
+      if (collections.length > 0) {
+        const item = await db.collection(collName).findOne({ id: itemId })
+        return json(200, item || null)
+      }
+    }
+
+    if (method === 'POST' && segments.length === 1) {
+      const db = await mongo()
+      const collections = await db.listCollections({ name: collName }).toArray()
+      if (collections.length > 0) {
+        const all = await db.collection(collName).find().sort({ id: -1 }).limit(1).toArray()
+        const newId = (all.length > 0 ? all[0].id : 0) + 1
+        const doc = { id: newId, ...body, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+        await db.collection(collName).insertOne(doc)
+        return json(200, doc, 'Created')
+      }
+    }
+
+    if (method === 'PUT' && segments.length === 2) {
+      const itemId = parseInt(segments[1])
+      if (!isNaN(itemId)) {
+        const db = await mongo()
+        const collections = await db.listCollections({ name: collName }).toArray()
+        if (collections.length > 0) {
+          const $set = { ...body, updatedAt: new Date().toISOString() }
+          delete $set._id
+          await db.collection(collName).updateOne({ id: itemId }, { $set })
+          const updated = await db.collection(collName).findOne({ id: itemId })
+          return json(200, updated || body, 'Updated')
+        }
+      }
+    }
+
+    if (method === 'DELETE' && segments.length === 2) {
+      const itemId = parseInt(segments[1])
+      if (!isNaN(itemId)) {
+        const db = await mongo()
+        const collections = await db.listCollections({ name: collName }).toArray()
+        if (collections.length > 0) {
+          await db.collection(collName).deleteOne({ id: itemId })
+          return json(200, null, 'Deleted')
+        }
+      }
+    }
+  }
+
   return json(404, null, 'Not found')
 }
 
@@ -487,6 +591,222 @@ module.exports = async function handler(request, response) {
       const user = await db.collection('users').findOne()
       return sendRes(response, json(200, user ? safeUser(user) : null))
     }
+
+    /* ─── Admin verification routes ─── */
+
+    if (p === '/admin/verified-stats') {
+      const db = await mongo()
+      const citizens = await db.collection('citizens').find().toArray()
+      const vers = await db.collection('citizenVerifications').find().toArray()
+      const tins = await db.collection('citizenTins').find().toArray()
+      const verifiedCitizens = citizens.filter(c => {
+        const cv = vers.filter(v => v.citizenId === c.id && v.status === 'verified').length
+        return cv >= 2
+      })
+      return sendRes(response, json(200, {
+        totalCitizens: citizens.length,
+        verifiedCitizens: verifiedCitizens.length,
+        verificationRate: citizens.length > 0 ? ((verifiedCitizens.length / citizens.length) * 100).toFixed(1) : 0,
+        tinRegistered: tins.filter(t => t.status === 'active').length,
+        pendingVerifications: vers.filter(v => v.status === 'pending').length,
+        byType: {
+          national_id: vers.filter(v => v.documentType === 'national_id' && v.status === 'verified').length,
+          passport: vers.filter(v => v.documentType === 'passport' && v.status === 'verified').length,
+          drivers_license: vers.filter(v => v.documentType === 'drivers_license' && v.status === 'verified').length,
+          tin_certificate: vers.filter(v => v.documentType === 'tin_certificate' && v.status === 'verified').length,
+        }
+      }))
+    }
+
+    if (request.method === 'GET' && p === '/admin/verifications') {
+      const db = await mongo()
+      const vers = await db.collection('citizenVerifications').find({ status: { $ne: 'not_submitted' } }).sort({ submittedAt: -1 }).toArray()
+      const citizens = await db.collection('citizens').find().toArray()
+      const enriched = vers.map(v => {
+        const c = citizens.find(cit => cit.id === v.citizenId)
+        return { ...v, citizenName: c ? `${c.firstName} ${c.lastName}` : 'Unknown', citizenEmail: c?.email || '', citizenPhone: c?.phone || '' }
+      })
+      return sendRes(response, json(200, enriched))
+    }
+
+    if (request.method === 'PUT' && p?.startsWith('/admin/verifications/')) {
+      const verId = parseInt(p.split('/')[3])
+      const db = await mongo()
+      const ver = await db.collection('citizenVerifications').findOne({ id: verId })
+      if (!ver) return sendRes(response, json(404, null, 'Verification not found'))
+      const $set = {}
+      if (body.status) $set.status = body.status
+      if (body.adminNotes !== undefined) $set.adminNotes = body.adminNotes
+      if (body.status === 'verified' || body.status === 'rejected') $set.verifiedAt = new Date().toISOString()
+      await db.collection('citizenVerifications').updateOne({ id: verId }, { $set })
+      const updated = await db.collection('citizenVerifications').findOne({ id: verId })
+      return sendRes(response, json(200, updated, `Verification ${body.status}`))
+    }
+
+    if (request.method === 'GET' && p === '/admin/users') {
+      const db = await mongo()
+      const citizens = await db.collection('citizens').find().toArray()
+      const vers = await db.collection('citizenVerifications').find().toArray()
+      const tins = await db.collection('citizenTins').find().toArray()
+      const netWorth = await db.collection('netWorth').find().toArray()
+      const enriched = citizens.map(c => {
+        const cv = vers.filter(v => v.citizenId === c.id)
+        const tin = tins.find(t => t.citizenId === c.id)
+        const nw = netWorth.find(n => n.citizenId === c.id)
+        const verifiedDocs = cv.filter(v => v.status === 'verified').length
+        return {
+          id: c.id, firstName: c.firstName, lastName: c.lastName,
+          email: c.email, phone: c.phone, shareName: !!c.shareName,
+          createdAt: c.createdAt, netWorth: nw?.netWorth || 0,
+          verifiedDocuments: verifiedDocs, totalDocuments: cv.length,
+          tinStatus: tin?.status || 'unregistered', tinNumber: tin?.tinNumber || '',
+          isMesobVerified: verifiedDocs >= 2, hasBadge: verifiedDocs >= 2,
+          education: c.education || [], experience: c.experience || [], skills: c.skills || []
+        }
+      })
+      return sendRes(response, json(200, enriched))
+    }
+
+    if (request.method === 'PUT' && p?.startsWith('/admin/users/') && p.endsWith('/badge')) {
+      const userId = parseInt(p.split('/')[3])
+      const db = await mongo()
+      const citizen = await db.collection('citizens').findOne({ id: userId })
+      if (!citizen) return sendRes(response, json(404, null, 'Citizen not found'))
+      await db.collection('citizens').updateOne({ id: userId }, { $set: { isMesobVerified: !!body.isMesobVerified } })
+      return sendRes(response, json(200, { citizenId: userId, isMesobVerified: !!body.isMesobVerified }, `Badge ${body.isMesobVerified ? 'added' : 'removed'}`))
+    }
+
+    if (request.method === 'PUT' && p?.startsWith('/admin/users/') && !p.endsWith('/badge')) {
+      const userId = parseInt(p.split('/')[3])
+      if (isNaN(userId)) return sendRes(response, json(400, null, 'Invalid user ID'))
+      const db = await mongo()
+      const $set = {}
+      if (body.firstName) $set.firstName = body.firstName
+      if (body.lastName) $set.lastName = body.lastName
+      if (body.email) $set.email = body.email
+      if (body.phone) $set.phone = body.phone
+      await db.collection('citizens').updateOne({ id: userId }, { $set })
+      const updated = await db.collection('citizens').findOne({ id: userId })
+      return sendRes(response, json(200, updated, 'Citizen updated'))
+    }
+
+    if (request.method === 'DELETE' && p?.startsWith('/admin/users/')) {
+      const userId = parseInt(p.split('/')[3])
+      if (isNaN(userId)) return sendRes(response, json(400, null, 'Invalid user ID'))
+      const db = await mongo()
+      await db.collection('citizens').deleteOne({ id: userId });
+      ['citizenVerifications','citizenTins','citizenFaydaIds','netWorth','citizenApplications','citizenDocuments'].forEach(async coll => {
+        try { await db.collection(coll).deleteMany({ citizenId: userId }) } catch {}
+      })
+      return sendRes(response, json(200, null, 'Citizen deleted'))
+    }
+
+    /* ─── Dashboard data endpoints ─── */
+
+    if (request.method === 'GET' && p === '/budgets') {
+      return sendRes(response, json(200, [
+        { id: 1, departmentName: 'Ministry of Education', shortName: 'Education', annualBudget: 52000000000, allocated: 48000000000, spent: 35000000000, remaining: 13000000000, netWorth: 0 },
+        { id: 2, departmentName: 'Ministry of Health', shortName: 'Health', annualBudget: 38000000000, allocated: 35000000000, spent: 28000000000, remaining: 7000000000, netWorth: 0 },
+        { id: 3, departmentName: 'Ministry of Defense', shortName: 'Defense', annualBudget: 45000000000, allocated: 44000000000, spent: 40000000000, remaining: 4000000000, netWorth: 0 },
+        { id: 4, departmentName: 'Ministry of Agriculture', shortName: 'Agriculture', annualBudget: 28000000000, allocated: 25000000000, spent: 18000000000, remaining: 7000000000, netWorth: 0 },
+        { id: 5, departmentName: 'Ministry of Transport', shortName: 'Transport', annualBudget: 22000000000, allocated: 20000000000, spent: 15000000000, remaining: 5000000000, netWorth: 0 },
+        { id: 6, departmentName: 'Ministry of Water & Energy', shortName: 'Water & Energy', annualBudget: 18000000000, allocated: 17000000000, spent: 12000000000, remaining: 5000000000, netWorth: 0 },
+        { id: 7, departmentName: 'Ministry of Finance', shortName: 'Finance', annualBudget: 15000000000, allocated: 14000000000, spent: 11000000000, remaining: 3000000000, netWorth: 500000000000 },
+        { id: 8, departmentName: 'Ministry of Trade', shortName: 'Trade', annualBudget: 12000000000, allocated: 11000000000, spent: 8000000000, remaining: 3000000000, netWorth: 0 },
+        { id: 9, departmentName: 'Ministry of Labor & Skills', shortName: 'Labor', annualBudget: 8000000000, allocated: 7500000000, spent: 5000000000, remaining: 2500000000, netWorth: 0 },
+        { id: 10, departmentName: 'Ministry of Innovation & Tech', shortName: 'Innovation', annualBudget: 6000000000, allocated: 5500000000, spent: 3000000000, remaining: 2500000000, netWorth: 0 },
+      ]))
+    }
+
+    if (request.method === 'GET' && p === '/budgets/overview') {
+      return sendRes(response, json(200, {
+        fiscalYear: '2025/26', totalNationalBudget: 245000000000, totalAllocated: 222500000000,
+        totalSpent: 161000000000, totalRemaining: 61500000000, totalRevenueCollected: 185000000000,
+        budgetUtilizationRate: 72.4, totalNetWorth: 500000000000,
+      }))
+    }
+
+    if (request.method === 'GET' && p === '/economy') {
+      return sendRes(response, json(200, {
+        gdp: 155.8, gdpGrowth: 6.4, gdpPerCapita: 1123, inflation: 23.5,
+        unemployment: 19.1, sectors: { agriculture: 34, services: 36, industry: 30 },
+      }))
+    }
+
+    if (request.method === 'GET' && p === '/tax/stats') {
+      return sendRes(response, json(200, {
+        totalCollected: 185000000000, totalTarget: 210000000000, collectionRate: 88.1,
+        byType: [
+          { name: 'Income Tax', amount: 72000000000 },
+          { name: 'VAT', amount: 48000000000 },
+          { name: 'Corporate Tax', amount: 35000000000 },
+          { name: 'Customs', amount: 18000000000 },
+          { name: 'Excise', amount: 12000000000 },
+        ],
+        byMonth: [
+          { month: 'Jul', amount: 14000000000 }, { month: 'Aug', amount: 15200000000 },
+          { month: 'Sep', amount: 14800000000 }, { month: 'Oct', amount: 15500000000 },
+          { month: 'Nov', amount: 16200000000 }, { month: 'Dec', amount: 15800000000 },
+          { month: 'Jan', amount: 16500000000 }, { month: 'Feb', amount: 17000000000 },
+          { month: 'Mar', amount: 17200000000 }, { month: 'Apr', amount: 16800000000 },
+          { month: 'May', amount: 17500000000 }, { month: 'Jun', amount: 18000000000 },
+        ],
+      }))
+    }
+
+    if (request.method === 'GET' && p === '/population') {
+      return sendRes(response, json(200, {
+        total: 126500000, growthRate: 2.6, literacyRate: 51.8, medianAge: 19.5,
+        regions: [
+          { name: 'Oromia', population: 37000000 }, { name: 'Amhara', population: 21000000 },
+          { name: 'SNNPR', population: 19000000 }, { name: 'Somali', population: 12000000 },
+          { name: 'Tigray', population: 7000000 }, { name: 'Sidama', population: 5000000 },
+          { name: 'Afar', population: 2500000 }, { name: 'Benishangul', population: 1500000 },
+          { name: 'Gambela', population: 500000 }, { name: 'Harari', population: 300000 },
+        ],
+        ageGroups: [
+          { group: '0-14', percentage: 40 }, { group: '15-24', percentage: 20 },
+          { group: '25-54', percentage: 32 }, { group: '55-64', percentage: 4 },
+          { group: '65+', percentage: 4 },
+        ],
+        urbanRural: { urban: 21, rural: 79 },
+      }))
+    }
+
+    if (request.method === 'GET' && p === '/dashboard/news') {
+      return sendRes(response, json(200, [
+        { title: 'Ethiopia Launches Digital Economy Strategy 2025-2030', description: 'The government unveils comprehensive digital transformation plan targeting $50B digital economy by 2030.', source: 'ENA', pubDate: new Date(Date.now() - 3600000).toISOString(), image: 'https://i.imgur.com/placeholder-news.jpg' },
+        { title: 'New Tax Reform Package Announced for FY 2025/26', description: 'Ministry of Finance introduces streamlined tax collection system expected to increase revenue by 35%.', source: 'The Reporter', pubDate: new Date(Date.now() - 7200000).toISOString(), image: '' },
+        { title: 'Ethiopia GDP Growth Projected at 6.4% Amid Economic Reforms', description: 'IMF projects strong growth driven by agriculture reform, industrial parks, and service sector expansion.', source: 'Bloomberg', pubDate: new Date(Date.now() - 14400000).toISOString(), image: '' },
+        { title: 'Digital ID System Reaches 80 Million Enrollments', description: 'Fayda digital ID program hits major milestone, enabling improved government service delivery.', source: 'ENA', pubDate: new Date(Date.now() - 28800000).toISOString(), image: '' },
+        { title: 'Ethiopia Opens New Industrial Parks in Four Regions', description: 'Investment in manufacturing zones expected to create 200,000 new jobs.', source: 'The Reporter', pubDate: new Date(Date.now() - 57600000).toISOString(), image: '' },
+        { title: 'Government Launches E-Service Portal for Citizen Services', description: 'MESOB platform now offers 150+ government services online, reducing processing times by 60%.', source: 'ENA', pubDate: new Date(Date.now() - 115200000).toISOString(), image: '' },
+      ]))
+    }
+
+    if (request.method === 'GET' && p === '/news/ethiopia') {
+      return sendRes(response, json(200, [
+        { title: 'Ethiopia Digital Economy', source: 'Google News', pubDate: new Date().toISOString(), description: 'Ethiopia advancing digital transformation agenda with new policies and infrastructure investments.' },
+        { title: 'Government Service Modernization', source: 'ENA', pubDate: new Date(Date.now() - 86400000).toISOString(), description: 'MESOB platform continues to expand with new services and improved citizen experience.' },
+      ]))
+    }
+
+    if (request.method === 'GET' && p === '/news/videos') {
+      return sendRes(response, json(200, []))
+    }
+
+    /* ─── APISIX routes ─── */
+
+    if (request.method === 'GET' && p === '/apisix/routes') return sendRes(response, json(200, { list: [] }))
+    if (request.method === 'GET' && p === '/apisix/upstreams') return sendRes(response, json(200, { list: [] }))
+    if (request.method === 'GET' && p === '/apisix/dashboard') return sendRes(response, json(200, {}))
+    if (request.method === 'GET' && p === '/apisix/plugins') return sendRes(response, json(200, { list: [] }))
+    if (request.method === 'GET' && p === '/apisix/consumers') return sendRes(response, json(200, { list: [] }))
+
+    /* ─── Jobs & extra endpoints ─── */
+
+    if (request.method === 'GET' && p === '/jobs') return sendRes(response, json(200, []))
+    if (request.method === 'GET' && p === '/admin/job-applications') return sendRes(response, json(200, []))
 
     /* ─── Fayda OIDC routes ─── */
 
