@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { FileText, CheckCircle, Clock, AlertCircle, XCircle, Eye, Search, X, ChevronLeft, ExternalLink, Download } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { citizenService } from '../services/citizenService'
 import { useToast } from '../context/ToastContext'
 import api from '../services/api'
+import usePolling from '../hooks/usePolling'
 
 const statusConfig = {
   submitted: { icon: Clock, color: 'text-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30', label: 'Submitted' },
@@ -21,16 +22,18 @@ export default function AdminApplications() {
   const [selectedApp, setSelectedApp] = useState(null)
   const [processing, setProcessing] = useState(false)
 
-  const fetchApps = async () => {
-    setLoading(true)
+  const fetchApps = useCallback(async (silent) => {
+    if (!silent) setLoading(true)
     try {
       const result = await citizenService.getAllApplications()
       setApps(Array.isArray(result) ? result : [])
     } catch { setApps([]) }
-    setLoading(false)
-  }
+    if (!silent) setLoading(false)
+  }, [])
 
-  useEffect(() => { fetchApps() }, [])
+  useEffect(() => { fetchApps() }, [fetchApps])
+
+  usePolling(() => fetchApps(true), 5000)
 
   const updateStatus = async (appId, status) => {
     setProcessing(true)

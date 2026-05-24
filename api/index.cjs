@@ -491,6 +491,34 @@ async function handleRoute(method, p, body, req) {
     return json(200, null, 'Fayda OIDC identity unlinked')
   }
 
+  if (method === 'GET' && p === '/api/proxy/bank') {
+    const https = require('https')
+    const http = require('http')
+    const targetUrl = req.query.url
+    if (!targetUrl) return json(400, null, 'Missing url parameter')
+    return new Promise((resolve) => {
+      const fetcher = targetUrl.startsWith('https') ? https : http
+      fetcher.get(targetUrl, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'text/html,application/xhtml+xml' }, rejectUnauthorized: false }, (proxyRes) => {
+        let body = ''
+        proxyRes.on('data', c => body += c)
+        proxyRes.on('end', () => {
+          response.writeHead(proxyRes.statusCode, {
+            'Content-Type': 'text/html; charset=utf-8',
+            'X-Frame-Options': 'ALLOWALL',
+            'Content-Security-Policy': "frame-ancestors *",
+            'Access-Control-Allow-Origin': '*'
+          })
+          response.end(body)
+          resolve()
+        })
+      }).on('error', () => {
+        response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+        response.end(`<html><body style="font-family:sans-serif;padding:2rem;text-align:center;color:#666"><h2>Unable to load page</h2><p>The website could not be reached. It may be temporarily unavailable.</p><a href="${targetUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px">Open directly</a></body></html>`)
+        resolve()
+      })
+    })
+  }
+
   /* ─── Generic collection CRUD fallback ─── */
   const segments = p.split('/').filter(Boolean)
   if (segments.length >= 1) {
@@ -719,6 +747,12 @@ module.exports = async function handler(request, response) {
       if (body.status === 'verified' || body.status === 'rejected') $set.verifiedAt = new Date().toISOString()
       await db.collection('citizenVerifications').updateOne({ id: verId }, { $set })
       const updated = await db.collection('citizenVerifications').findOne({ id: verId })
+      if (body.status === 'verified' || body.status === 'rejected') {
+        const allVers = await db.collection('citizenVerifications').find({ citizenId: ver.citizenId }).toArray()
+        const verifiedCount = allVers.filter(v => v.status === 'verified').length
+        const isVerified = verifiedCount >= 2
+        await db.collection('citizens').updateOne({ id: ver.citizenId }, { $set: { isMesobVerified: isVerified } })
+      }
       return sendRes(response, json(200, updated, `Verification ${body.status}`))
     }
 

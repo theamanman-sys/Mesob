@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, Users, CheckCircle, Clock, XCircle, Search, BadgeCheck, X, Hash, DollarSign, ChevronLeft, Receipt, FileText, UserCheck, UserX, Edit3 } from 'lucide-react'
 import { adminService } from '../services/adminService'
 import { useToast } from '../context/ToastContext'
+import usePolling from '../hooks/usePolling'
 
 function formatBirr(n) {
   if (!n) return '0'
@@ -50,20 +51,29 @@ export default function AdminVerifications() {
   const [editUser, setEditUser] = useState(null)
   const [editForm, setEditForm] = useState({})
 
-  const loadData = () => {
-    setLoading(true)
-    Promise.all([
+  const fetchAll = useCallback(async () => {
+    const [u, s, v] = await Promise.all([
       adminService.getCitizenUsers(),
       adminService.getVerifiedStats(),
       adminService.getVerifications()
-    ]).then(([u, s, v]) => {
-      setUsers(u || [])
-      setStats(s || {})
-      setVerifications(v || [])
-    }).catch(console.error).finally(() => setLoading(false))
-  }
+    ])
+    setUsers(u || [])
+    setStats(s || {})
+    setVerifications(v || [])
+  }, [])
 
-  useEffect(() => { loadData() }, [])
+  const loadData = useCallback(() => {
+    setLoading(true)
+    fetchAll().catch(console.error).finally(() => setLoading(false))
+  }, [fetchAll])
+
+  const refreshData = useCallback(() => {
+    fetchAll().catch(console.error)
+  }, [fetchAll])
+
+  useEffect(() => { loadData() }, [loadData])
+
+  usePolling(refreshData, 5000)
 
   const filtered = users.filter(u => {
     const name = `${u.firstName} ${u.lastName}`.toLowerCase()

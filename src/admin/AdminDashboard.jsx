@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
 import { Link } from 'react-router-dom'
+import usePolling from '../hooks/usePolling'
 import {
   Building2, DollarSign, TrendingUp, Users, Ticket, Wallet,
   BarChart3, Activity, Globe, Newspaper, Video, ExternalLink,
@@ -62,6 +63,36 @@ export default function AdminDashboard() {
   const [services, setServices] = useState([])
   const [statsLoading, setStatsLoading] = useState(false)
 
+  const loadStats = useCallback(async (silent) => {
+    if (!silent) setStatsLoading(true)
+    try {
+      const [u, j, ja, s] = await Promise.all([
+        adminService.getCitizenUsers().catch(() => []),
+        fetch('/api/jobs').then(r => r.json()).then(r => r.data || []).catch(() => []),
+        fetch('/api/admin/job-applications').then(r => r.json()).then(r => r.data || []).catch(() => []),
+        fetch('/api/services').then(r => r.json()).then(r => r.data || []).catch(() => [])
+      ])
+      setCitizenUsers(u || [])
+      setJobs(j || [])
+      setJobApps(ja || [])
+      setServices(s || [])
+    } catch {}
+    if (!silent) setStatsLoading(false)
+  }, [])
+
+  const refreshNews = useCallback(async (silent) => {
+    if (!silent) setNewsLoading(true)
+    try {
+      const [n, v] = await Promise.all([
+        adminService.fetchNewsFromRss(),
+        adminService.getVideos()
+      ])
+      if (n?.length) setNews(n)
+      if (v?.length) setVideos(v)
+    } catch {}
+    if (!silent) setNewsLoading(false)
+  }, [])
+
   useEffect(() => {
     setLoading(true)
     adminService.getDashboardData()
@@ -78,35 +109,10 @@ export default function AdminDashboard() {
     }).catch(() => {}).finally(() => setNewsLoading(false))
 
     loadStats()
-  }, [])
+  }, [loadStats])
 
-  const loadStats = async () => {
-    setStatsLoading(true)
-    try {
-      const [u, j, ja, s] = await Promise.all([
-        adminService.getCitizenUsers().catch(() => []),
-        fetch('/api/jobs').then(r => r.json()).then(r => r.data || []).catch(() => []),
-        fetch('/api/admin/job-applications').then(r => r.json()).then(r => r.data || []).catch(() => []),
-        fetch('/api/services').then(r => r.json()).then(r => r.data || []).catch(() => [])
-      ])
-      setCitizenUsers(u || [])
-      setJobs(j || [])
-      setJobApps(ja || [])
-      setServices(s || [])
-    } catch {}
-    setStatsLoading(false)
-  }
-
-  const refreshNews = () => {
-    setNewsLoading(true)
-    Promise.all([
-      adminService.fetchNewsFromRss(),
-      adminService.getVideos()
-    ]).then(([n, v]) => {
-      if (n?.length) setNews(n)
-      if (v?.length) setVideos(v)
-    }).catch(() => {}).finally(() => setNewsLoading(false))
-  }
+  usePolling(() => loadStats(true), 10000)
+  usePolling(() => refreshNews(true), 30000)
 
   if (loading) return <PageLoader />
 

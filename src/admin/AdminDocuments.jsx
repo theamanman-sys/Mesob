@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { FileText, Search, Eye, ExternalLink, X, Filter } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../services/api'
+import usePolling from '../hooks/usePolling'
 
 export default function AdminDocuments() {
   const [docs, setDocs] = useState([])
@@ -10,16 +11,18 @@ export default function AdminDocuments() {
   const [filterType, setFilterType] = useState('all')
   const [selectedDoc, setSelectedDoc] = useState(null)
 
-  const fetchDocs = async () => {
-    setLoading(true)
+  const fetchDocs = useCallback(async (silent) => {
+    if (!silent) setLoading(true)
     try {
       const { data } = await api.get('/admin/documents')
       setDocs(Array.isArray(data) ? data : (data?.data || []))
     } catch { setDocs([]) }
-    setLoading(false)
-  }
+    if (!silent) setLoading(false)
+  }, [])
 
-  useEffect(() => { fetchDocs() }, [])
+  useEffect(() => { fetchDocs() }, [fetchDocs])
+
+  usePolling(() => fetchDocs(true), 5000)
 
   const types = ['all', ...new Set(docs.map(d => d.documentType || 'other'))]
 

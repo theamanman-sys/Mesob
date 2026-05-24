@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FileText, ClipboardList, Upload, Clock, CheckCircle, XCircle, AlertCircle, ArrowRight, TrendingUp, FileCheck2, Building2, User, Scan, Camera, X, Image, RefreshCw, BadgeCheck, Hash, Globe, Wallet, Trophy, HeartHandshake, BarChart3, DollarSign, PiggyBank, Plus, Minus, Landmark, Target, Users, Ticket, Calendar, Shield, ExternalLink, Trash2, Fingerprint } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
+import usePolling from '../../hooks/usePolling'
 import { createWorker } from 'tesseract.js'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -430,21 +431,34 @@ export default function CitizenDashboard() {
   const [oidcModal, setOidcModal] = useState(false)
   const [oidcLinking, setOidcLinking] = useState(false)
 
-  useEffect(() => {
+  const refreshAllData = useCallback(async () => {
+    const session = citizenService.getSession()
+    if (!session) return
+    setCitizen(session)
+    await Promise.all([
+      citizenService.getApplications().then(setApplications).catch(() => {}),
+      citizenService.getDocuments().then(setDocuments).catch(() => {}),
+      citizenService.getNetWorth().then(setNetWorthData).catch(() => {}),
+      citizenService.getNetWorthRankings().then(setRankings).catch(() => {}),
+      citizenService.getEconomyData().then(setEconomyData).catch(() => {}),
+      citizenService.getContributionStats().then(setContribStats).catch(() => {}),
+      citizenService.getContributions().then(setUserContribs).catch(() => {}),
+      citizenService.getMyTickets().then(setTickets).catch(() => {}),
+      citizenService.getFaydaOidcStatus().then(setOidcIdentity).catch(() => {}),
+    ])
+  }, [])
+
+  useEffect(() => { refreshAllData() }, [refreshAllData])
+
+  usePolling(() => {
     const session = citizenService.getSession()
     if (session) {
-      setCitizen(session)
-      citizenService.getApplications().then(setApplications).catch(() => {})
       citizenService.getDocuments().then(setDocuments).catch(() => {})
+      citizenService.getApplications().then(setApplications).catch(() => {})
       citizenService.getNetWorth().then(setNetWorthData).catch(() => {})
       citizenService.getNetWorthRankings().then(setRankings).catch(() => {})
-      citizenService.getEconomyData().then(setEconomyData).catch(() => {})
-      citizenService.getContributionStats().then(setContribStats).catch(() => {})
-      citizenService.getContributions().then(setUserContribs).catch(() => {})
-      citizenService.getMyTickets().then(setTickets).catch(() => {})
-      citizenService.getFaydaOidcStatus().then(setOidcIdentity).catch(() => {})
     }
-  }, [])
+  }, 10000)
 
   const handleNetWorthSave = async (value) => {
     try {

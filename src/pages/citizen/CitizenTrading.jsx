@@ -219,6 +219,7 @@ export default function CitizenTrading() {
           src="https://www.ecx.com.et/"
           title="Ethiopian Commodity Exchange"
           className="w-full min-h-[300px] md:min-h-[450px] lg:min-h-[600px] border-0"
+          loading="lazy" referrerPolicy="no-referrer"
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         />
       </motion.div>

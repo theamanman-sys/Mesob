@@ -379,6 +379,7 @@ export default function Home() {
               title="MESOB hero video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
+              loading="lazy"
               className="w-full h-full"
             />
           </div>
