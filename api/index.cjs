@@ -431,7 +431,7 @@ module.exports = async function handler(request, response) {
   const allowedOrigins = isDev
     ? ['http://localhost:3000', 'http://localhost:5173']
     : (process.env.CORS_ORIGINS || '').split(',').filter(Boolean)
-  if (allowedOrigins.includes(origin) || isDev) {
+  if (allowedOrigins.includes(origin)) {
     response.setHeader('Access-Control-Allow-Origin', origin || '*')
     response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
     response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
