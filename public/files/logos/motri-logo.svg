@@ -1,5 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <text x="100" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="white">MOTRI</text>
-  <text x="100" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#93c5fd">Ministry of Trade &amp;</text>
-  <text x="100" y="132" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#93c5fd">Regional Integration</text>
+  <rect x="10" y="10" width="180" height="180" rx="30" fill="#1e40af" opacity="0.12"/>
+  <rect x="15" y="15" width="170" height="170" rx="25" fill="none" stroke="#1e40af" stroke-width="2.5"/>
+  <path d="M70 55 h60 l15 25 l-15 25 h-60 l-15-25 z" fill="#1e40af" opacity="0.2"/>
+  <path d="M75 65 h50 l10 15 l-10 15 h-50 l-10-15 z" fill="none" stroke="#1e40af" stroke-width="2"/>
+  <circle cx="100" cy="80" r="12" fill="none" stroke="#1e40af" stroke-width="2"/>
+  <path d="M100 68 v24 M88 80 h24" stroke="#1e40af" stroke-width="2"/>
+  <text x="100" y="135" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="30" fill="#1e40af">MOTRI</text>
+  <text x="100" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#1e40af">Ministry of Trade &amp;</text>
+  <text x="100" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#1e40af">Regional Integration</text>
 </svg>

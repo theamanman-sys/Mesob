@@ -1,5 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <text x="100" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="white">MoTL</text>
-  <text x="100" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#99f6e4">Ministry of Transport</text>
-  <text x="100" y="123" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#99f6e4">and Logistics</text>
+  <rect x="10" y="10" width="180" height="180" rx="30" fill="#0e7490" opacity="0.12"/>
+  <rect x="15" y="15" width="170" height="170" rx="25" fill="none" stroke="#0e7490" stroke-width="2.5"/>
+  <rect x="55" y="65" width="90" height="45" rx="8" fill="none" stroke="#0e7490" stroke-width="2.5"/>
+  <circle cx="72" cy="110" r="10" fill="none" stroke="#0e7490" stroke-width="2.5"/>
+  <circle cx="128" cy="110" r="10" fill="none" stroke="#0e7490" stroke-width="2.5"/>
+  <circle cx="72" cy="110" r="4" fill="#0e7490"/>
+  <circle cx="128" cy="110" r="4" fill="#0e7490"/>
+  <line x1="90" y1="70" x2="90" y2="85" stroke="#0e7490" stroke-width="1.5"/>
+  <line x1="110" y1="70" x2="110" y2="85" stroke="#0e7490" stroke-width="1.5"/>
+  <rect x="65" y="80" width="70" height="25" rx="3" fill="#0e7490" opacity="0.1"/>
+  <text x="100" y="152" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="26" fill="#0e7490">MoTL</text>
+  <text x="100" y="172" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#0e7490">Ministry of Transport</text>
+  <text x="100" y="184" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#0e7490">&amp; Logistics</text>
 </svg>

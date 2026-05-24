@@ -18,7 +18,7 @@
       "color": "#047857",
       "isActive": true,
       "url": "https://id.gov.et",
-      "icon": "/files/logos/nid-logo.png"
+      "icon": "/files/logos/nid-logo.webp"
     },
     {
       "id": 3,
@@ -28,7 +28,7 @@
       "color": "#b45309",
       "isActive": true,
       "url": "https://www.ics.gov.et",
-      "icon": "/files/logos/ics-logo.png"
+      "icon": "/files/logos/ics-logo.webp"
     },
     {
       "id": 4,
@@ -58,7 +58,7 @@
       "color": "#6366f1",
       "isActive": true,
       "url": "https://www.mor.gov.et",
-      "icon": "/files/logos/mor-logo.png"
+      "icon": "/files/logos/mor-logo.webp"
     },
     {
       "id": 7,
@@ -68,7 +68,7 @@
       "color": "#0891b2",
       "isActive": true,
       "url": "https://www.dars.gov.et",
-      "icon": "/files/logos/dars-logo.png"
+      "icon": "/files/logos/dars-logo.webp"
     },
     {
       "id": 8,
@@ -98,7 +98,7 @@
       "color": "#dc2626",
       "isActive": true,
       "url": "https://ethio.post",
-      "icon": "/files/logos/epse-logo.png"
+      "icon": "/files/logos/epse-logo.webp"
     },
     {
       "id": 11,
@@ -118,7 +118,7 @@
       "color": "#4f46e5",
       "isActive": true,
       "url": "https://www.ethiopiancustoms.gov.et",
-      "icon": "/files/logos/ecc-logo.png"
+      "icon": "/files/logos/ecc-logo.webp"
     },
     {
       "id": 14,
@@ -138,7 +138,7 @@
       "color": "#e11d48",
       "isActive": true,
       "url": "https://www.moh.gov.et",
-      "icon": "/files/logos/moh-logo.png"
+      "icon": "/files/logos/moh-logo.webp"
     },
     {
       "id": 16,
@@ -198,7 +198,7 @@
       "color": "#7c3aed",
       "isActive": true,
       "url": "https://www.ethiotelecom.et",
-      "icon": "/files/logos/ethiotelecom-logo.png"
+      "icon": "/files/logos/ethiotelecom-logo.webp"
     },
     {
       "id": 24,

@@ -1,5 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <text x="100" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="36" fill="#15803d">EPA</text>
-  <text x="100" y="118" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#15803d">Environmental</text>
-  <text x="100" y="136" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#15803d">Protection Auth.</text>
+  <rect x="10" y="10" width="180" height="180" rx="30" fill="#15803d" opacity="0.12"/>
+  <rect x="15" y="15" width="170" height="170" rx="25" fill="none" stroke="#15803d" stroke-width="2.5"/>
+  <circle cx="100" cy="80" r="30" fill="none" stroke="#15803d" stroke-width="2"/>
+  <ellipse cx="100" cy="80" rx="15" ry="8" fill="none" stroke="#15803d" stroke-width="1.5"/>
+  <line x1="100" y1="50" x2="100" y2="110" stroke="#15803d" stroke-width="1.5"/>
+  <line x1="70" y1="80" x2="130" y2="80" stroke="#15803d" stroke-width="1.5"/>
+  <path d="M65 112 Q100 130 135 112" fill="none" stroke="#15803d" stroke-width="2"/>
+  <path d="M70 118 Q100 135 130 118" fill="none" stroke="#15803d" stroke-width="1.5" opacity="0.6"/>
+  <text x="100" y="162" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="26" fill="#15803d">EPA</text>
+  <text x="100" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="6.5" fill="#15803d">Ethiopian Environmental</text>
+  <text x="100" y="192" text-anchor="middle" font-family="Arial, sans-serif" font-size="6.5" fill="#15803d">Protection Authority</text>
 </svg>

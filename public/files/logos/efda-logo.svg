@@ -1,5 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <text x="100" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="36" fill="white">EFDA</text>
-  <text x="100" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#c4b5fd">Ethiopian Food &amp;</text>
-  <text x="100" y="132" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#c4b5fd">Drug Authority</text>
+  <rect x="10" y="10" width="180" height="180" rx="30" fill="#9333ea" opacity="0.12"/>
+  <rect x="15" y="15" width="170" height="170" rx="25" fill="none" stroke="#9333ea" stroke-width="2.5"/>
+  <path d="M100 45 L140 65 L140 105 Q140 125 100 145 Q60 125 60 105 L60 65 Z" fill="none" stroke="#9333ea" stroke-width="2.5"/>
+  <path d="M85 95 h30 v-15 h-30 z" fill="none" stroke="#9333ea" stroke-width="2"/>
+  <path d="M82 105 q18-10 36 0" fill="none" stroke="#9333ea" stroke-width="2"/>
+  <line x1="100" y1="80" x2="100" y2="105" stroke="#9333ea" stroke-width="2"/>
+  <text x="100" y="168" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="26" fill="#9333ea">EFDA</text>
+  <text x="100" y="184" text-anchor="middle" font-family="Arial, sans-serif" font-size="6.5" fill="#9333ea">Ethiopian Food &amp; Drug Authority</text>
 </svg>

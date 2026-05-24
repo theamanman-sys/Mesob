@@ -1,5 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <text x="100" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="36" fill="#db2777">MOT</text>
-  <text x="100" y="118" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#db2777">Ministry of</text>
-  <text x="100" y="136" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#db2777">Tourism</text>
+  <rect x="10" y="10" width="180" height="180" rx="30" fill="#db2777" opacity="0.12"/>
+  <rect x="15" y="15" width="170" height="170" rx="25" fill="none" stroke="#db2777" stroke-width="2.5"/>
+  <circle cx="100" cy="70" r="25" fill="none" stroke="#db2777" stroke-width="2.5"/>
+  <circle cx="100" cy="70" r="8" fill="#db2777" opacity="0.3"/>
+  <path d="M75 70 Q85 55 100 55 Q115 55 125 70" fill="none" stroke="#db2777" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="100,95 85,125 115,125" fill="none" stroke="#db2777" stroke-width="2"/>
+  <path d="M70 125 Q100 135 130 125" fill="none" stroke="#db2777" stroke-width="1.5"/>
+  <text x="100" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="#db2777">MOT</text>
+  <text x="100" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#db2777">Ministry of Tourism</text>
 </svg>
