@@ -7,7 +7,7 @@ const jwtLib = require('jsonwebtoken')
 const MONGODB_URI = process.env.MONGODB_URI
 const JWT_SECRET = process.env.JWT_SECRET
 const isDev = process.env.NODE_ENV !== 'production'
-const GOOGLE_CLIENT_ID = process.env.VITE_GOOGLE_CLIENT_ID
+const GOOGLE_CLIENT_ID = process.env.VITE_GOOGLE_CLIENT_ID || '684481615293-5ah46hm3dccnfbqj4rbuga2knpvtevma.apps.googleusercontent.com'
 
 function b64Decode(str) {
   const raw = str.replace(/-/g, '+').replace(/_/g, '/')
