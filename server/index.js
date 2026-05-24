@@ -233,8 +233,15 @@ app.post('/users/login', async (req, res) => {
     const user = await User.findOne({ username }).collation({ locale: 'en', strength: 2 })
     if (!user) return res.status(401).json({ message: 'Invalid credentials', success: false })
 
-    const isMatch = await bcrypt.compare(password, user.password)
+    const isBcrypt = user.password && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$'))
+    const isMatch = isBcrypt
+      ? await bcrypt.compare(password, user.password)
+      : user.password === password
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials', success: false })
+    if (!isBcrypt) {
+      user.password = await bcrypt.hash(password, 12)
+      await user.save()
+    }
 
     const token = jwt.sign(
       { sub: user._id.toString(), username: user.username, role: user.role },

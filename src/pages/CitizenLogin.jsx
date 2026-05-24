@@ -110,7 +110,7 @@ export default function CitizenLogin() {
               <div className="relative">
                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input type="text" value={form.identifier} onChange={handleChange('identifier')}
-                  placeholder="Enter your ID or email"
+                  placeholder="Enter your ID or email" autoComplete="username"
                   className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
               </div>
             </div>

@@ -198,8 +198,14 @@ async function doAdminLogin(body) {
   const db = await mongo()
   const user = await db.collection('users').findOne({ username })
   if (!user) return json(401, null, 'Invalid credentials')
-  const isMatch = await bcrypt.compare(password, user.password || '')
+  const pw = user.password || ''
+  const isBcrypt = pw.startsWith('$2a$') || pw.startsWith('$2b$')
+  const isMatch = isBcrypt ? await bcrypt.compare(password, pw) : pw === password
   if (!isMatch) return json(401, null, 'Invalid credentials')
+  if (!isBcrypt) {
+    const hashed = await bcrypt.hash(password, 12)
+    await db.collection('users').updateOne({ _id: user._id }, { $set: { password: hashed } })
+  }
   return json(200, { user: safeUser(user), accessToken: adminToken(user) }, 'Login successful')
 }
 
@@ -524,8 +530,14 @@ async function doLogin(body) {
   const db = await mongo()
   const citizen = await db.collection('citizens').findOne({ $or: [{ email: identifier }, { idNumber: identifier }] })
   if (!citizen) return json(401, null, 'Invalid credentials')
-  const isMatch = await bcrypt.compare(pwd, citizen.password || '')
+  const pw = citizen.password || ''
+  const isBcrypt = pw.startsWith('$2a$') || pw.startsWith('$2b$')
+  const isMatch = isBcrypt ? await bcrypt.compare(pwd, pw) : pw === pwd
   if (!isMatch) return json(401, null, 'Invalid credentials')
+  if (!isBcrypt) {
+    const hashed = await bcrypt.hash(pwd, 12)
+    await db.collection('citizens').updateOne({ _id: citizen._id }, { $set: { password: hashed } })
+  }
   return json(200, { citizen: safeCitizen(citizen), accessToken: signJwt(citizen) }, 'Login successful')
 }
 

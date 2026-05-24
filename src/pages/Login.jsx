@@ -110,10 +110,12 @@ export default function Login() {
               Please Provide Your Credentials
             </Typography>
             <TextField fullWidth placeholder="User Name" value={form.username} onChange={handleChange('username')}
+              autoComplete="username"
               sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               InputProps={{ startAdornment: <Person sx={{ mr: 1, color: 'text.secondary' }} /> }} />
             <TextField fullWidth type={showPassword ? 'text' : 'password'} placeholder="Password"
               value={form.password} onChange={handleChange('password')}
+              autoComplete="current-password"
               sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               InputProps={{
                 startAdornment: <Lock sx={{ mr: 1, color: 'text.secondary' }} />,
