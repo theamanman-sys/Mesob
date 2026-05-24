@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Calendar, Clock, MapPin, ExternalLink, CheckCircle, XCircle, AlertCircle, ChevronRight, ChevronDown, Ticket, ArrowRight, X, ListFilter, RefreshCw, Globe, Search } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Calendar, Clock, MapPin, ExternalLink, CheckCircle, XCircle, AlertCircle, ChevronRight, ChevronDown, Ticket, ArrowRight, X, ListFilter, RefreshCw, Globe, Search, Check, Image, FileDown, FileText } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
 import { Barcode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
