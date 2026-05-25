@@ -986,7 +986,7 @@ module.exports = async function handler(request, response) {
         if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
         const baseDomain = new URL(finalUrl).origin
         body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
-        const proxyScript = `<script>(function(){var pu=${JSON.stringify(proxyUrl)};var a=document.createElement('a');var pr=function(u){if(typeof u==='string'&&!u.startsWith(pu)){a.href=u;return pu+encodeURIComponent(a.href)}return u};var f=window.fetch.bind(window);window.fetch=function(u,i){return f(pr(u),i)};var o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){return o.call(this,m,pr(u))}})();<\/script>`
+        const proxyScript = `<script>(function(){var pu=${JSON.stringify(proxyUrl)};var a=document.createElement('a');var pr=function(u){if(typeof u==='string'&&!u.startsWith(pu)){a.href=u;return pu+encodeURIComponent(a.href)}return u};var f=window.fetch.bind(window);window.fetch=function(u,i){return f(pr(u),i)};var o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){return o.call(this,m,pr(u))};try{var h=window.history;var rs=h.replaceState.bind(h);var ps=h.pushState.bind(h);h.replaceState=function(s,t,u){try{return rs(s,t,u)}catch(e){}};h.pushState=function(s,t,u){try{return ps(s,t,u)}catch(e){}}}catch(e){}})();<\/script>`
         body = body.replace(/<head[^>]*>/i, (m) => `${m}${proxyScript}`)
         body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
           const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url

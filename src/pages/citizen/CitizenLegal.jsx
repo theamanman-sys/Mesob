@@ -175,7 +175,7 @@ export default function CitizenLegal() {
         </div>
         <div className="bg-gray-50">
           <iframe
-            src={currentLanguage === 'am' ? 'https://justice.gov.et/am/' : 'https://justice.gov.et/en/'}
+            src={currentLanguage === 'am' ? `/api/proxy/bank?url=${encodeURIComponent('https://justice.gov.et/am/')}` : `/api/proxy/bank?url=${encodeURIComponent('https://justice.gov.et/en/')}`}
             title={t('Ministry of Justice')}
             className="w-full min-h-[300px] md:min-h-[450px] lg:min-h-[600px] border-0"
             loading="lazy" referrerPolicy="no-referrer"

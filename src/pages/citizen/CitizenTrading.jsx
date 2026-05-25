@@ -216,7 +216,7 @@ export default function CitizenTrading() {
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
         className="bg-gray-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <iframe
-          src="https://www.ecx.com.et/"
+          src={`/api/proxy/bank?url=${encodeURIComponent('https://www.ecx.com.et')}`}
           title="Ethiopian Commodity Exchange"
           className="w-full min-h-[300px] md:min-h-[450px] lg:min-h-[600px] border-0"
           loading="lazy" referrerPolicy="no-referrer"
