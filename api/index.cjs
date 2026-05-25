@@ -951,33 +951,47 @@ module.exports = async function handler(request, response) {
             res.resume()
             return fetchWithRedirects(res.headers.location, maxFollow - 1).then(resolve).catch(reject)
           }
-          let body = ''
-          res.on('data', c => body += c)
-          res.on('end', () => resolve({ body, headers: res.headers, status: res.statusCode, finalUrl: url }))
+          const chunks = []
+          res.on('data', c => chunks.push(c))
+          res.on('end', () => {
+            const buf = Buffer.concat(chunks)
+            resolve({ body: buf, headers: res.headers, status: res.statusCode, finalUrl: url })
+          })
         }).on('error', reject)
       })
-      return fetchWithRedirects(targetUrl, 5).then(({ body, headers, status, finalUrl }) => {
+      const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
+      const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
+      return fetchWithRedirects(targetUrl, 5).then(({ body: buf, headers, status, finalUrl }) => {
         if (isResource) {
           const ct = headers['content-type'] || ''
           response.setHeader('Content-Type', ct)
           response.setHeader('Access-Control-Allow-Origin', '*')
           response.setHeader('Access-Control-Allow-Methods', 'GET')
-          response.status(status).end(body)
+          if (/\.css$/i.test(targetUrl) && !targetUrl.match(proxyBase)) {
+            let css = buf.toString('utf8')
+            const cssOrigin = new URL(targetUrl).origin
+            css = css.replace(/url\((["']?)((?!data:|#)[^"')]+)\1\)/g, (m, q, u) => {
+              const absolute = u.startsWith('http') ? u : (u.startsWith('/') ? cssOrigin + u : new URL(u, targetUrl).href)
+              return `url(${proxyUrl}${encodeURIComponent(absolute)})`
+            })
+            response.status(status).end(css)
+          } else {
+            response.status(status).end(buf)
+          }
           return
         }
-            body = body.replace(/<meta[^>]*?http-equiv\s*=\s*["'][^"']*(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^"']*["'][^>]*?>/gi, '')
-            body = body.replace(/<base\b[^>]*>/gi, '')
-            if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
-            const baseDomain = new URL(finalUrl).origin
-            const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
-            const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
-            body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
-            const proxyScript = `<script>(function(){var pu=${JSON.stringify(proxyUrl)};var pr=function(u){if(typeof u==='string'&&!u.startsWith(pu))return pu+encodeURIComponent(u.startsWith('http')?u:new URL(u,self.location.href).href);return u};var f=window.fetch.bind(window);window.fetch=function(u,i){return f(pr(u),i)};var o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){return o.call(this,m,pr(u))}})();<\/script>`
-            body = body.replace(/<head[^>]*>/i, (m) => `${m}${proxyScript}`)
-            body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
-              const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
-              return `${pre}${proxyUrl}${encodeURIComponent(absolute)}${post}`
-            })
+        let body = buf.toString('utf8')
+        body = body.replace(/<meta[^>]*?http-equiv\s*=\s*["'][^"']*(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^"']*["'][^>]*?>/gi, '')
+        body = body.replace(/<base\b[^>]*>/gi, '')
+        if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
+        const baseDomain = new URL(finalUrl).origin
+        body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
+        const proxyScript = `<script>(function(){var pu=${JSON.stringify(proxyUrl)};var pr=function(u){if(typeof u==='string'&&!u.startsWith(pu))return pu+encodeURIComponent(u.startsWith('http')?u:new URL(u,self.location.href).href);return u};var f=window.fetch.bind(window);window.fetch=function(u,i){return f(pr(u),i)};var o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){return o.call(this,m,pr(u))}})();<\/script>`
+        body = body.replace(/<head[^>]*>/i, (m) => `${m}${proxyScript}`)
+        body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
+          const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
+          return `${pre}${proxyUrl}${encodeURIComponent(absolute)}${post}`
+        })
         response.setHeader('Content-Type', 'text/html; charset=utf-8')
         response.setHeader('X-Frame-Options', 'ALLOWALL')
         response.setHeader('Access-Control-Allow-Origin', '*')
