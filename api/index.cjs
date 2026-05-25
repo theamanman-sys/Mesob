@@ -502,6 +502,7 @@ async function handleRoute(method, p, body, req) {
         let body = ''
         proxyRes.on('data', c => body += c)
         proxyRes.on('end', () => {
+          body = body.replace(/<meta[^>]*X-Frame-Options[^>]*>/gi, '').replace(/<meta[^>]*frame-ancestors[^>]*>/gi, '').replace(/<meta[^>]*Content-Security-Policy[^>]*>/gi, '')
           response.writeHead(proxyRes.statusCode, {
             'Content-Type': 'text/html; charset=utf-8',
             'X-Frame-Options': 'ALLOWALL',
