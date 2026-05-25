@@ -959,6 +959,7 @@ module.exports = async function handler(request, response) {
               return
             }
             body = body.replace(/<meta[^>]*?http-equiv\s*=\s*["'][^"']*(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^"']*["'][^>]*?>/gi, '')
+            if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
             const baseDomain = new URL(targetUrl).origin
             body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
             const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
@@ -970,6 +971,7 @@ module.exports = async function handler(request, response) {
             response.setHeader('Content-Type', 'text/html; charset=utf-8')
             response.setHeader('X-Frame-Options', 'ALLOWALL')
             response.setHeader('Access-Control-Allow-Origin', '*')
+            response.setHeader('Content-Security-Policy', "default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; connect-src *; frame-src *; font-src * data:; base-uri *; form-action *")
             response.status(proxyRes.statusCode).end(body)
             resolve()
           })
