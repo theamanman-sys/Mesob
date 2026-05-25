@@ -966,10 +966,18 @@ module.exports = async function handler(request, response) {
       return fetchBuf(targetUrl, 5).then(({ buf, hdrs, st, finalUrl }) => {
         if (isResource) {
           const ct = hdrs['content-type'] || ''
-          response.setHeader('Content-Type', ct)
           response.setHeader('Access-Control-Allow-Origin', '*')
           response.setHeader('Access-Control-Allow-Methods', 'GET')
-          response.status(st).end(buf)
+          if (/\.css$/i.test(targetUrl)) {
+            let css = (hdrs['content-encoding'] === 'gzip' ? require('zlib').gunzipSync(buf) : buf).toString('utf8')
+            const origin = new URL(targetUrl).origin
+            css = css.replace(/url\((["']?)\/((?!\/)[^"')]+)\1\)/g, (m, q, path) => `url(${proxyUrl}${encodeURIComponent(origin + '/' + path)})`)
+            response.setHeader('Content-Type', 'text/css; charset=utf-8')
+            response.status(st).end(css)
+          } else {
+            response.setHeader('Content-Type', ct)
+            response.status(st).end(buf)
+          }
           return
         }
         let body = buf.toString('utf8')
