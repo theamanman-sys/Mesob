@@ -960,15 +960,17 @@ module.exports = async function handler(request, response) {
             }
             body = body.replace(/<meta[^>]*?http-equiv\s*=\s*["'][^"']*(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^"']*["'][^>]*?>/gi, '')
             const baseDomain = new URL(targetUrl).origin
-            const proxyUrl = '/api/proxy/bank?url='
-            const rewritten = body.replace(/((?:src|href)\s*=\s*["'])((?!https?:\/\/|#|\/\/|data:|javascript:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
+            body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
+            const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
+            const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
+            body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
               const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
               return `${pre}${proxyUrl}${encodeURIComponent(absolute)}${post}`
             })
             response.setHeader('Content-Type', 'text/html; charset=utf-8')
             response.setHeader('X-Frame-Options', 'ALLOWALL')
             response.setHeader('Access-Control-Allow-Origin', '*')
-            response.status(proxyRes.statusCode).end(rewritten)
+            response.status(proxyRes.statusCode).end(body)
             resolve()
           })
         }).on('error', (err) => {
