@@ -940,46 +940,48 @@ module.exports = async function handler(request, response) {
     if (request.method === 'GET' && p === '/proxy/bank') {
       const https = require('https')
       const http = require('http')
-      const targetUrl = request.query?.url
+      let targetUrl = request.query?.url
       if (!targetUrl) return sendRes(response, json(400, null, 'Missing url parameter'))
       const isResource = /\.(css|js|json|png|jpg|jpeg|gif|svg|ico|webp|avif|woff2?|ttf|eot)$/i.test(targetUrl)
-      return new Promise((resolve) => {
-        const fetcher = targetUrl.startsWith('https') ? https : http
-        fetcher.get(targetUrl, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': isResource ? '*/*' : 'text/html,application/xhtml+xml' }, rejectUnauthorized: false }, (proxyRes) => {
+      const fetchWithRedirects = (url, maxFollow) => new Promise((resolve, reject) => {
+        if (maxFollow <= 0) return reject(new Error('Redirect limit'))
+        const fetcher = url.startsWith('https') ? https : http
+        fetcher.get(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': isResource ? '*/*' : 'text/html,application/xhtml+xml' }, rejectUnauthorized: false }, (res) => {
+          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+            res.resume()
+            return fetchWithRedirects(res.headers.location, maxFollow - 1).then(resolve).catch(reject)
+          }
           let body = ''
-          proxyRes.on('data', c => body += c)
-          proxyRes.on('end', () => {
-            if (isResource) {
-              const ct = proxyRes.headers['content-type'] || ''
-              response.setHeader('Content-Type', ct)
-              response.setHeader('Access-Control-Allow-Origin', '*')
-              response.setHeader('Access-Control-Allow-Methods', 'GET')
-              response.status(proxyRes.statusCode).end(body)
-              resolve()
-              return
-            }
-            body = body.replace(/<meta[^>]*?http-equiv\s*=\s*["'][^"']*(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^"']*["'][^>]*?>/gi, '')
-            if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
-            const baseDomain = new URL(targetUrl).origin
-            body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
-            const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
-            const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
-            body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
-              const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
-              return `${pre}${proxyUrl}${encodeURIComponent(absolute)}${post}`
-            })
-            response.setHeader('Content-Type', 'text/html; charset=utf-8')
-            response.setHeader('X-Frame-Options', 'ALLOWALL')
-            response.setHeader('Access-Control-Allow-Origin', '*')
-            response.setHeader('Content-Security-Policy', "default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; connect-src *; frame-src *; font-src * data:; base-uri *; form-action *")
-            response.status(proxyRes.statusCode).end(body)
-            resolve()
-          })
-        }).on('error', (err) => {
-          response.setHeader('Content-Type', 'text/html; charset=utf-8')
-          response.status(200).end(`<html><body style="font-family:sans-serif;padding:2rem;text-align:center;color:#666"><h2>Unable to load page</h2><p>The website could not be reached. It may be temporarily unavailable.</p><a href="${targetUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px">Open directly</a></body></html>`)
-          resolve()
+          res.on('data', c => body += c)
+          res.on('end', () => resolve({ body, headers: res.headers, status: res.statusCode, finalUrl: url }))
+        }).on('error', reject)
+      })
+      return fetchWithRedirects(targetUrl, 5).then(({ body, headers, status, finalUrl }) => {
+        if (isResource) {
+          const ct = headers['content-type'] || ''
+          response.setHeader('Content-Type', ct)
+          response.setHeader('Access-Control-Allow-Origin', '*')
+          response.setHeader('Access-Control-Allow-Methods', 'GET')
+          response.status(status).end(body)
+          return
+        }
+        body = body.replace(/<meta[^>]*?http-equiv\s*=\s*["'][^"']*(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^"']*["'][^>]*?>/gi, '')
+        if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
+        const baseDomain = new URL(finalUrl).origin
+        const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
+        const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
+        body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
+          const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
+          return `${pre}${proxyUrl}${encodeURIComponent(absolute)}${post}`
         })
+        response.setHeader('Content-Type', 'text/html; charset=utf-8')
+        response.setHeader('X-Frame-Options', 'ALLOWALL')
+        response.setHeader('Access-Control-Allow-Origin', '*')
+        response.setHeader('Content-Security-Policy', "default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; connect-src *; frame-src *; font-src * data:; base-uri *; form-action *")
+        response.status(status).end(body)
+      }).catch(() => {
+        response.setHeader('Content-Type', 'text/html; charset=utf-8')
+        response.status(200).end(`<html><body style="font-family:sans-serif;padding:2rem;text-align:center;color:#666"><h2>Unable to load page</h2><p>The website could not be reached. It may be temporarily unavailable.</p><a href="${targetUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px">Open directly</a></body></html>`)
       })
     }
 
