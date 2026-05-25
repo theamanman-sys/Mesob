@@ -948,7 +948,7 @@ module.exports = async function handler(request, response) {
           let body = ''
           proxyRes.on('data', c => body += c)
           proxyRes.on('end', () => {
-            body = body.replace(/<meta[^>]*X-Frame-Options[^>]*>/gi, '').replace(/<meta[^>]*frame-ancestors[^>]*>/gi, '').replace(/<meta[^>]*Content-Security-Policy[^>]*>/gi, '')
+            body = body.replace(/<meta[^>]*?(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^>]*?>/gi, '')
             const baseDomain = new URL(targetUrl).origin
             body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
             response.writeHead(proxyRes.statusCode, {
