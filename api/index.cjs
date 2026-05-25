@@ -940,44 +940,36 @@ module.exports = async function handler(request, response) {
     if (request.method === 'GET' && p === '/proxy/bank') {
       const https = require('https')
       const http = require('http')
-      let targetUrl = request.query?.url
+      const targetUrl = request.query?.url
       if (!targetUrl) return sendRes(response, json(400, null, 'Missing url parameter'))
+      const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
+      const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
       const isResource = /\.(css|js|json|png|jpg|jpeg|gif|svg|ico|webp|avif|woff2?|ttf|eot)$/i.test(targetUrl)
-      const fetchWithRedirects = (url, maxFollow) => new Promise((resolve, reject) => {
+      if (/\.css$/i.test(targetUrl) && targetUrl.includes(proxyBase)) {
+        response.setHeader('Content-Type', 'text/css; charset=utf-8')
+        response.setHeader('Access-Control-Allow-Origin', '*')
+        return response.status(200).end('/* skip */')
+      }
+      const fetchBuf = (url, maxFollow) => new Promise((resolve, reject) => {
         if (maxFollow <= 0) return reject(new Error('Redirect limit'))
         const fetcher = url.startsWith('https') ? https : http
         fetcher.get(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': isResource ? '*/*' : 'text/html,application/xhtml+xml' }, rejectUnauthorized: false }, (res) => {
           if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
             res.resume()
-            return fetchWithRedirects(res.headers.location, maxFollow - 1).then(resolve).catch(reject)
+            return fetchBuf(res.headers.location, maxFollow - 1).then(resolve).catch(reject)
           }
-          const chunks = []
-          res.on('data', c => chunks.push(c))
-          res.on('end', () => {
-            const buf = Buffer.concat(chunks)
-            resolve({ body: buf, headers: res.headers, status: res.statusCode, finalUrl: url })
-          })
+          const c = []
+          res.on('data', d => c.push(d))
+          res.on('end', () => resolve({ buf: Buffer.concat(c), hdrs: res.headers, st: res.statusCode, finalUrl: url }))
         }).on('error', reject)
       })
-      const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
-      const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
-      return fetchWithRedirects(targetUrl, 5).then(({ body: buf, headers, status, finalUrl }) => {
+      return fetchBuf(targetUrl, 5).then(({ buf, hdrs, st, finalUrl }) => {
         if (isResource) {
-          const ct = headers['content-type'] || ''
+          const ct = hdrs['content-type'] || ''
           response.setHeader('Content-Type', ct)
           response.setHeader('Access-Control-Allow-Origin', '*')
           response.setHeader('Access-Control-Allow-Methods', 'GET')
-          if (/\.css$/i.test(targetUrl) && !targetUrl.match(proxyBase)) {
-            let css = buf.toString('utf8')
-            const cssOrigin = new URL(targetUrl).origin
-            css = css.replace(/url\((["']?)((?!data:|#)[^"')]+)\1\)/g, (m, q, u) => {
-              const absolute = u.startsWith('http') ? u : (u.startsWith('/') ? cssOrigin + u : new URL(u, targetUrl).href)
-              return `url(${proxyUrl}${encodeURIComponent(absolute)})`
-            })
-            response.status(status).end(css)
-          } else {
-            response.status(status).end(buf)
-          }
+          response.status(st).end(buf)
           return
         }
         let body = buf.toString('utf8')
@@ -996,8 +988,9 @@ module.exports = async function handler(request, response) {
         response.setHeader('X-Frame-Options', 'ALLOWALL')
         response.setHeader('Access-Control-Allow-Origin', '*')
         response.setHeader('Content-Security-Policy', "default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; connect-src *; frame-src *; font-src * data:; base-uri *; form-action *")
-        response.status(status).end(body)
-      }).catch(() => {
+        response.status(st).end(body)
+      }).catch((e) => {
+        console.error('[proxy]', e?.message || e)
         response.setHeader('Content-Type', 'text/html; charset=utf-8')
         response.status(200).end(`<html><body style="font-family:sans-serif;padding:2rem;text-align:center;color:#666"><h2>Unable to load page</h2><p>The website could not be reached. It may be temporarily unavailable.</p><a href="${targetUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px">Open directly</a></body></html>`)
       })
