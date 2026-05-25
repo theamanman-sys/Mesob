@@ -972,6 +972,8 @@ module.exports = async function handler(request, response) {
             const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
             const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
             body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
+            const proxyScript = `<script>(function(){var pu=${JSON.stringify(proxyUrl)};var pr=function(u){if(typeof u==='string'&&!u.startsWith(pu))return pu+encodeURIComponent(u.startsWith('http')?u:new URL(u,self.location.href).href);return u};var f=window.fetch.bind(window);window.fetch=function(u,i){return f(pr(u),i)};var o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){return o.call(this,m,pr(u))}})();<\/script>`
+            body = body.replace(/<head[^>]*>/i, (m) => `${m}${proxyScript}`)
             body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
               const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
               return `${pre}${proxyUrl}${encodeURIComponent(absolute)}${post}`
