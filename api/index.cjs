@@ -965,15 +965,17 @@ module.exports = async function handler(request, response) {
           response.status(status).end(body)
           return
         }
-        body = body.replace(/<meta[^>]*?http-equiv\s*=\s*["'][^"']*(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^"']*["'][^>]*?>/gi, '')
-        if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
-        const baseDomain = new URL(finalUrl).origin
-        const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
-        const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
-        body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
-          const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
-          return `${pre}${proxyUrl}${encodeURIComponent(absolute)}${post}`
-        })
+            body = body.replace(/<meta[^>]*?http-equiv\s*=\s*["'][^"']*(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^"']*["'][^>]*?>/gi, '')
+            body = body.replace(/<base\b[^>]*>/gi, '')
+            if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
+            const baseDomain = new URL(finalUrl).origin
+            const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
+            const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
+            body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
+            body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
+              const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
+              return `${pre}${proxyUrl}${encodeURIComponent(absolute)}${post}`
+            })
         response.setHeader('Content-Type', 'text/html; charset=utf-8')
         response.setHeader('X-Frame-Options', 'ALLOWALL')
         response.setHeader('Access-Control-Allow-Origin', '*')
