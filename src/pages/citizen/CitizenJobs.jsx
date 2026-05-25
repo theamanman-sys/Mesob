@@ -74,10 +74,15 @@ export default function CitizenJobs() {
         </div>
       </div>
 
-      {/* EthioJobs - Main Iframe */}
+      {/* EthioJobs - External Link */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
-        <div className="bg-gray-50">
-          <iframe src="https://www.ethiojobs.net" title={t('EthioJobs')} className="w-full min-h-[300px] md:min-h-[500px] lg:min-h-[700px] border-0" loading="lazy" referrerPolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
+        <div className="bg-gray-50 p-8 text-center">
+          <Globe className="w-12 h-12 text-blue-500 mx-auto mb-3" />
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">{t('EthioJobs')}</h2>
+          <p className="text-sm text-gray-500 mb-4">{t('Browse external job listings on EthioJobs')}</p>
+          <a href="https://www.ethiojobs.net" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-blue-700 transition">
+            <ExternalLink className="w-4 h-4" /> {t('Open EthioJobs')}
+          </a>
         </div>
       </motion.div>
 
