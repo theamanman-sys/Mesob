@@ -491,7 +491,7 @@ async function handleRoute(method, p, body, req) {
     return json(200, null, 'Fayda OIDC identity unlinked')
   }
 
-  if (method === 'GET' && p === '/api/proxy/bank') {
+  if (method === 'GET' && p === '/proxy/bank') {
     const https = require('https')
     const http = require('http')
     const targetUrl = req.query.url
