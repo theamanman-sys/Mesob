@@ -75,7 +75,7 @@ function setSecurityHeaders(res) {
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-eval' https://accounts.google.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://open.er-api.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://i.ytimg.com https://www.properties.et https://betoch.com https://qetero.com https://www.ethiojobs.net https://justice.gov.et https://www.ecx.com.et; frame-src 'self' https://accounts.google.com https://id.et https://justice.gov.et https://qetero.com https://www.ethiojobs.net https://www.ecx.com.et https://www.properties.et https://betoch.com https://www.youtube.com https://www.youtube-nocookie.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self'; manifest-src 'self'")
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-eval' https://accounts.google.com https://static.cloudflareinsights.com https://www.googletagmanager.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://open.er-api.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://i.ytimg.com https://www.properties.et https://betoch.com https://qetero.com https://www.ethiojobs.net https://justice.gov.et https://www.ecx.com.et; frame-src 'self' https://accounts.google.com https://id.et https://justice.gov.et https://qetero.com https://www.ethiojobs.net https://www.ecx.com.et https://www.properties.et https://betoch.com https://www.youtube.com https://www.youtube-nocookie.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self'; manifest-src 'self'")
 }
 
 function sendRes(res, result) {
@@ -949,6 +949,8 @@ module.exports = async function handler(request, response) {
           proxyRes.on('data', c => body += c)
           proxyRes.on('end', () => {
             body = body.replace(/<meta[^>]*X-Frame-Options[^>]*>/gi, '').replace(/<meta[^>]*frame-ancestors[^>]*>/gi, '').replace(/<meta[^>]*Content-Security-Policy[^>]*>/gi, '')
+            const baseDomain = new URL(targetUrl).origin
+            body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
             response.writeHead(proxyRes.statusCode, {
               'Content-Type': 'text/html; charset=utf-8',
               'X-Frame-Options': 'ALLOWALL',

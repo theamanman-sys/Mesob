@@ -181,11 +181,11 @@ export default function CitizenProperty() {
           {browseTab === 'properties' ? <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-4 border-b border-gray-100 flex items-center gap-2"><img src="https://www.properties.et/favicon.ico" className="w-5 h-5 rounded" onError={e => e.target.style.display='none'} /><h3 className="font-semibold text-gray-900 text-sm">properties.et</h3></div>
-              <iframe src="https://www.properties.et" className="w-full min-h-[300px] md:min-h-[450px] lg:min-h-[600px]" title="properties.et" loading="lazy" referrerPolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
+              <iframe src="https://www.properties.et" className="w-full min-h-[300px] md:min-h-[450px] lg:min-h-[600px]" title="properties.et" loading="lazy" referrerPolicy="no-referrer" />
             </div>
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-4 border-b border-gray-100 flex items-center gap-2"><img src="https://betoch.com/favicon.ico" className="w-5 h-5 rounded" onError={e => e.target.style.display='none'} /><h3 className="font-semibold text-gray-900 text-sm">betoch.com</h3></div>
-              <iframe src="https://betoch.com" className="w-full min-h-[300px] md:min-h-[450px] lg:min-h-[600px]" title="betoch.com" loading="lazy" referrerPolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
+              <iframe src="https://betoch.com" className="w-full min-h-[300px] md:min-h-[450px] lg:min-h-[600px]" title="betoch.com" loading="lazy" referrerPolicy="no-referrer" />
             </div>
           </div> : <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center max-w-md mx-auto"><Car className="w-16 h-16 mx-auto mb-4 text-purple-600" /><h2 className="text-xl font-bold text-gray-900 mb-2">{t('Browse Cars on mekina.net')}</h2><p className="text-gray-500 mb-6">{t('View car listings, compare prices, and find your next vehicle.')}</p><a href="https://mekina.net" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow-lg shadow-purple-200">{t('See Car Listings')} <ArrowUpRight className="w-5 h-5" /></a></div>}
         </div>

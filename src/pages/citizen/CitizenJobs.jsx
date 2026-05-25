@@ -77,7 +77,7 @@ export default function CitizenJobs() {
       {/* EthioJobs - Main Iframe */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
         <div className="bg-gray-50">
-          <iframe src={`/api/proxy/bank?url=${encodeURIComponent('https://www.ethiojobs.net')}`} title={t('EthioJobs')} className="w-full min-h-[300px] md:min-h-[500px] lg:min-h-[700px] border-0" loading="lazy" referrerPolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
+          <iframe src={`/api/proxy/bank?url=${encodeURIComponent('https://www.ethiojobs.net')}`} title={t('EthioJobs')} className="w-full min-h-[300px] md:min-h-[500px] lg:min-h-[700px] border-0" loading="lazy" referrerPolicy="no-referrer" />
         </div>
       </motion.div>
 

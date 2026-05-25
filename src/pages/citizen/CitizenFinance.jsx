@@ -249,7 +249,7 @@ export default function CitizenFinance() {
               <iframe src="/api/proxy/bank?url=https%3A%2F%2Fnbe.gov.et"
                 className="w-full h-full border-0" title="National Bank of Ethiopia"
                 loading="lazy" referrerPolicy="no-referrer"
-                sandbox="allow-scripts allow-forms allow-same-origin" />
+                />
             </div>
           </motion.div>
 
@@ -332,7 +332,7 @@ export default function CitizenFinance() {
               <iframe src={`/api/proxy/bank?url=${encodeURIComponent(bankIframeUrl)}`}
                 className="w-full h-full border-0" title="Bank Website"
                 loading="lazy" referrerPolicy="no-referrer"
-                sandbox="allow-scripts allow-forms allow-same-origin" />
+                />
             </div>
           </motion.div>
         </div>

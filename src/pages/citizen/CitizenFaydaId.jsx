@@ -212,7 +212,7 @@ export default function CitizenFaydaId() {
         className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2"><Globe className="w-4 h-4 text-blue-600" /> {t('Ethiopian Digital ID Portal (id.et)')}</h3>
         <div className="w-full rounded-xl overflow-hidden border border-gray-200 min-h-[250px] md:min-h-[400px] lg:min-h-[500px]">
-          <iframe src="https://id.et" className="w-full h-full border-0" title={t('id.et')} loading="lazy" referrerPolicy="no-referrer" sandbox="allow-scripts allow-forms allow-same-origin" />
+          <iframe src="https://id.et" className="w-full h-full border-0" title={t('id.et')} loading="lazy" referrerPolicy="no-referrer" />
         </div>
         <p className="text-xs text-gray-400 mt-3">{t('Powered by the Ethiopian Digital ID Program. Visit')} <a href="https://id.et" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">id.et</a> {t('for more information.')}</p>
       </motion.div>
