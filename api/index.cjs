@@ -986,7 +986,7 @@ module.exports = async function handler(request, response) {
         if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
         const baseDomain = new URL(finalUrl).origin
         body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
-        const proxyScript = `<script>(function(){var pu=${JSON.stringify(proxyUrl)};var pr=function(u){if(typeof u==='string'&&!u.startsWith(pu))return pu+encodeURIComponent(u.startsWith('http')?u:new URL(u,self.location.href).href);return u};var f=window.fetch.bind(window);window.fetch=function(u,i){return f(pr(u),i)};var o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){return o.call(this,m,pr(u))}})();<\/script>`
+        const proxyScript = `<script>(function(){var pu=${JSON.stringify(proxyUrl)};var a=document.createElement('a');var pr=function(u){if(typeof u==='string'&&!u.startsWith(pu)){a.href=u;return pu+encodeURIComponent(a.href)}return u};var f=window.fetch.bind(window);window.fetch=function(u,i){return f(pr(u),i)};var o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){return o.call(this,m,pr(u))}})();<\/script>`
         body = body.replace(/<head[^>]*>/i, (m) => `${m}${proxyScript}`)
         body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
           const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
