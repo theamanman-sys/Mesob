@@ -951,18 +951,15 @@ module.exports = async function handler(request, response) {
             body = body.replace(/<meta[^>]*?http-equiv\s*=\s*["'][^"']*(?:X-Frame-Options|frame-ancestors|Content-Security-Policy)[^"']*["'][^>]*?>/gi, '')
             const baseDomain = new URL(targetUrl).origin
             body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
-            response.writeHead(proxyRes.statusCode, {
-              'Content-Type': 'text/html; charset=utf-8',
-              'X-Frame-Options': 'ALLOWALL',
-              'Content-Security-Policy': "default-src *; script-src * 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; font-src * data:; connect-src *; frame-src *; frame-ancestors *; base-uri *; form-action *;",
-              'Access-Control-Allow-Origin': '*'
-            })
-            response.end(body)
+            response.setHeader('Content-Type', 'text/html; charset=utf-8')
+            response.setHeader('X-Frame-Options', 'ALLOWALL')
+            response.setHeader('Access-Control-Allow-Origin', '*')
+            response.status(proxyRes.statusCode).end(body)
             resolve()
           })
         }).on('error', (err) => {
-          response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
-          response.end(`<html><body style="font-family:sans-serif;padding:2rem;text-align:center;color:#666"><h2>Unable to load page</h2><p>The website could not be reached. It may be temporarily unavailable.</p><a href="${targetUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px">Open directly</a></body></html>`)
+          response.setHeader('Content-Type', 'text/html; charset=utf-8')
+          response.status(200).end(`<html><body style="font-family:sans-serif;padding:2rem;text-align:center;color:#666"><h2>Unable to load page</h2><p>The website could not be reached. It may be temporarily unavailable.</p><a href="${targetUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px">Open directly</a></body></html>`)
           resolve()
         })
       })
