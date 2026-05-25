@@ -954,7 +954,7 @@ module.exports = async function handler(request, response) {
             response.writeHead(proxyRes.statusCode, {
               'Content-Type': 'text/html; charset=utf-8',
               'X-Frame-Options': 'ALLOWALL',
-              'Content-Security-Policy': "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-ancestors *;",
+              'Content-Security-Policy': "default-src *; script-src * 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; font-src * data:; connect-src *; frame-src *; frame-ancestors *; base-uri *; form-action *;",
               'Access-Control-Allow-Origin': '*'
             })
             response.end(body)
