@@ -944,8 +944,11 @@ module.exports = async function handler(request, response) {
       if (!targetUrl) return sendRes(response, json(400, null, 'Missing url parameter'))
       const proxyBase = `${request.headers['x-forwarded-proto'] || 'https'}://${request.headers.host}`
       const proxyUrl = `${proxyBase}/api/proxy/bank?url=`
-      const isResource = /\.(css|js|json|png|jpg|jpeg|gif|svg|ico|webp|avif|woff2?|ttf|eot)$/i.test(targetUrl)
-      if (/\.css$/i.test(targetUrl) && targetUrl.includes(proxyBase)) {
+      const urlPath = targetUrl.replace(/[?#].*/,'')
+      const extMatch = urlPath.match(/\.(css|js|json|png|jpg|jpeg|gif|svg|ico|webp|avif|woff2?|ttf|eot)$/i)
+      const isResource = !!extMatch
+      const isCss = extMatch && extMatch[1].toLowerCase() === 'css'
+      if (isCss && targetUrl.includes(proxyBase)) {
         response.setHeader('Content-Type', 'text/css; charset=utf-8')
         response.setHeader('Access-Control-Allow-Origin', '*')
         return response.status(200).end('/* skip */')
@@ -968,7 +971,7 @@ module.exports = async function handler(request, response) {
           const ct = hdrs['content-type'] || ''
           response.setHeader('Access-Control-Allow-Origin', '*')
           response.setHeader('Access-Control-Allow-Methods', 'GET')
-          if (/\.css$/i.test(targetUrl)) {
+          if (isCss) {
             let css = (hdrs['content-encoding'] === 'gzip' ? require('zlib').gunzipSync(buf) : buf).toString('utf8')
             const origin = new URL(targetUrl).origin
             css = css.replace(/url\((["']?)\/((?!\/)[^"')]+)\1\)/g, (m, q, path) => `url(${proxyUrl}${encodeURIComponent(origin + '/' + path)})`)
