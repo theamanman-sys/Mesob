@@ -92,8 +92,8 @@ export default function CitizenApplications() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className={selected ? 'hidden lg:block lg:col-span-1' : 'lg:col-span-3'}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className={selected ? 'hidden md:block md:col-span-1' : 'md:col-span-3'}>
           {filtered.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
               <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -147,7 +147,7 @@ export default function CitizenApplications() {
         <AnimatePresence>
           {selected && (
             <motion.div key="detail" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-              className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              className="md:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-gray-100">
                 <div className="flex items-center justify-between">
                   <h2 className="font-bold text-gray-900">{selected.serviceTitle}</h2>

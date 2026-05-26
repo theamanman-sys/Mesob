@@ -46,8 +46,8 @@ export default function CitizenTickets() {
         <p className="text-gray-500 mt-1">{t('View your appointment tickets and book new ones')}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className={selected ? 'hidden lg:block lg:col-span-1' : 'lg:col-span-3'}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className={selected ? 'hidden md:block md:col-span-1' : 'md:col-span-3'}>
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -112,7 +112,7 @@ export default function CitizenTickets() {
         <AnimatePresence>
           {selected && (
             <motion.div key="detail" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-              className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              className="md:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-gray-100">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -122,7 +122,7 @@ export default function CitizenTickets() {
                       selected.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                     }`}>{selected.status}</span>
                   </div>
-                  <button onClick={() => setSelected(null)} className="lg:hidden p-2 rounded-lg hover:bg-gray-100">
+                  <button onClick={() => setSelected(null)} className="md:hidden p-2 rounded-lg hover:bg-gray-100">
                     <X className="w-5 h-5 text-gray-400" />
                   </button>
                 </div>
