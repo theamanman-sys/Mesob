@@ -953,10 +953,12 @@ module.exports = async function handler(request, response) {
         response.setHeader('Access-Control-Allow-Origin', '*')
         return response.status(200).end('/* skip */')
       }
+      const isProxyFetch = request.headers['x-proxy-fetch'] === '1'
       const fetchBuf = (url, maxFollow) => new Promise((resolve, reject) => {
         if (maxFollow <= 0) return reject(new Error('Redirect limit'))
         const fetcher = url.startsWith('https') ? https : http
-        fetcher.get(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': isResource ? '*/*' : 'text/html,application/xhtml+xml' }, rejectUnauthorized: false }, (res) => {
+        const upstreamAccept = isProxyFetch ? (request.headers['accept'] || '*/*') : (isResource ? '*/*' : 'text/html,application/xhtml+xml')
+        fetcher.get(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': upstreamAccept }, rejectUnauthorized: false }, (res) => {
           if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
             res.resume()
             return fetchBuf(res.headers.location, maxFollow - 1).then(resolve).catch(reject)
@@ -989,7 +991,7 @@ module.exports = async function handler(request, response) {
         if (!/^<!DOCTYPE\s+html>/i.test(body)) body = '<!DOCTYPE html>\n' + body
         const baseDomain = new URL(finalUrl).origin
         body = body.replace(/<head[^>]*>/i, (m) => `${m}<base href="${baseDomain}/">`)
-        const proxyScript = `<script>(function(){var pu=${JSON.stringify(proxyUrl)};var a=document.createElement('a');var pr=function(u){if(typeof u==='string'&&!u.startsWith(pu)){a.href=u;return pu+encodeURIComponent(a.href)}return u};var f=window.fetch.bind(window);window.fetch=function(u,i){return f(pr(u),i)};var o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){return o.call(this,m,pr(u))};try{var h=window.history;var rs=h.replaceState.bind(h);var ps=h.pushState.bind(h);h.replaceState=function(s,t,u){try{return rs(s,t,u)}catch(e){}};h.pushState=function(s,t,u){try{return ps(s,t,u)}catch(e){}}}catch(e){}document.addEventListener('click',function(e){var l=e.target.closest('a');if(l&&l.href&&!l.href.startsWith(window.location.origin+'/api/')&&!l.target){e.preventDefault();window.location.href=pu+encodeURIComponent(l.href)}})})();<\/script>`
+        const proxyScript = `<script>(function(){var pu=${JSON.stringify(proxyUrl)};var a=document.createElement('a');var pr=function(u){if(typeof u==='string'&&!u.startsWith(pu)){a.href=u;return pu+encodeURIComponent(a.href)}return u};var f=window.fetch.bind(window);window.fetch=function(u,i){if(typeof u==='string'&&!u.startsWith(pu)){if(!i)i={};i.headers=i.headers||{};i.headers['x-proxy-fetch']='1'}return f(pr(u),i).then(function(r){if(typeof u==='string'&&u.indexOf('/api/')!==-1){var ct=r.headers.get('content-type')||'';if(ct.indexOf('text/html')!==-1)return new Response('{}',{status:200,headers:{'Content-Type':'application/json'}})}return r})};var o=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){this._proxyUrl=u;return o.call(this,m,pr(u))};var s=XMLHttpRequest.prototype.send;XMLHttpRequest.prototype.send=function(b){var x=this;var lo=x.onload;x.onload=function(e){if(x._proxyUrl&&x._proxyUrl.indexOf('/api/')!==-1){var ct=x.getResponseHeader('content-type')||'';if(ct.indexOf('text/html')!==-1){Object.defineProperty(x,'responseText',{configurable:true,get:function(){return '{}'}});Object.defineProperty(x,'response',{configurable:true,get:function(){return '{}'}})}}if(lo)return lo.call(this,e)};return s.call(this,b)};try{var h=window.history;var rs=h.replaceState.bind(h);var ps=h.pushState.bind(h);h.replaceState=function(s,t,u){try{return rs(s,t,u)}catch(e){}};h.pushState=function(s,t,u){try{return ps(s,t,u)}catch(e){}}}catch(e){}document.addEventListener('click',function(e){var l=e.target.closest('a');if(l&&l.href&&!l.href.startsWith(window.location.origin+'/api/')&&!l.target){e.preventDefault();window.location.href=pu+encodeURIComponent(l.href)}})})();<\/script>`
         body = body.replace(/<head[^>]*>/i, (m) => `${m}${proxyScript}`)
         body = body.replace(/(<(?:link|script)\s[^>]*?(?:href|src)\s*=\s*["'])((?!https?:\/\/|\/\/|data:|\/api\/)[^"']+)(["'])/gi, (m, pre, url, post) => {
           const absolute = url.startsWith('/') ? baseDomain + url : baseDomain + '/' + url
