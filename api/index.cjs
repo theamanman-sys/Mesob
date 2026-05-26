@@ -998,7 +998,7 @@ module.exports = async function handler(request, response) {
         response.setHeader('Content-Type', 'text/html; charset=utf-8')
         response.setHeader('X-Frame-Options', 'ALLOWALL')
         response.setHeader('Access-Control-Allow-Origin', '*')
-        response.setHeader('Content-Security-Policy', "default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; connect-src *; frame-src *; font-src * data:; base-uri *; form-action *")
+        response.setHeader('Content-Security-Policy', "default-src *; script-src * 'unsafe-inline' 'unsafe-eval' blob: data:; style-src * 'unsafe-inline' blob:; img-src * data: blob:; connect-src *; frame-src *; font-src * data: blob:; base-uri *; form-action *")
         response.status(st).end(body)
       }).catch((e) => {
         console.error('[proxy]', e?.message || e)
