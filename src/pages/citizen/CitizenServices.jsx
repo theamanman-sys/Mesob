@@ -242,9 +242,9 @@ export default function CitizenServices() {
                         <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">{t('Time')}</span><span className="font-medium text-gray-800">{appTicket.appointmentTime}</span></div>
                         <div className="flex items-center justify-between text-sm"><span className="text-gray-500">{t('Fee')}</span><span className="font-medium text-gray-800">{appTicket.fee} ETB</span></div>
                         <div className="mt-3 pt-3 border-t border-blue-200">
-                          <div className="flex items-center gap-4">
+                          <div className="flex flex-col sm:flex-row items-center gap-3">
                             <QRCode value={appTicket.ticketNumber} size={60} />
-                            <Barcode value={appTicket.ticketNumber} height={36} className="flex-1" />
+                            <Barcode value={appTicket.ticketNumber} height={36} />
                           </div>
                           <div className="flex gap-2 mt-2">
                             <button onClick={() => downloadTicketImage(appTicket)}

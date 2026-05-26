@@ -183,9 +183,9 @@ export default function CitizenApplications() {
                       <span className="font-medium text-gray-800">{selected.referenceNumber}</span>
                     </div>
                     <div className="mt-2 pt-2 border-t border-purple-200">
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col sm:flex-row items-center gap-3">
                         <QRCode value={selected.ticketNumber} size={56} />
-                        <Barcode value={selected.ticketNumber} height={30} className="flex-1" />
+                        <Barcode value={selected.ticketNumber} height={30} />
                       </div>
                       <div className="flex gap-2 mt-2">
                         <button onClick={() => downloadTicketImage({ ticketNumber: selected.ticketNumber, serviceTitle: selected.serviceTitle, fee: 0, status: selected.status, appointmentDate: selected.createdAt })}

@@ -204,14 +204,9 @@ export default function CitizenTickets() {
                 </div>
 
                 <div className="bg-white rounded-xl border border-gray-200 p-4">
-                  <div className="flex items-center justify-center gap-6">
-                    <div className="text-center">
-                      <p className="text-xs text-gray-400 mb-1">QR</p>
-                      <QRCode value={selected.ticketNumber} size={72} />
-                    </div>
-                    <div className="text-center flex-1">
-                      <Barcode value={selected.ticketNumber} height={50} className="mx-auto" />
-                    </div>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <QRCode value={selected.ticketNumber} size={72} />
+                    <Barcode value={selected.ticketNumber} height={50} />
                   </div>
                   <p className="text-xs text-gray-500 mt-2 font-mono text-center">{selected.ticketNumber}</p>
                 </div>
