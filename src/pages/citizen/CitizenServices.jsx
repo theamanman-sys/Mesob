@@ -116,12 +116,12 @@ export default function CitizenServices() {
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+          <input id="svc-search" name="search" type="text" value={search} onChange={e => setSearch(e.target.value)}
             placeholder={t('Search services...')} className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white" />
         </div>
         <div className="relative">
           <Filter className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-          <select value={selectedOrg} onChange={e => setSelectedOrg(e.target.value)}
+          <select id="svc-filter" name="selectedOrg" value={selectedOrg} onChange={e => setSelectedOrg(e.target.value)}
             className="pl-11 pr-8 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none cursor-pointer min-w-[140px] sm:min-w-[200px]">
             <option value="all">{t('All Departments')}</option>
             {organizations.map(o => (
@@ -266,26 +266,26 @@ export default function CitizenServices() {
                   <form onSubmit={(e) => { e.preventDefault(); setStep(2) }} className="space-y-4">
                     <p className="text-sm text-gray-600">{t('Provide additional details for your application')}</p>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Full Name')}</label>
-                      <input type="text" value={appForm.fullName || citizen?.firstName + ' ' + citizen?.lastName || ''}
+                      <label htmlFor="svc-full-name" className="block text-sm font-semibold text-gray-700 mb-1">{t('Full Name')}</label>
+                      <input id="svc-full-name" name="fullName" type="text" value={appForm.fullName || citizen?.firstName + ' ' + citizen?.lastName || ''}
                         onChange={e => setAppForm({ ...appForm, fullName: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Email')}</label>
-                      <input type="email" value={appForm.email || citizen?.email || ''}
+                      <label htmlFor="svc-email" className="block text-sm font-semibold text-gray-700 mb-1">{t('Email')}</label>
+                      <input id="svc-email" name="email" type="email" value={appForm.email || citizen?.email || ''}
                         onChange={e => setAppForm({ ...appForm, email: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Phone')}</label>
-                      <input type="tel" value={appForm.phone || citizen?.phone || ''}
+                      <label htmlFor="svc-phone" className="block text-sm font-semibold text-gray-700 mb-1">{t('Phone')}</label>
+                      <input id="svc-phone" name="phone" type="tel" value={appForm.phone || citizen?.phone || ''}
                         onChange={e => setAppForm({ ...appForm, phone: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Additional Notes')}</label>
-                      <textarea value={appForm.notes || ''} onChange={e => setAppForm({ ...appForm, notes: e.target.value })}
+                      <label htmlFor="svc-notes" className="block text-sm font-semibold text-gray-700 mb-1">{t('Additional Notes')}</label>
+                      <textarea id="svc-notes" name="notes" value={appForm.notes || ''} onChange={e => setAppForm({ ...appForm, notes: e.target.value })}
                         rows={3} placeholder={t('Any additional information...')}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition resize-none" />
                     </div>
@@ -303,15 +303,15 @@ export default function CitizenServices() {
                     <p className="text-sm text-gray-600">{t('Choose your preferred appointment date and time')}</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Appointment Date')}</label>
-                        <input type="date" value={apptDate}
+                        <label htmlFor="svc-appt-date" className="block text-sm font-semibold text-gray-700 mb-1">{t('Appointment Date')}</label>
+                        <input id="svc-appt-date" name="apptDate" type="date" value={apptDate}
                           onChange={e => setApptDate(e.target.value)}
                           min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Appointment Time')}</label>
-                        <select value={apptTime} onChange={e => setApptTime(e.target.value)}
+                        <label htmlFor="svc-appt-time" className="block text-sm font-semibold text-gray-700 mb-1">{t('Appointment Time')}</label>
+                        <select id="svc-appt-time" name="apptTime" value={apptTime} onChange={e => setApptTime(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
                           {['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00'].map(t => (
                             <option key={t} value={t}>{t}</option>

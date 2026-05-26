@@ -51,11 +51,11 @@ export default function CitizenTickets() {
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+              <input id="ticket-search" name="search" type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder={t('Search tickets...')} className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition bg-white" />
             </div>
             <div className="relative">
-              <select value={filter} onChange={e => setFilter(e.target.value)}
+              <select id="ticket-filter" name="filter" value={filter} onChange={e => setFilter(e.target.value)}
                 className="pl-4 pr-8 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition bg-white appearance-none cursor-pointer min-w-[120px] sm:min-w-[160px]">
                 <option value="all">{t('All Status')}</option>
                 <option value="active">{t('Active')}</option>
@@ -165,10 +165,12 @@ export default function CitizenTickets() {
                     <div className="mt-3 pt-3 border-t border-gray-200">
                       {resched.date || resched.time ? (
                         <div className="flex items-center gap-2">
-                          <input type="date" value={resched.date} onChange={e => setResched({ ...resched, date: e.target.value })}
+                          <label htmlFor="reschedule-date" className="sr-only">{t('Reschedule Date')}</label>
+                          <input id="reschedule-date" name="rescheduleDate" type="date" value={resched.date} onChange={e => setResched({ ...resched, date: e.target.value })}
                             min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
                             className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-purple-400" />
-                          <select value={resched.time} onChange={e => setResched({ ...resched, time: e.target.value })}
+                          <label htmlFor="reschedule-time" className="sr-only">{t('Reschedule Time')}</label>
+                          <select id="reschedule-time" name="rescheduleTime" value={resched.time} onChange={e => setResched({ ...resched, time: e.target.value })}
                             className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-purple-400">
                             {['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00'].map(t => (
                               <option key={t} value={t}>{t}</option>

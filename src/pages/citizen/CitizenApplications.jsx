@@ -76,11 +76,11 @@ export default function CitizenApplications() {
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+          <input id="app-search" name="search" type="text" value={search} onChange={e => setSearch(e.target.value)}
             placeholder={t('Search applications...')} className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white" />
         </div>
         <div className="relative">
-          <select value={filter} onChange={e => setFilter(e.target.value)}
+          <select id="app-filter" name="filter" value={filter} onChange={e => setFilter(e.target.value)}
             className="pl-4 pr-8 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none cursor-pointer min-w-[120px] sm:min-w-[160px]">
             <option value="all">{t('All Status')}</option>
             <option value="submitted">{t('Submitted')}</option>
@@ -246,23 +246,23 @@ export default function CitizenApplications() {
               <div className="p-5 space-y-4">
                 <p className="text-sm text-gray-600 font-medium">{editing.serviceTitle}</p>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Full Name')}</label>
-                  <input type="text" value={editForm.fullName || ''} onChange={e => setEditForm({ ...editForm, fullName: e.target.value })}
+                  <label htmlFor="edit-full-name" className="block text-sm font-semibold text-gray-700 mb-1">{t('Full Name')}</label>
+                  <input id="edit-full-name" name="fullName" type="text" value={editForm.fullName || ''} onChange={e => setEditForm({ ...editForm, fullName: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Email')}</label>
-                  <input type="email" value={editForm.email || ''} onChange={e => setEditForm({ ...editForm, email: e.target.value })}
+                  <label htmlFor="edit-email" className="block text-sm font-semibold text-gray-700 mb-1">{t('Email')}</label>
+                  <input id="edit-email" name="email" type="email" value={editForm.email || ''} onChange={e => setEditForm({ ...editForm, email: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Phone')}</label>
-                  <input type="tel" value={editForm.phone || ''} onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
+                  <label htmlFor="edit-phone" className="block text-sm font-semibold text-gray-700 mb-1">{t('Phone')}</label>
+                  <input id="edit-phone" name="phone" type="tel" value={editForm.phone || ''} onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">{t('Additional Notes')}</label>
-                  <textarea value={editForm.notes || ''} onChange={e => setEditForm({ ...editForm, notes: e.target.value })}
+                  <label htmlFor="edit-notes" className="block text-sm font-semibold text-gray-700 mb-1">{t('Additional Notes')}</label>
+                  <textarea id="edit-notes" name="notes" value={editForm.notes || ''} onChange={e => setEditForm({ ...editForm, notes: e.target.value })}
                     rows={2} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition resize-none" />
                 </div>
                 <div>
