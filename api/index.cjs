@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs')
 const jwtLib = require('jsonwebtoken')
 
 const MONGODB_URI = process.env.MONGODB_URI
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET || 'mesob-default-dev-secret-2025'
 const isDev = process.env.NODE_ENV !== 'production'
 const GOOGLE_CLIENT_ID = process.env.VITE_GOOGLE_CLIENT_ID || '684481615293-5ah46hm3dccnfbqj4rbuga2knpvtevma.apps.googleusercontent.com'
 
@@ -226,18 +226,21 @@ async function handleRoute(method, p, body, req) {
   const citizen = await requireAuth(req)
   const citizenId = citizen?.id || null
 
-  if (method === 'PUT' && p === '/citizens/profile' && citizen) {
+  if (method === 'PUT' && p === '/citizens/profile') {
+    if (!citizen) return json(401, null, 'Unauthorized')
     const db = await mongo()
     await db.collection('citizens').updateOne({ id: citizenId }, { $set: body })
     const updated = await db.collection('citizens').findOne({ id: citizenId })
     return json(200, safeCitizen(updated), 'Profile updated')
   }
 
-  if (method === 'GET' && p === '/citizens/applications' && citizen) {
+  if (method === 'GET' && p === '/citizens/applications') {
+    if (!citizen) return json(401, null, 'Unauthorized')
     const db = await mongo()
     return json(200, await db.collection('citizenApplications').find({ citizenId }).toArray())
   }
-  if (method === 'POST' && p === '/citizens/applications' && citizen) {
+  if (method === 'POST' && p === '/citizens/applications') {
+    if (!citizen) return json(401, null, 'Unauthorized')
     const now = new Date()
     const ticketNumber = 'TKT-' + now.getTime().toString(36).toUpperCase()
     const refNumber = 'APP-' + now.getFullYear() + String(now.getTime()).slice(-4)
@@ -258,13 +261,15 @@ async function handleRoute(method, p, body, req) {
     await db.collection('tickets').insertOne(ticket)
     return json(200, { application: app, ticket }, 'Application submitted with ticket')
   }
-  if (method === 'PUT' && p?.startsWith('/citizens/applications/') && citizen) {
+  if (method === 'PUT' && p?.startsWith('/citizens/applications/')) {
+    if (!citizen) return json(401, null, 'Unauthorized')
     const appId = p.split('/')[3]
     const db = await mongo()
     await db.collection('citizenApplications').updateOne({ id: appId, citizenId }, { $set: { ...body, updatedAt: new Date() } })
     return json(200, null, 'Application updated')
   }
-  if (method === 'DELETE' && p?.startsWith('/citizens/applications/') && citizen) {
+  if (method === 'DELETE' && p?.startsWith('/citizens/applications/')) {
+    if (!citizen) return json(401, null, 'Unauthorized')
     const appId = p.split('/')[3]
     const db = await mongo()
     await db.collection('citizenApplications').deleteOne({ id: appId, citizenId })
@@ -362,11 +367,13 @@ async function handleRoute(method, p, body, req) {
     return json(200, { isMesobVerified: verifiedDocs >= 2, verifiedDocuments: verifiedDocs, totalDocuments: vers.length })
   }
 
-  if (method === 'GET' && p === '/citizens/tickets' && citizen) {
+  if (method === 'GET' && p === '/citizens/tickets') {
+    if (!citizen) return json(401, null, 'Unauthorized')
     const db = await mongo()
     return json(200, await db.collection('tickets').find({ citizenId }).sort({ createdAt: -1 }).toArray())
   }
-  if (method === 'PUT' && p?.startsWith('/citizens/tickets/') && citizen) {
+  if (method === 'PUT' && p?.startsWith('/citizens/tickets/')) {
+    if (!citizen) return json(401, null, 'Unauthorized')
     const ticketId = parseInt(p.split('/')[3])
     const db = await mongo()
     const $set = {}
