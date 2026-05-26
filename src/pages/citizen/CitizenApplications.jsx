@@ -151,7 +151,7 @@ export default function CitizenApplications() {
               <div className="p-5 border-b border-gray-100">
                 <div className="flex items-center justify-between">
                   <h2 className="font-bold text-gray-900">{selected.serviceTitle}</h2>
-                  <button onClick={() => setSelected(null)} className="lg:hidden p-2 rounded-lg hover:bg-gray-100">
+                  <button onClick={() => setSelected(null)} className="md:hidden p-2 rounded-lg hover:bg-gray-100">
                     <XCircle className="w-5 h-5 text-gray-400" />
                   </button>
                 </div>

@@ -114,19 +114,21 @@ export default function CitizenTickets() {
             <motion.div key="detail" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
               className="md:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Ticket className="w-5 h-5 text-purple-600" />
-                    <h2 className="font-bold text-gray-900">{selected.ticketNumber}</h2>
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-2 min-w-0 flex-1">
+                    <Ticket className="w-5 h-5 text-purple-600 mt-0.5 shrink-0" />
+                    <div className="min-w-0">
+                      <h2 className="font-bold text-gray-900 truncate">{selected.ticketNumber}</h2>
+                      <p className="text-sm text-gray-500 truncate">{selected.serviceTitle}</p>
+                    </div>
+                    <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${
                       selected.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                     }`}>{selected.status}</span>
                   </div>
-                  <button onClick={() => setSelected(null)} className="md:hidden p-2 rounded-lg hover:bg-gray-100">
+                  <button onClick={() => setSelected(null)} className="md:hidden shrink-0 p-2 rounded-lg hover:bg-gray-100">
                     <X className="w-5 h-5 text-gray-400" />
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">{selected.serviceTitle}</p>
               </div>
               <div className="p-5 space-y-6">
                 <div>
