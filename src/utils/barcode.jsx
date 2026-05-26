@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import QRCodeLib from 'qrcode'
 
 const CODE128_MAP = {
   '0': 212222, '1': 222122, '2': 222221, '3': 121223, '4': 121322,
@@ -67,6 +68,39 @@ export function Barcode({ value, height = 60, className = '' }) {
   )
 }
 
+function drawQR(ctx, x, y, size, value) {
+  const qr = QRCodeLib.create(value, { errorCorrectionLevel: 'M' })
+  const modules = qr.modules
+  const cell = size / modules.size
+  for (let r = 0; r < modules.size; r++) {
+    for (let c = 0; c < modules.size; c++) {
+      if (modules.get(r, c)) {
+        ctx.fillRect(x + c * cell, y + r * cell, Math.ceil(cell), Math.ceil(cell))
+      }
+    }
+  }
+}
+
+export function QRCode({ value, size = 80, className = '' }) {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    if (!canvasRef.current || !value) return
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    canvas.width = size
+    canvas.height = size
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, size, size)
+    ctx.fillStyle = '#000'
+    drawQR(ctx, 0, 0, size, value)
+  }, [value, size])
+
+  if (!value) return null
+
+  return <canvas ref={canvasRef} className={className} style={{ width: size, height: size }} />
+}
+
 export function renderTicketToCanvas(ticket) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
@@ -127,6 +161,13 @@ export function renderTicketToCanvas(ticket) {
   const bx = (w - totalWidth) / 2
   const by = y + 20
   ctx.fillStyle = '#000'
+
+  const qrSize = 80
+  const qrX = w - qrSize - 40
+  const qrY = y - (fields.length * 30) + 10
+  ctx.fillStyle = '#000'
+  drawQR(ctx, qrX, qrY, qrSize, ticket.ticketNumber)
+
   let cx = bx
   for (const bar of bars) {
     for (const ch of String(bar)) {

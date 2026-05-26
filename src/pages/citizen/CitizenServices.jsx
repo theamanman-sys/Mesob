@@ -7,7 +7,7 @@ import { organizationService } from '../../services/organizationService'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
 import { getTranslatedService } from '../../i18n/serviceTranslations'
-import { Barcode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
+import { Barcode, QRCode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
 
 export default function CitizenServices() {
   const { currentLanguage, t } = useLanguage()
@@ -242,7 +242,10 @@ export default function CitizenServices() {
                         <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-500">{t('Time')}</span><span className="font-medium text-gray-800">{appTicket.appointmentTime}</span></div>
                         <div className="flex items-center justify-between text-sm"><span className="text-gray-500">{t('Fee')}</span><span className="font-medium text-gray-800">{appTicket.fee} ETB</span></div>
                         <div className="mt-3 pt-3 border-t border-blue-200">
-                          <Barcode value={appTicket.ticketNumber} height={36} />
+                          <div className="flex items-center gap-4">
+                            <QRCode value={appTicket.ticketNumber} size={60} />
+                            <Barcode value={appTicket.ticketNumber} height={36} className="flex-1" />
+                          </div>
                           <div className="flex gap-2 mt-2">
                             <button onClick={() => downloadTicketImage(appTicket)}
                               className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition">

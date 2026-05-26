@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, ChevronDown, Building2, Calendar, ArrowRight, Plus, Trash2, Edit3, Upload, X, Loader, Ticket, Download } from 'lucide-react'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
-import { Barcode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
+import { Barcode, QRCode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
 
 const statusConfig = {
   submitted: { icon: Clock, label: 'Submitted', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
@@ -183,7 +183,10 @@ export default function CitizenApplications() {
                       <span className="font-medium text-gray-800">{selected.referenceNumber}</span>
                     </div>
                     <div className="mt-2 pt-2 border-t border-purple-200">
-                      <Barcode value={selected.ticketNumber} height={30} />
+                      <div className="flex items-center gap-4">
+                        <QRCode value={selected.ticketNumber} size={56} />
+                        <Barcode value={selected.ticketNumber} height={30} className="flex-1" />
+                      </div>
                       <div className="flex gap-2 mt-2">
                         <button onClick={() => downloadTicketImage({ ticketNumber: selected.ticketNumber, serviceTitle: selected.serviceTitle, fee: 0, status: selected.status, appointmentDate: selected.createdAt })}
                           className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-semibold hover:bg-purple-700 transition">

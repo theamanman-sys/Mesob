@@ -3,7 +3,7 @@ import { Calendar, Clock, MapPin, ExternalLink, CheckCircle, XCircle, AlertCircl
 import { motion, AnimatePresence } from 'framer-motion'
 import { citizenService } from '../../services/citizenService'
 import { useLanguage } from '../../context/LanguageContext'
-import { Barcode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
+import { Barcode, QRCode, downloadTicketImage, downloadTicketPDF } from '../../utils/barcode'
 
 const statusConfig = {
   active: { color: 'text-green-700', bg: 'bg-green-100' },
@@ -203,9 +203,17 @@ export default function CitizenTickets() {
                   )}
                 </div>
 
-                <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-                  <Barcode value={selected.ticketNumber} height={50} className="mx-auto" />
-                  <p className="text-xs text-gray-500 mt-2 font-mono">{selected.ticketNumber}</p>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-center gap-6">
+                    <div className="text-center">
+                      <p className="text-xs text-gray-400 mb-1">QR</p>
+                      <QRCode value={selected.ticketNumber} size={72} />
+                    </div>
+                    <div className="text-center flex-1">
+                      <Barcode value={selected.ticketNumber} height={50} className="mx-auto" />
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 font-mono text-center">{selected.ticketNumber}</p>
                 </div>
 
                 <div className="flex gap-2">
